@@ -2,8 +2,8 @@
 name: Task template
 about: A template used to add a task to an epic.
 title: "[TASK]"
-labels: task
-assignees: ''
+labels: task, user story
+assignees: raintje
 
 ---
 
