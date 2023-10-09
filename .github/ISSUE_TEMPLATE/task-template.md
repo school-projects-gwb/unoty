@@ -6,7 +6,5 @@ labels: task
 assignees: raintje
 
 ---
-
-# [TITLE]
 ## Beschrijving
 [DESCRIPTION]
