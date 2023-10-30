@@ -24,8 +24,8 @@ the center of the C++ minor, as presented by Avans Hogeschool.
 ## Getting Started
 
 ### Prerequisites
-* CMake 3.26 or higher
 * C++ 17
+* CMake 3.26.x
 * CLion 2023.x
 
 ### Installation
