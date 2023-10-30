@@ -11,11 +11,14 @@ class BehaviourScript : public Component {
  public:
   ~BehaviourScript();
   BehaviourScript();
-  virtual void OnStart() = 0;
-  virtual void OnUpdate() = 0;
-  virtual void OnInput(const Key& key) = 0;
-  virtual void OnTriggerEnter2d(Collider& collider) = 0;
-  virtual void OnTriggerExit2d(Collider& collider) = 0;
+  virtual void OnStart();
+  virtual void OnUpdate();
+  virtual void OnInput(const Key& key);
+  virtual void OnTriggerEnter2d(Collider& collider);
+  virtual void OnTriggerExit2d(Collider& collider);
+ private:
+  class Impl;
+  const std::unique_ptr<Impl> impl_;
 };
 
 }

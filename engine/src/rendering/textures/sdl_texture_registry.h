@@ -5,7 +5,7 @@
 #include <string>
 #include <map>
 #include "texture_registry_base.h"
-#include <SDL2_image/SDL_image.h>
+#include <SDL_image.h>
 
 namespace engine::rendering {
 

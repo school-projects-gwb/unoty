@@ -2,7 +2,7 @@
 #define ENGINE_SRC_UI_SDL_RENDERER_H_
 
 #include <SDL.h>
-#include <SDL2_image/SDL_image.h>
+#include <SDL_image.h>
 #include "engine/renderer.h"
 #include "entities/transform.h"
 #include "entities/component.h"

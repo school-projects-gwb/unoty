@@ -18,8 +18,7 @@ class TestScene : engine::entities::Scene {
      auto camera = std::make_unique<Camera>();
 
      auto game_object = GameObject::Create();
-     auto sprite = Component::Create<Sprite>("resources/sprites/player/front_1.png");
-     game_object->AddComponent(sprite);
+     game_object->AddComponent(Component::Create<Sprite>("resources/sprites/player/front_1.png"));
      game_object->AddComponent(Component::Create<MovementScript>());
 
      scene->AddObject(game_object);

@@ -8,6 +8,12 @@ add_executable(slime_shooter main.cc
         movement_script.h
 )
 
+# SDL2
+if (WIN32)
+    set(SDL2_DIR "C:/Program Files/SDL/SDL2/cmake")
+    set(SDL2_image_DIR "C:/Program Files/SDL/SDL2_image/cmake")
+endif (WIN32)
+
 find_package(SDL2 REQUIRED COMPONENTS SDL2)
 find_package(SDL2_image REQUIRED)
 
