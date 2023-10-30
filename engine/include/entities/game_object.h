@@ -2,15 +2,33 @@
 #define ENGINE_INCLUDE_ENTITIES_GAME_OBJECT_H_
 
 #include <vector>
+#include <memory>
 #include "component.h"
 
 namespace engine::entities {
 
 /// @brief Base for GameObjects, contains various helper methods for handling game objects
-class GameObject {
+class GameObject : public std::enable_shared_from_this<GameObject> {
  public:
   GameObject();
   ~GameObject();
+
+  Transform& GetTransform();
+
+  void SetParent(std::shared_ptr<GameObject> parent);
+  std::shared_ptr<GameObject> GetParent();
+
+  void SetName(const std::string& name);
+  const std::string& GetName();
+
+  void SetTagName(const std::string& tag_name);
+  const std::string& GetTagName();
+
+  void SetLayer(int layer);
+  int GetLayer();
+
+  void SetIsActive(bool is_active);
+  bool GetIsActive();
 
   template<class T>
   void AddComponent(std::shared_ptr<T> component);
@@ -18,10 +36,14 @@ class GameObject {
   template<class T>
   std::shared_ptr<T> GetComponentByType();
 
+  template<class T>
+  std::vector<std::shared_ptr<T>> GetComponentsByType();
+
   template <typename... Args>
   static std::shared_ptr<GameObject> Create(Args&&... args) {
     return std::make_shared<GameObject>(std::forward<Args>(args)...);
   }
+
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;
@@ -32,6 +54,7 @@ class GameObject {
 
 template<class T>
 void GameObject::AddComponent(std::shared_ptr<T> component) {
+  component->SetGameObject(shared_from_this());
   components_.emplace_back(component);
 }
 
@@ -44,6 +67,18 @@ std::shared_ptr<T> GameObject::GetComponentByType() {
   if (found_component != components_.end()) return std::dynamic_pointer_cast<T>(*found_component);
 
   return nullptr;
+}
+
+template<class T>
+std::vector<std::shared_ptr<T>> GameObject::GetComponentsByType() {
+  std::vector<std::shared_ptr<T>> matching_components;
+
+  for (const auto& component : components_) {
+    auto typedComponent = std::dynamic_pointer_cast<T>(component);
+    if (typedComponent) matching_components.push_back(typedComponent);
+  }
+
+  return matching_components;
 }
 
 }

@@ -3,21 +3,19 @@
 
 #include <memory>
 #include "entities/colliders/collider.h"
+#include "entities/structs/key.h"
 namespace engine::entities {
 
 /// @brief Use for completely custom behavior; has access to various listeners
-class BehaviourScript {
+class BehaviourScript : public Component {
  public:
   ~BehaviourScript();
   BehaviourScript();
-  virtual void OnStart();
-  virtual void OnUpdate();
-  virtual void OnInput();
-  virtual void OnTriggerEnter2d(Collider& collider);
-  virtual void OnTriggerExit2d(Collider& collider);
- private:
-  class Impl;
-  const std::unique_ptr<Impl> impl_;
+  virtual void OnStart() = 0;
+  virtual void OnUpdate() = 0;
+  virtual void OnInput(const Key& key) = 0;
+  virtual void OnTriggerEnter2d(Collider& collider) = 0;
+  virtual void OnTriggerExit2d(Collider& collider) = 0;
 };
 
 }

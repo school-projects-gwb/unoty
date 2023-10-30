@@ -1,7 +1,7 @@
 #ifndef ENGINE_INCLUDE_ENTITIES_LISTENERS_MOUSE_LISTENER_H_
 #define ENGINE_INCLUDE_ENTITIES_LISTENERS_MOUSE_LISTENER_H_
 
-namespace game::entities {
+namespace engine::entities {
 
 /// @brief Triggers functions on mouse interaction
 class MouseListener {
