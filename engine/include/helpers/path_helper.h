@@ -1,0 +1,23 @@
+#ifndef UNOTY_PATH_HELPER_H
+#define UNOTY_PATH_HELPER_H
+
+#include <string>
+#include <filesystem>
+
+namespace engine::helpers {
+
+/// @brief Helper for paths
+class PathHelper {
+ public:
+  /// @brief Assume working directory (current_path) is directory where executable is located
+  static const std::string GetFullPathFromRelative(const std::string& relative_path) {
+    std::filesystem::path current_path = std::filesystem::current_path();
+    std::string image_path = current_path.string() + "/" + relative_path;
+
+    return image_path;
+  }
+};
+
+}
+
+#endif //UNOTY_PATH_HELPER_H

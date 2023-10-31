@@ -49,3 +49,6 @@ libs/
 *.exe
 *.out
 *.app
+
+!/dependencies/
+!/dependencies/**

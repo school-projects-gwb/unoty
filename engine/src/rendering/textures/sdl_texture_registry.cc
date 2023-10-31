@@ -1,5 +1,7 @@
 #include <iostream>
+#include <filesystem>
 #include "sdl_texture_registry.h"
+#include "helpers/path_helper.h"
 
 namespace engine::rendering {
 
@@ -18,7 +20,11 @@ SdlTextureRegistry::~SdlTextureRegistry() {
 void* SdlTextureRegistry::RegisterTexture(const std::string& image_path) {
   auto it = texture_registry.find(image_path);
   if (it == texture_registry.end()) {
-    SDL_Surface* image_surface = IMG_Load(image_path.c_str());
+    std::string full_path = helpers::PathHelper::GetFullPathFromRelative(image_path);
+    const char* image_path_c_str = full_path.c_str();
+
+    SDL_Surface* image_surface = IMG_Load(image_path_c_str);
+
     if (!image_surface) return nullptr;
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, image_surface);

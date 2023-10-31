@@ -15,7 +15,7 @@ namespace engine {
 
 class Engine::Impl {
  public:
-  explicit Impl(EngineConfig engine_config) : game_tick_(), scene_manager_() {
+  explicit Impl(EngineConfig engine_config) : scene_manager_(), game_tick_() {
     is_debug_mode_ = engine_config.is_debug_mode;
 
     renderer_ = std::make_unique<ui::SdlRenderer>(engine_config.window_width_, engine_config.window_height_);

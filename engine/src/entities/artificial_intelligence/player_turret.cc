@@ -1,6 +1,7 @@
 
 #include <vector>
 #include "entities/artificial_intelligence/player_turret.h"
+
 namespace engine::entities {
 
 class PlayerTurret::Impl {
@@ -55,6 +56,10 @@ void PlayerTurret::OnTriggerEnter2d(Collider& collider) {
 
 void PlayerTurret::OnTriggerExit2d(Collider& collider) {
   impl_->OnTriggerEnter2d(collider);
+}
+
+void PlayerTurret::TrackObject(std::shared_ptr<GameObject> object) {
+
 }
 
 }
