@@ -33,6 +33,8 @@ CMake will automatically build the project and manage any required dependencies 
 
 You can directly run the binary from there, or have your IDE of choice run it for you.
 
+View INSTALL.md for more detailed instructions.
+
 ## Usage
 The Unoty engine strives to provide a developer experience that is as close as possible to Unity, using C++ instead of C#.
 
@@ -41,12 +43,16 @@ have implemented some of the desired functionality.
 
 ## Rules
 
+### Project Management
+See our [JIRA board](https://unoty.atlassian.net/jira/software/projects/UNOTY/boards/1).
+
 ### Git Conventions
-- Our main- and development branches are protected. 
-    - Pushes to these branches require a pull request with 2 and 1 approvals, respectively.
-      - When assigning reviewers, try to pick people who haven't worked on the feature in question.
-- We use feature branches when working on user stories. These will be appended with the specific task being worked on.
-  - Example: When working on input, create a branch called `input`, based on `develop`. When working on a specific task, i.e. controller support, create a branch based on the `input` branch called `input/controller`.
+- Our main branch serves as our "release branch", and will be updated at the conclusion of every sprint.
+  - This branch is protected, and requires 2 approvals on a pull request.
+- Our develop branch is an unstable environment where you can find the most recent changes.
+  - This branch is also protected, and requires 1 approval on a pull request.
+- We use feature branches when working on on user stories. The name of these branches must be equal to their respective JIRA ticket, i.e. UNOTY-1.
+  - When working on subtasks, we base our new branches on said feature branches and adhere to the same naming convention.
 - Merge commits from feature branches must be squashed, to ensure that our commit history remains organized.
 
 ### Coding Conventions
@@ -54,10 +60,6 @@ have implemented some of the desired functionality.
 #### Style guide
 This project adheres to the [Google C++ style guide](https://google.github.io/styleguide/cppguide.html).
 
-You can set this up in CLion by opening settings, going to Editor > Code Style > C/C++ and clicking the "Set from"
-dropdown in the top right, and selecting Google from this list.
-
 #### Core guidelines
 Our code makes use of the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines) as
 described by Stroustrup and Sutter.
-
