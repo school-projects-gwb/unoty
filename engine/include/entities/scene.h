@@ -1,6 +1,7 @@
 #ifndef ENGINE_INCLUDE_API_SCENE_H_
 #define ENGINE_INCLUDE_API_SCENE_H_
 
+#include <set>
 #include "game_object.h"
 #include "engine/renderer.h"
 #include "camera.h"
@@ -14,7 +15,7 @@ class Scene {
   ~Scene();
   Scene();
   void AddObject(std::shared_ptr<GameObject> object);
-  void TriggerInputs(const entities::Key& key);
+  void TriggerInputs(const std::set<entities::Key>& keys);
   void UpdatePhysics(const std::unique_ptr<physics::Physics>& physics);
   void RenderObjects(const std::unique_ptr<ui::Renderer>& renderer);
   void SetCamera(std::unique_ptr<Camera> camera);

@@ -57,7 +57,7 @@ class Engine::Impl {
         // double render_factor = render_tick_.GetAccumulator() / render_tick_.GetFixedTimeStep();
         // Render frame using render_factor for smooth animations
         input_->ProcessInput();
-        active_scene->TriggerInputs(input_->GetLastKeyPress());
+        active_scene->TriggerInputs(input_->GetActiveKeys());
         active_scene->RenderObjects(renderer_);
 
         render_tick_.SubtractAccumulator(render_tick_.GetFixedTimeStep());

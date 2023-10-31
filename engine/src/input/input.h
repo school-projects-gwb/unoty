@@ -3,6 +3,7 @@
 
 #include "entities/structs/key.h"
 #include "entities/structs/point.h"
+#include <set>
 
 namespace engine::input {
 
@@ -15,6 +16,7 @@ class Input {
   [[nodiscard]] virtual entities::Point GetLastMousePress() const = 0;
   [[nodiscard]] virtual bool GetIsMousePressed() const = 0;
   [[nodiscard]] virtual bool GetIsMouseReleased() const = 0;
+  [[nodiscard]] virtual std::set<entities::Key> GetActiveKeys() const = 0;
 };
 
 }

@@ -19,11 +19,16 @@ void SdlInput::ProcessInput() {
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
       case SDL_KEYDOWN:
-        if (key_mappings_.find(event.key.keysym.sym) != key_mappings_.end())
+        if (key_mappings_.find(event.key.keysym.sym) != key_mappings_.end()) {
           last_key_press_ = key_mappings_[event.key.keysym.sym];
+          active_keys_.insert(last_key_press_);
+        }
         break;
       case SDL_KEYUP:
         last_key_press_ = entities::Key::None;
+        if (key_mappings_.find(event.key.keysym.sym) != key_mappings_.end()) {
+          active_keys_.erase(key_mappings_[event.key.keysym.sym]);
+        }
         break;
       case SDL_MOUSEBUTTONDOWN:
         if (key_mappings_.find(event.button.button) != key_mappings_.end()) {
@@ -62,6 +67,10 @@ bool SdlInput::GetIsMousePressed() const {
 
 bool SdlInput::GetIsMouseReleased() const {
   return is_mouse_released_;
+}
+
+std::set<entities::Key> SdlInput::GetActiveKeys() const {
+  return active_keys_;
 }
 
 }

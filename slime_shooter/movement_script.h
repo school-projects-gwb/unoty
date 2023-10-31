@@ -12,6 +12,8 @@ class MovementScript : public BehaviourScript {
     auto game_object = GetGameObject();
     Transform& transform = game_object->GetTransform();
 
+
+
     switch (key) {
       case Key::Up:
         transform.Position.y -= 10;

@@ -22,12 +22,12 @@ class Scene::Impl {
     // todo implement
   }
 
-  void TriggerInputs(const entities::Key& key) {
-    if (key == Key::None) return;
-
-    for (const auto& game_object : game_objects_) {
-      auto behaviour_scripts = game_object->GetComponentsByType<entities::BehaviourScript>();
-      for (const auto& script : behaviour_scripts) script->OnInput(key);
+  void TriggerInputs(const std::set<entities::Key>& keys) {
+    for (const auto& key : keys) {
+      for (const auto& game_object : game_objects_) {
+        auto behaviour_scripts = game_object->GetComponentsByType<entities::BehaviourScript>();
+        for (const auto& script : behaviour_scripts) script->OnInput(key);
+      }
     }
   }
 
@@ -68,8 +68,8 @@ void Scene::AddObject(std::shared_ptr<GameObject> object) {
   impl_->AddObject(std::move(object));
 }
 
-void Scene::TriggerInputs(const entities::Key &key) {
-  impl_->TriggerInputs(key);
+void Scene::TriggerInputs(const std::set<entities::Key>& keys) {
+  impl_->TriggerInputs(keys);
 }
 
 void Scene::UpdatePhysics(const std::unique_ptr<physics::Physics>& physics) {
