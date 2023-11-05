@@ -1,0 +1,16 @@
+{
+  "name": "Henk de Vries",
+  "address": "Straatnaam 23",
+  "hobbies": [
+    "Lezen",
+    "Hardlopen",
+    "Fietsen"
+  ],
+  "werkervaring": {
+    "bijbaantje": "Vakkenvuller",
+    "complexe baan": {
+      "positie": "vakkenvuller",
+      "bedrijf": "jumbo"
+    }
+  }
+}

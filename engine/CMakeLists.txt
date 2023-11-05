@@ -12,10 +12,16 @@ if(WIN32)
 
     find_package(SDL2 REQUIRED)
     find_package(SDL2_IMAGE REQUIRED)
+
+    include(FetchContent)
+    FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+    FetchContent_MakeAvailable(json)
+
 else() # unix
     include(FindPkgConfig)
     find_package(SDL2 REQUIRED COMPONENTS SDL2)
     find_package(SDL2_IMAGE REQUIRED)
+    find_package(nlohmann_json 3.2.0 REQUIRED)
 endif()
 
 add_compile_options(-Wall -Wpedantic)
@@ -95,6 +101,8 @@ file(GLOB_RECURSE SOURCES
         src/rendering/sdl_renderer.h
 )
 
+include(EngineTests.cmake)
+
 add_library(engine SHARED ${SOURCES})
 
 if(WIN32)
@@ -103,6 +111,9 @@ if(WIN32)
 else()
     target_link_libraries(engine PRIVATE SDL2::SDL2 SDL2_image::SDL2_image)
 endif()
+
+# Link JSON library
+target_link_libraries(engine PRIVATE nlohmann_json::nlohmann_json)
 
 target_include_directories(engine PUBLIC include)
 target_include_directories(engine PRIVATE

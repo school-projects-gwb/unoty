@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 if(WIN32)
     set(SDL2_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
     set(SDL2_IMAGE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2_image")
+
     find_package(SDL2 REQUIRED)
     find_package(SDL2_IMAGE REQUIRED)
-
 endif(WIN32)
 
 set(INSTALL_DIR ${PROJECT_BINARY_DIR}/out)
