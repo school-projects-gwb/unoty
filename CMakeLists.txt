@@ -6,9 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 if(WIN32)
     set(SDL2_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
     set(SDL2_IMAGE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2_image")
+    set(SDL2_MIXER_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2_mixer")
 
     find_package(SDL2 REQUIRED)
     find_package(SDL2_IMAGE REQUIRED)
+    find_package(SDL2_MIXER REQUIRED)
 endif(WIN32)
 
 set(INSTALL_DIR ${PROJECT_BINARY_DIR}/out)
@@ -21,11 +23,17 @@ add_subdirectory(slime_shooter)
 if(WIN32)
     list(GET SDL2_LIBRARIES 0 HEAD_SDL2_LIBRARIES)
     get_filename_component(SDL2_DLL_DIR ${HEAD_SDL2_LIBRARIES} DIRECTORY CACHE)
+
     list(GET SDL2_IMAGE_LIBRARIES 0 HEAD_SDL2_IMAGE_LIBRARIES)
     get_filename_component(SDL2_IMAGE_DLL_DIR ${HEAD_SDL2_IMAGE_LIBRARIES} DIRECTORY CACHE)
+
+    list(GET SDL2_MIXER_LIBRARIES 0 HEAD_SDL2_MIXER_LIBRARIES)
+    get_filename_component(SDL2_MIXER_DLL_DIR ${HEAD_SDL2_MIXER_LIBRARIES} DIRECTORY CACHE)
+
     file(GLOB SDL2_DLLS "${SDL2_DLL_DIR}/*.dll")
     file(GLOB SDL2_IMAGE_DLLS "${SDL2_IMAGE_DLL_DIR}/*.dll")
+    file(GLOB SDL2_MIXER_DLLS "${SDL2_MIXER_DLL_DIR}/*.dll")
 
     add_custom_target(dependencies ALL
-            COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLLS} ${SDL2_IMAGE_DLLS} ${INSTALL_DIR})
+            COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLLS} ${SDL2_IMAGE_DLLS} ${SDL2_MIXER_DLLS} ${INSTALL_DIR})
 endif(WIN32)

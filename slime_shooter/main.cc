@@ -2,6 +2,7 @@
 #include "engine/engine.h"
 #include "entities/game_object.h"
 #include "entities/sprite.h"
+#include "entities/audio_source.h"
 #include "entities/colliders/box_collider.h"
 #include "entities/colliders/circle_collider.h"
 #include "game_scene.h"
@@ -9,6 +10,9 @@
 using namespace engine::entities;
 
 int main() {
+//    auto* t = new engine::audio::Audio();
+//    t->start();
+
   engine::EngineConfig engine_config;
   engine_config.render_tick_fps = 30;
   engine_config.game_tick_fps = 30;
@@ -26,4 +30,6 @@ int main() {
   engine.SetActiveScene("test_scene");
 
   engine.Start();
+
+  return 0;
 }

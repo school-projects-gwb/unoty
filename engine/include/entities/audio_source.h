@@ -6,7 +6,11 @@
 namespace engine::entities {
 
 /// @brief Contains logic to play audio
-class AudioSource : Component {
+class AudioSource : public Component {
+ public:
+  AudioSource(const std::string& track);
+  ~AudioSource() override;
+  void Start();
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

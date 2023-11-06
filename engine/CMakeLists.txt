@@ -6,9 +6,14 @@ if(WIN32)
     if(NOT DEFINED SDL2_DIR)
         set(SDL2_DIR "C:/SDL2")
     endif()
+
     if(NOT DEFINED SDL2_IMAGE_DIR)
         set(SDL2_IMAGE_DIR "C:/SDL2_image")
     endif(NOT DEFINED SDL2_IMAGE_DIR)
+
+    if(NOT DEFINED SDL2_MIXER_DIR)
+        set(SDL2_MIXER_DIR "C:/SDL2_mixer")
+    endif(NOT DEFINED SDL2_MIXER_DIR)
 
     find_package(SDL2 REQUIRED)
     find_package(SDL2_IMAGE REQUIRED)
@@ -17,11 +22,13 @@ if(WIN32)
     FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
     FetchContent_MakeAvailable(json)
 
+    find_package(SDL2_MIXER REQUIRED)
 else() # unix
     include(FindPkgConfig)
     find_package(SDL2 REQUIRED COMPONENTS SDL2)
     find_package(SDL2_IMAGE REQUIRED)
     find_package(nlohmann_json 3.2.0 REQUIRED)
+    find_package(SDL2_MIXER REQUIRED)
 endif()
 
 add_compile_options(-Wall -Wpedantic)
@@ -68,6 +75,11 @@ file(GLOB_RECURSE SOURCES
         include/helpers/path_helper.h
         include/helpers/debug.h
 
+        src/entities/audio_source.cc
+        src/audio/audio_factory.h
+        src/audio/audio_factory.cc
+        src/audio/sdl2_audio.h
+        src/audio/sdl2_audio.cc
         src/audio/audio.cc
         src/audio/audio.h
         src/engine/engine.cc
@@ -108,14 +120,13 @@ file(GLOB_RECURSE SOURCES
 )
 
 include(EngineTests.cmake)
-
 add_library(engine SHARED ${SOURCES})
 
 if(WIN32)
     set_target_properties(engine PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
-    target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+    target_link_libraries(engine PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
 else()
-    target_link_libraries(engine PRIVATE SDL2::SDL2 SDL2_image::SDL2_image)
+    target_link_libraries(engine PRIVATE SDL2::SDL2 SDL2_image::SDL2_image SDL2_mixer::SDL2_mixer)
 endif()
 
 # Link JSON library
@@ -125,7 +136,8 @@ target_include_directories(engine PUBLIC include)
 target_include_directories(engine PRIVATE
         src
         ${SDL2_INCLUDE_DIRS}
-        ${SDL2_IMAGE_INCLUDE_DIRS})
+        ${SDL2_IMAGE_INCLUDE_DIRS}
+        ${SDL2_MIXER_INCLUDE_DIRS})
 
 install(DIRECTORY include/engine
         DESTINATION include/engine

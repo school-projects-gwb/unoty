@@ -1,5 +1,5 @@
-#ifndef DEBUG_APP__TEST_SCENE_H_
-#define DEBUG_APP__TEST_SCENE_H_
+#ifndef DEBUG_APP__GAME_SCENE_H_
+#define DEBUG_APP__GAME_SCENE_H_
 
 #include <iostream>
 #include "entities/scene/scene.h"
@@ -50,4 +50,4 @@ class GameScene : engine::entities::Scene {
   }
 };
 
-#endif //DEBUG_APP__TEST_SCENE_H_
+#endif //DEBUG_APP__GAME_SCENE_H_
