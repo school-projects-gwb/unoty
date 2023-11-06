@@ -1,4 +1,3 @@
-#include <iostream>
 #include <filesystem>
 #include "engine/engine.h"
 #include "engine_tick.h"
@@ -10,6 +9,7 @@
 #include "../rendering/textures/texture_registry.h"
 #include "engine/physics.h"
 #include "../physics/impl_physics.h"
+#include "helpers/debug.h"
 
 namespace engine {
 
@@ -18,7 +18,8 @@ class Engine::Impl {
   explicit Impl(EngineConfig engine_config) : scene_manager_(), game_tick_() {
     is_debug_mode_ = engine_config.is_debug_mode;
 
-    renderer_ = std::make_unique<ui::SdlRenderer>(engine_config.window_width_, engine_config.window_height_);
+    renderer_ = std::make_unique<ui::SdlRenderer>(engine_config.window_width, engine_config.window_height,
+                                                  engine_config.window_title);
     rendering::TextureRegistry::Initialize(renderer_);
 
     input_ = std::make_unique<input::SdlInput>();
@@ -31,10 +32,13 @@ class Engine::Impl {
   }
 
   void Start() {
-    is_game_active_ = true;
-
-    while (is_game_active_) {
+    while (!input_->IsWindowClosed()) {
       auto active_scene = scene_manager_.GetActiveScene();
+
+      if (active_scene == nullptr) {
+        helpers::Debug::Error("No starting Scene set.");
+        return;
+      }
 
       double delta_time = game_tick_.GetDeltaTime();
       game_tick_.AppendAccumulator(delta_time);
@@ -68,9 +72,11 @@ class Engine::Impl {
 
       game_tick_.IncreaseElapsed();
       render_tick_.IncreaseElapsed();
-      game_tick_.ShowFps("Game");
-      render_tick_.ShowFps("RenderSprite");
+      game_tick_.ShowFps("Game update");
+      render_tick_.ShowFps("Rendering");
     }
+
+    renderer_->Exit();
   }
 
   void AddScene(const std::string& name, entities::SceneCallbackFunction callback_function) {
@@ -91,7 +97,6 @@ class Engine::Impl {
   EngineTick game_tick_;
   EngineTick render_tick_;
   bool is_debug_mode_ = false;
-  bool is_game_active_ = false;
 };
 
 Engine::Engine(EngineConfig engine_config) : impl_(new Impl(engine_config)) {}

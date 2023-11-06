@@ -3,7 +3,7 @@
 
 namespace engine::entities {
 
-/// @brief Color struct for RGB and A (transparancy) values
+/// @brief Color struct for Red, Green, Blue and A (transparency) values
 struct Color {
   unsigned char r = 0;
   unsigned char g = 0;

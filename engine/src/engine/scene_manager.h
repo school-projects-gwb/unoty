@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include <../include/entities/scene_callback_function.h>
+#include "entities/scene/scene_callback_function.h"
 
 namespace engine {
 

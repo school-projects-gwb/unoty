@@ -11,8 +11,9 @@ struct EngineConfig {
   bool is_debug_mode = true;
 
   // Rendering
-  int window_width_ = 500;
-  int window_height_ = 500;
+  int window_width = 500;
+  int window_height = 500;
+  std::string window_title = "Game";
 };
 
 }

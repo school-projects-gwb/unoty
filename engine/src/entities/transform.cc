@@ -1,15 +1,28 @@
 #include "entities/transform.h"
+#include "helpers/debug.h"
 namespace engine::entities {
 
 class Transform::Impl {
  public:
-  Impl() {}
+  Impl() = default;
 
-  void SetRotation(float rotation) {
-    rotation_ = rotation;
+  Impl(float rotation, float scale) : rotation_(rotation), scale_(scale) {}
+
+  void SetRotation(double rotation) {
+    double min_rotation = 0.0;
+    double max_rotation = 360.0;
+
+    // Rotation is in bounds of allowed rotation values
+    if (rotation >= min_rotation && rotation <= max_rotation) {
+      rotation_ = rotation;
+      return;
+    }
+
+    // Set rotation to minimum/maximum allowed value
+    rotation_ = rotation < min_rotation ? min_rotation : max_rotation;
   }
 
-  float GetRotation() {
+  [[nodiscard]] double GetRotation() const {
     return rotation_;
   }
 
@@ -17,23 +30,28 @@ class Transform::Impl {
     scale_ = scale;
   }
 
-  float GetScale() {
+  [[nodiscard]] float GetScale() const {
     return scale_;
   }
 
  private:
+  double rotation_ = 0.0;
   float scale_ = 1;
-  float rotation_ = 0.0;
 };
 
 Transform::Transform() : impl_(new Impl()) {}
+Transform::Transform(engine::entities::Point position, float rotation, float scale)
+: impl_(new Impl(rotation, scale)) {
+  Position = position;
+}
+
 Transform::~Transform() = default;
 
-void Transform::SetRotation(float rotation) {
+void Transform::SetRotation(double rotation) {
   impl_->SetRotation(rotation);
 }
 
-float Transform::GetRotation() {
+double Transform::GetRotation() const {
   return impl_->GetRotation();
 }
 
@@ -41,7 +59,7 @@ void Transform::SetScale(float scale) {
   impl_->SetScale(scale);
 }
 
-float Transform::GetScale() {
+float Transform::GetScale() const {
   return impl_->GetScale();
 }
 

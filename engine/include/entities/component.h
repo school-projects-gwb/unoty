@@ -12,10 +12,14 @@ class Component {
  public:
   virtual ~Component() = default;
 
+  /// @brief Sets the GameObject this Component belongs to
+  ///
+  /// Automatically used internally when creating new Component
   void SetGameObject(std::shared_ptr<GameObject> game_object) {
     game_object_ = game_object;
   }
 
+  /// @brief Returns the GameObject this Component belongs to
   std::shared_ptr<GameObject> GetGameObject() {
     return game_object_.lock();
   }

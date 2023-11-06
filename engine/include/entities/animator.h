@@ -5,7 +5,6 @@
 
 namespace engine::entities {
 
-/// @brief Contains logic to animate sprites
 class Animator : Component {
  public:
   Animator(std::string sprite_path, int sprites_in_sheet, Point total_sprite_sheet_size);

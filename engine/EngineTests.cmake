@@ -3,6 +3,17 @@ add_executable(engine_tests
         src/data_handler/file_handler/tests/file_reader_test.cc
         src/data_handler/file_handler/file_handler.cc
         src/data_handler/file_handler/file_handler.h
+
+        include/entities/game_object.h
+        src/entities/game_object.cc
+
+        include/entities/transform.h
+        src/entities/transform.cc
+
+        include/entities/camera.h
+        src/entities/camera.cc
+
+        src/entities/tests/camera_test.cc
 )
 
 # Windows: Fetch GTest from repo
@@ -26,6 +37,8 @@ if (GTest_FOUND)
     target_compile_definitions(engine_tests PUBLIC MOCK_JSON="${CMAKE_CURRENT_SOURCE_DIR}/src/data_handler/file_handler/tests/mockfile.json")
     target_compile_features(engine_tests PUBLIC cxx_std_17)
     target_link_libraries(engine_tests nlohmann_json::nlohmann_json GTest::gtest_main)
+    target_include_directories(engine_tests PUBLIC include)
+    target_include_directories(engine_tests PRIVATE src)
     include(GoogleTest)
     add_test(AllTests engine_tests)
 endif (GTest_FOUND)

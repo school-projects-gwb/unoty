@@ -28,7 +28,6 @@ add_compile_options(-Wall -Wpedantic)
 add_compile_options("$<$<CONFIG:DEBUG>:-g>")
 
 file(GLOB_RECURSE SOURCES
-        include/*.h include/*/*.h include/*/*/*.h
         include/engine/engine.h
         include/engine/engine_config.h
         include/engine/physics.h
@@ -44,12 +43,17 @@ file(GLOB_RECURSE SOURCES
         include/entities/listeners/key_listener.h
         include/entities/listeners/mouse_listener.h
 
+        include/entities/scene/scene.h
+        include/entities/scene/scene_background.h
+        include/entities/scene/scene_callback_function.h
+
         include/entities/structs/color.h
         include/entities/structs/key.h
         include/entities/structs/point.h
         include/entities/structs/button.h
         include/entities/structs/text.h
         include/entities/structs/ui_object.h
+        include/entities/structs/sprite_flip.h
 
         include/entities/animator.h
         include/entities/audio_source.h
@@ -58,11 +62,11 @@ file(GLOB_RECURSE SOURCES
         include/entities/component.h
         include/entities/game_object.h
         include/entities/rigid_body.h
-        include/entities/scene.h
-        include/entities/scene_callback_function.h
         include/entities/sprite.h
         include/entities/transform.h
+
         include/helpers/path_helper.h
+        include/helpers/debug.h
 
         src/audio/audio.cc
         src/audio/audio.h
@@ -77,11 +81,13 @@ file(GLOB_RECURSE SOURCES
         src/entities/colliders/box_collider.cc
         src/entities/colliders/circle_collider.cc
 
+        src/entities/scene/scene.cc
+        src/entities/scene/scene_background.cc
+
         src/entities/animator.cc
         src/entities/behaviour_script.cc
         src/entities/camera.cc
         src/entities/game_object.cc
-        src/entities/scene.cc
         src/entities/sprite.cc
         src/entities/transform.cc
 

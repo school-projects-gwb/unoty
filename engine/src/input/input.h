@@ -17,6 +17,7 @@ class Input {
   [[nodiscard]] virtual bool GetIsMousePressed() const = 0;
   [[nodiscard]] virtual bool GetIsMouseReleased() const = 0;
   [[nodiscard]] virtual std::set<entities::Key> GetActiveKeys() const = 0;
+  [[nodiscard]] virtual bool IsWindowClosed() = 0;
 };
 
 }

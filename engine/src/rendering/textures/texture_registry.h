@@ -12,7 +12,7 @@ class TextureRegistry {
   }
 
   static void Initialize(std::unique_ptr<ui::Renderer>& renderer) {
-    SdlTextureRegistry::Initialize(renderer);
+    SdlTextureRegistry::SetRenderer(renderer);
   }
 };
 

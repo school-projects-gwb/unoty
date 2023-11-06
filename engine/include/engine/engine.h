@@ -1,7 +1,7 @@
 #ifndef ENGINE_INCLUDE_ENGINE_ENGINE_H_
 #define ENGINE_INCLUDE_ENGINE_ENGINE_H_
 
-#include <../include/entities/scene_callback_function.h>
+#include "entities/scene/scene_callback_function.h"
 #include "engine_config.h"
 
 namespace engine {
@@ -10,7 +10,7 @@ namespace engine {
 class Engine {
  public:
   ~Engine();
-  Engine(engine::EngineConfig);
+  explicit Engine(engine::EngineConfig);
   void Start();
   void AddScene(const std::string& scene_name, entities::SceneCallbackFunction callback_function);
   void SetActiveScene(const std::string& scene_name);

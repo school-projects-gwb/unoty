@@ -1,5 +1,6 @@
 #include <iostream>
 #include "engine_tick.h"
+#include "helpers/debug.h"
 
 namespace engine {
   void EngineTick::Init(int target_fps) {
@@ -52,8 +53,7 @@ double EngineTick::GetCurrentTime() const {
 
   void EngineTick::ShowFps(const std::string& title) {
     if (elapsed_time_ < 1.0) return;
-
-    std::cout << title << " FPS: " << frame_counter_ << std::endl;
+    helpers::Debug::Log(title + " FPS: " + std::to_string(frame_counter_));
     frame_counter_ = 0;
     elapsed_time_ = 0.0;
   }

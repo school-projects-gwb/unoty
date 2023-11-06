@@ -14,22 +14,22 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   GameObject();
   ~GameObject();
 
-  Transform& GetTransform();
+  std::shared_ptr<Transform> GetTransform();
 
   void SetParent(std::shared_ptr<GameObject> parent);
-  std::shared_ptr<GameObject> GetParent();
+  std::shared_ptr<GameObject> GetParent() const;
 
   void SetName(const std::string& name);
-  const std::string& GetName();
+  const std::string& GetName() const;
 
   void SetTagName(const std::string& tag_name);
-  const std::string& GetTagName();
+  const std::string& GetTagName() const;
 
   void SetLayer(int layer);
-  int GetLayer();
+  int GetLayer() const;
 
   void SetIsActive(bool is_active);
-  bool GetIsActive();
+  bool GetIsActive() const;
 
   template<class T>
   void AddComponent(std::shared_ptr<T> component);

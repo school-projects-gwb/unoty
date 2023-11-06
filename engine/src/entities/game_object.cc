@@ -1,19 +1,20 @@
 #include <iostream>
-#include <utility>
 #include "entities/game_object.h"
 #include "entities/component.h"
 
 namespace engine::entities {
 
-class GameObject::Impl {
+class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
  public:
-  explicit Impl(GameObject* owner) : owner_(owner), transform_() {}
+  explicit Impl(GameObject* owner) : owner_(owner), transform_() {
+    transform_ = std::make_shared<Transform>();
+  }
 
   void SetParent(std::shared_ptr<GameObject> parent) {
     parent_ = parent;
   }
 
-  std::shared_ptr<GameObject> GetParent() {
+  std::shared_ptr<GameObject> GetParent() const {
     return parent_;
   }
 
@@ -21,7 +22,7 @@ class GameObject::Impl {
     name_ = name;
   }
 
-  const std::string &GetName() {
+  const std::string &GetName() const {
     return name_;
   }
 
@@ -29,7 +30,7 @@ class GameObject::Impl {
     tag_name_ = tag_name;
   }
 
-  const std::string &GetTagName() {
+  const std::string &GetTagName() const {
     return tag_name_;
   }
 
@@ -49,7 +50,7 @@ class GameObject::Impl {
     return is_active_;
   }
 
-  Transform &GetTransform() {
+  std::shared_ptr<Transform> GetTransform() {
     return transform_;
   }
 
@@ -60,7 +61,7 @@ class GameObject::Impl {
   int layer_ = 0;
   std::shared_ptr<GameObject> parent_;
   const GameObject* owner_;
-  Transform transform_ = {};
+  std::shared_ptr<Transform> transform_;
 };
 
 GameObject::GameObject() : impl_(std::make_unique<Impl>(this)) {}
@@ -70,7 +71,7 @@ void GameObject::SetParent(std::shared_ptr<GameObject> parent) {
   impl_->SetParent(parent);
 }
 
-std::shared_ptr<GameObject> GameObject::GetParent() {
+std::shared_ptr<GameObject> GameObject::GetParent() const {
   return impl_->GetParent();
 }
 
@@ -78,7 +79,7 @@ void GameObject::SetName(const std::string &name) {
   impl_->SetName(name);
 }
 
-const std::string &GameObject::GetName() {
+const std::string &GameObject::GetName() const {
   return impl_->GetName();
 }
 
@@ -86,7 +87,7 @@ void GameObject::SetTagName(const std::string &tag_name) {
   impl_->SetTagName(tag_name);
 }
 
-const std::string &GameObject::GetTagName() {
+const std::string &GameObject::GetTagName() const {
   return impl_->GetTagName();
 }
 
@@ -94,7 +95,7 @@ void GameObject::SetLayer(int layer) {
   impl_->SetLayer(layer);
 }
 
-int GameObject::GetLayer() {
+int GameObject::GetLayer() const {
   return impl_->GetLayer();
 }
 
@@ -102,11 +103,11 @@ void GameObject::SetIsActive(bool is_active) {
   impl_->SetIsActive(is_active);
 }
 
-bool GameObject::GetIsActive() {
+bool GameObject::GetIsActive() const {
   return impl_->GetIsActive();
 }
 
-Transform &GameObject::GetTransform() {
+std::shared_ptr<Transform> GameObject::GetTransform() {
   return impl_->GetTransform();
 }
 

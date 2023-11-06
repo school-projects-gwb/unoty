@@ -18,6 +18,9 @@ void SdlInput::ProcessInput() {
 
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
+      case SDL_QUIT:
+        is_window_closed_ = true;
+        break;
       case SDL_KEYDOWN:
         if (key_mappings_.find(event.key.keysym.sym) != key_mappings_.end()) {
           last_key_press_ = key_mappings_[event.key.keysym.sym];
@@ -47,7 +50,7 @@ void SdlInput::ProcessInput() {
         }
         break;
       case SDL_MOUSEMOTION:
-        // You can handle mouse movement here if needed
+        // todo implement
         break;
     }
   }
@@ -71,6 +74,10 @@ bool SdlInput::GetIsMouseReleased() const {
 
 std::set<entities::Key> SdlInput::GetActiveKeys() const {
   return active_keys_;
+}
+
+bool SdlInput::IsWindowClosed() {
+  return is_window_closed_;
 }
 
 }

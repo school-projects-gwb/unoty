@@ -63,3 +63,51 @@ This project adheres to the [Google C++ style guide](https://google.github.io/st
 #### Core guidelines
 Our code makes use of the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines) as
 described by Stroustrup and Sutter.
+
+### Documenting code guidelines
+Since Google Coding Standards recommend a comment format that's different from the recommended format of Doxygen, a slightly different style is used:
+- Comments to describe classes and functions, both single and multi-line, start with `///`
+  - This way it gets picked up by Doxygen when generating the documentation. 
+- **Examples:** 
+```c++
+/// @brief Does Foo by performing x, y and z  
+void Foo();
+
+/// @brief I'm a pretty big, complicated function
+///
+/// This is an extended description
+/// Even more descriptive text here
+///
+/// @param x Parameter description
+void Bar(Foo x);
+
+/// @brief I'm a short class description
+class Foo;
+```
+
+### Documenting headers and functions
+- Document public header classes and its functions, not implementation
+  -  If there is a header that is non-public, also document it. 
+- Not every function or class necessarily has to be documented unless it is not obvious or non-standard.
+  - I.e. its generally not useful to document getters and setters.
+- Try to document `how` some function does its logic instead of `what` it does.
+- For example, the below @brief is not very useful and redundant:
+```c++
+/// @brief Processes Foo
+void ProcessFoo()
+```
+- This would be a lot more useful:
+```c++
+/// @brief Processes Foo using Bar algorithm
+void ProcessFoo()
+```
+
+### Documenting implementation
+- Use `//` when doing regular code comments inside a function so that it gets excluded from Doxygen.
+- **For example:**
+```c++
+void Foo(Bar x) {
+  // Perform Foo on Bar
+  x.Foo();
+}
+```

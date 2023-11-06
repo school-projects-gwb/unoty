@@ -15,9 +15,10 @@ class SdlInput : public Input {
   void ProcessInput() override;
   [[nodiscard]] entities::Key GetLastKeyPress() const override;
   [[nodiscard]] entities::Point GetLastMousePress() const override;
-  bool GetIsMousePressed() const override;
-  bool GetIsMouseReleased() const override;
+  [[nodiscard]] bool GetIsMousePressed() const override;
+  [[nodiscard]] bool GetIsMouseReleased() const override;
   [[nodiscard]] std::set<entities::Key> GetActiveKeys() const override;
+  [[nodiscard]] bool IsWindowClosed() override;
  private:
   entities::Key last_key_press_ = entities::Key::None;
   entities::Point last_mouse_press_ = {};
@@ -25,6 +26,7 @@ class SdlInput : public Input {
   bool is_mouse_released_ = false;
   std::unordered_map<SDL_Keycode, entities::Key> key_mappings_;
   std::set<entities::Key> active_keys_;
+  bool is_window_closed_ = false;
 };
 
 }

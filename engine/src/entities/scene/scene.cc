@@ -1,6 +1,6 @@
 #include <iostream>
 #include <utility>
-#include "../include/entities/scene.h"
+#include "entities/scene/scene.h"
 #include "entities/game_object.h"
 #include "engine/renderer.h"
 #include "entities/sprite.h"
@@ -12,10 +12,20 @@ namespace engine::entities {
 
 class Scene::Impl {
  public:
-  Impl() {}
+  Impl() {
+    background_ = std::make_unique<SceneBackground>();
+    camera_ = std::make_unique<Camera>();
+  }
 
   void AddObject(std::shared_ptr<GameObject> object) {
-    game_objects_.emplace_back(std::move(object));
+    // Insert new GameObject at position based on its layer
+    // Makes sure objects get rendered in correct order of their layers
+    auto insert_position = std::lower_bound(game_objects_.begin(), game_objects_.end(), object,
+                                            [](const std::shared_ptr<GameObject>& a, const std::shared_ptr<GameObject>& b) {
+                                        return a->GetLayer() < b->GetLayer();
+                                      });
+
+    game_objects_.insert(insert_position, std::move(object));
   }
   
   void UpdatePhysics(const std::unique_ptr<physics::Physics>& physics) {
@@ -32,18 +42,27 @@ class Scene::Impl {
   }
 
   void RenderObjects(const std::unique_ptr<ui::Renderer>& renderer) {
+    renderer->StartRenderFrame();
+    camera_->UpdatePosition();
     renderer->UpdateCameraPosition(camera_.get());
+
+    background_->RenderBackground(renderer);
 
     for (const auto& game_object : game_objects_) {
       auto sprite_components = game_object->GetComponentsByType<Sprite>();
-      for (const auto& sprite : sprite_components) {
-        sprite->Render(renderer, sprite->GetGameObject()->GetTransform().Position);
-      }
+      for (const auto& sprite : sprite_components)
+        sprite->Render(renderer, sprite->GetGameObject()->GetTransform());
     }
+
+    renderer->EndRenderFrame();
   }
 
   void SetCamera(std::unique_ptr<Camera> &camera) {
     camera_ = std::move(camera);
+  }
+
+  void SetBackground(std::unique_ptr<SceneBackground>& scene_background) {
+    background_ = std::move(scene_background);
   }
 
   std::shared_ptr<GameObject> GetObjectByName(const std::string &name) {
@@ -58,7 +77,8 @@ class Scene::Impl {
 
  private:
   std::vector<std::shared_ptr<GameObject>> game_objects_;
-  std::unique_ptr<entities::Camera> camera_;
+  std::unique_ptr<Camera> camera_;
+  std::unique_ptr<SceneBackground> background_;
 };
 
 Scene::Scene() : impl_(new Impl()) {}
@@ -82,6 +102,10 @@ void Scene::RenderObjects(const std::unique_ptr<ui::Renderer>& renderer) {
 
 void Scene::SetCamera(std::unique_ptr<Camera> camera) {
   impl_->SetCamera(camera);
+}
+
+void Scene::SetBackground(std::unique_ptr<SceneBackground> scene_background) {
+  impl_->SetBackground(scene_background);
 }
 
 std::shared_ptr<GameObject> Scene::GetObjectByName(const std::string &name) {

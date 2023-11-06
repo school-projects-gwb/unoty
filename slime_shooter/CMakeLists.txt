@@ -7,7 +7,7 @@ add_compile_options(-Wall -Wpedantic)
 add_compile_options("$<$<CONFIG:DEBUG>:-g>")
 
 add_executable(slime_shooter main.cc
-        test_scene.h
+        game_scene.h
         movement_script.h
 )
 

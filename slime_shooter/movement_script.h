@@ -10,22 +10,20 @@ using namespace engine::entities;
 class MovementScript : public BehaviourScript {
   void OnInput(const Key& key) override {
     auto game_object = GetGameObject();
-    Transform& transform = game_object->GetTransform();
-
-
+    auto transform = game_object->GetTransform();
 
     switch (key) {
       case Key::Up:
-        transform.Position.y -= 10;
+        transform->Position.y -= 10;
         break;
       case Key::Down:
-        transform.Position.y += 10;
+        transform->Position.y += 10;
         break;
       case Key::Left:
-        transform.Position.x -= 10;
+        transform->Position.x -= 10;
         break;
       case Key::Right:
-        transform.Position.x += 10;
+        transform->Position.x += 10;
         break;
       default:
         break;

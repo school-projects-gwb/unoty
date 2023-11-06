@@ -3,7 +3,7 @@
 
 namespace engine::entities {
 
-/// @brief Generic structure for defining two points (i.e. used for width or size)
+/// @brief Stores two points; such as width and height, or x and y coordinates
 struct Point {
   int x;
   int y;

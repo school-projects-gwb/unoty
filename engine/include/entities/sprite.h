@@ -3,15 +3,24 @@
 
 #include "component.h"
 #include "engine/renderer.h"
+#include "entities/structs/sprite_flip.h"
 
 namespace engine::entities {
 
-/// @brief Contains logic for rendering sprite
+/// @brief Contains logic and data for rendering sprite
 class Sprite : public Component {
  public:
   Sprite(std::string sprite_path);
   ~Sprite();
-  void Render(const std::unique_ptr<engine::ui::Renderer>& renderer, Point& position);
+
+  void Render(const std::unique_ptr<engine::ui::Renderer>& renderer, std::shared_ptr<entities::Transform> transform) const;
+
+  void SetColor(entities::Color color);
+  [[nodiscard]] entities::Color GetColor() const;
+
+  void SetFlip(entities::SpriteFlip flip);
+  [[nodiscard]] entities::SpriteFlip GetFlip() const;
+
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;
