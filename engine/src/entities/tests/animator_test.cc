@@ -6,53 +6,55 @@ using ::testing::HasSubstr;
 
 namespace engine::entities::tests {
 
-TEST(CameraTest, SpritesInSheetInvalidIntegerSqrtError) {
-  // Arrange
-  testing::internal::CaptureStderr();
+class AnimatorTest : public testing::Test {
+ protected:
+  std::string console_output;
 
+  void SetUp() override {
+    // Arrange
+    testing::internal::CaptureStderr();
+  }
+
+  Animator GetDefaultValidAnimator() {
+    return Animator{"", 4, {32, 32}};
+  }
+};
+
+TEST_F(AnimatorTest, SpritesInSheetInvalidIntegerSqrtError) {
   // Act
   Animator animator("", 3, {32, 32});
-  std::string console_output = testing::internal::GetCapturedStderr();
+  console_output = testing::internal::GetCapturedStderr();
 
   // Assert
   EXPECT_THAT(console_output, HasSubstr("sprites_in_sheet does not translate to an equal amount of rows and columns"));
 }
 
-TEST(CameraTest, SpritesInSheetValidIntegerSqrtNoError) {
-  // Arrange
-  testing::internal::CaptureStderr();
-
+TEST_F(AnimatorTest, SpritesInSheetValidIntegerSqrtNoError) {
   // Act
-  Animator animator("", 4, {32, 32});
-  std::string console_output = testing::internal::GetCapturedStderr();
+  Animator animator(GetDefaultValidAnimator());
+  console_output = testing::internal::GetCapturedStderr();
 
   // Assert
   EXPECT_EQ(console_output, "");
 }
 
-TEST(CameraTest, SetCurrentAnimationSpriteSheetInvalidIndexError) {
-  // Arrange
-  testing::internal::CaptureStderr();
-
+TEST_F(AnimatorTest, SetCurrentAnimationSpriteSheetInvalidIndexError) {
   // Act
-  Animator animator("", 3, {32, 32});
+  Animator animator(GetDefaultValidAnimator());
   animator.SetCurrentAnimationSpriteSheet(1000); // Index does not exist
-  std::string console_output = testing::internal::GetCapturedStderr();
+  console_output = testing::internal::GetCapturedStderr();
 
   // Assert
   EXPECT_THAT(console_output, HasSubstr("Animator: No valid sprite sheet at index"));
 }
 
-TEST(CameraTest, SetCurrentAnimationSpriteSheetValidIndexNoError) {
-  // Arrange
-  testing::internal::CaptureStderr();
-
+TEST_F(AnimatorTest, SetCurrentAnimationSpriteSheetValidIndexNoError) {
   // Act
-  Animator animator("", 4, {32, 32});
+  Animator animator(GetDefaultValidAnimator());
   int insert_index = 1;
   animator.SetSpriteSheetAtIndex("", insert_index);
   animator.SetCurrentAnimationSpriteSheet(insert_index); // Index does not exist
-  std::string console_output = testing::internal::GetCapturedStderr();
+  console_output = testing::internal::GetCapturedStderr();
 
   // Assert
   EXPECT_EQ(console_output, "");
