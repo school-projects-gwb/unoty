@@ -16,8 +16,7 @@ public:
 
   /// @brief Logs error message to standard output
   static void Error(const std::string& message) {
-    std::string ascii_red = "\x1b[31m";
-    std::cout << ascii_red << "[ERROR]  " << GetAsciiResetColor() << message << "\n";
+    std::cerr << "[ERROR]  " << message << "\n";
   }
 
   /// @overload

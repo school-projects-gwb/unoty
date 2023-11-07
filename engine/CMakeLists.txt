@@ -61,6 +61,7 @@ file(GLOB_RECURSE SOURCES
         include/entities/structs/text.h
         include/entities/structs/ui_object.h
         include/entities/structs/sprite_flip.h
+        include/entities/structs/sprite_animation_state.h
 
         include/entities/animator.h
         include/entities/audio_source.h

@@ -50,6 +50,9 @@ class Engine::Impl {
         // object.position += object_movement_amount * factor;
         active_scene->UpdatePhysics(physics_);
         game_tick_.SubtractAccumulator(game_tick_.GetFixedTimeStep());
+
+        input_->ProcessInput();
+        active_scene->TriggerListeners(input_->GetActiveKeys());
         if (is_debug_mode_) game_tick_.IncreaseFrameCounter();
       }
 
@@ -60,8 +63,6 @@ class Engine::Impl {
         // Interpolation example usage for rendering:
         // double render_factor = render_tick_.GetAccumulator() / render_tick_.GetFixedTimeStep();
         // Render frame using render_factor for smooth animations
-        input_->ProcessInput();
-        active_scene->TriggerInputs(input_->GetActiveKeys());
         active_scene->RenderObjects(renderer_);
 
         render_tick_.SubtractAccumulator(render_tick_.GetFixedTimeStep());

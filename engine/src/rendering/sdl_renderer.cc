@@ -61,25 +61,53 @@ void SdlRenderer::RenderSprite(const std::string& sprite_path, const std::shared
                                entities::SpriteFlip flip) {
   auto* texture = static_cast<SDL_Texture *>(rendering::TextureRegistry::GetInstance().GetTexture(sprite_path));
 
-  // Get scaled size
-  int width = kDefaultSpriteWidth * transform->GetScale();
-  int height = kDefaultSpriteHeight * transform->GetScale();
+  auto scaled_size = GetScaledSize(transform->GetScale());
+  RenderTexture(texture, nullptr, transform->Position, scaled_size.x, scaled_size.y, flip, transform->GetRotation());
+}
 
-  RenderTexture(texture, nullptr, transform->Position, width, height, flip, transform->GetRotation());
+void SdlRenderer::RenderSpriteFromSheet(const std::string &sprite_path, const std::shared_ptr<entities::Transform> transform,
+                                        const entities::Rectangle& position_in_sheet, entities::SpriteFlip flip) {
+  auto* texture = static_cast<SDL_Texture *>(rendering::TextureRegistry::GetInstance().GetTexture(sprite_path));
+
+  SDL_Rect sheet_rectangle = GetSheetRectangle(position_in_sheet);
+  auto scaled_size = GetScaledSize(transform->GetScale());
+  RenderTexture(texture, &sheet_rectangle, transform->Position, scaled_size.x,
+                scaled_size.y, flip, transform->GetRotation());
+}
+
+void SdlRenderer::RenderSpriteFromSheetWithColorOverlay(const std::string &sprite_path, const std::shared_ptr<entities::Transform> transform,
+                                        const entities::Rectangle& position_in_sheet, entities::Color color,
+                                        entities::SpriteFlip flip) {
+  auto* texture = static_cast<SDL_Texture *>(rendering::TextureRegistry::GetInstance().GetTexture(sprite_path));
+
+  SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
+
+  SDL_Rect sheet_rectangle = GetSheetRectangle(position_in_sheet);
+  auto scaled_size = GetScaledSize(transform->GetScale());
+  RenderTexture(texture, &sheet_rectangle, transform->Position, scaled_size.x,
+                scaled_size.y, flip, transform->GetRotation());
+
+  SDL_SetTextureColorMod(texture, 255, 255, 255);
 }
 
 void SdlRenderer::RenderSpriteFromSheet(const std::string &sprite_path, const entities::Rectangle& target_position,
                                         const entities::Rectangle& position_in_sheet) {
   auto* texture = static_cast<SDL_Texture *>(rendering::TextureRegistry::GetInstance().GetTexture(sprite_path));
 
+  SDL_Rect sheet_rectangle = GetSheetRectangle(position_in_sheet);
+
+  RenderTexture(texture, &sheet_rectangle, {target_position.x, target_position.y},
+                target_position.w, target_position.h, entities::SpriteFlip::FlipNone);
+}
+
+SDL_Rect SdlRenderer::GetSheetRectangle(const entities::Rectangle& position_in_sheet) {
   SDL_Rect sheet_rectangle;
   sheet_rectangle.x = position_in_sheet.x * position_in_sheet.w;
   sheet_rectangle.y = position_in_sheet.y * position_in_sheet.h;
   sheet_rectangle.w = position_in_sheet.w;
   sheet_rectangle.h = position_in_sheet.h;
 
-  RenderTexture(texture, &sheet_rectangle, {target_position.x, target_position.y},
-                target_position.w, target_position.h, entities::SpriteFlip::FlipNone);
+  return sheet_rectangle;
 }
 
 void SdlRenderer::RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rect,
@@ -97,7 +125,7 @@ void SdlRenderer::RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rec
                    {}, sdl_flip);
 }
 
-SDL_RendererFlip SdlRenderer::GetSdlRendererFlipFromSpriteFlip(entities::SpriteFlip sprite_flip) const {
+SDL_RendererFlip SdlRenderer::GetSdlRendererFlipFromSpriteFlip(entities::SpriteFlip sprite_flip) {
   if (sprite_flip == entities::SpriteFlip::FlipNone) return SDL_FLIP_NONE;
 
   switch (sprite_flip) {
@@ -110,6 +138,13 @@ SDL_RendererFlip SdlRenderer::GetSdlRendererFlipFromSpriteFlip(entities::SpriteF
     default:
       return SDL_FLIP_NONE;
   }
+}
+
+entities::Point SdlRenderer::GetScaledSize(float scale) const {
+  int width = kDefaultSpriteWidth * scale;
+  int height = kDefaultSpriteHeight * scale;
+
+  return {width, height};
 }
 
 void *SdlRenderer::GetRenderer() {

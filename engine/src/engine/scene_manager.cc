@@ -11,6 +11,7 @@ void SceneManager::SetActiveScene(const std::string& scene_name) {
   if (scenes_.find(scene_name) == scenes_.end()) return;
   auto scene = std::shared_ptr<entities::Scene>( scenes_[scene_name]());
   active_scene_ = scene;
+  active_scene_->InitialiseObjects();
 }
 
 std::shared_ptr<entities::Scene> SceneManager::GetActiveScene() {

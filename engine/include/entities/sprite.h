@@ -10,7 +10,7 @@ namespace engine::entities {
 /// @brief Contains logic and data for rendering sprite
 class Sprite : public Component {
  public:
-  Sprite(std::string sprite_path);
+  explicit Sprite(std::string sprite_path);
   ~Sprite();
 
   void Render(const std::unique_ptr<engine::ui::Renderer>& renderer, std::shared_ptr<entities::Transform> transform) const;

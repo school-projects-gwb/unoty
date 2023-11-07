@@ -7,6 +7,7 @@
 #include "entities/structs/key.h"
 #include "entities/behaviour_script.h"
 #include "engine/physics.h"
+#include "entities/animator.h"
 
 namespace engine::entities {
 
@@ -27,16 +28,28 @@ class Scene::Impl {
 
     game_objects_.insert(insert_position, std::move(object));
   }
+
+  void InitialiseObjects() {
+    for (const auto& game_object : game_objects_) {
+      auto behaviour_scripts = game_object->GetComponentsByType<entities::BehaviourScript>();
+      for (const auto& script : behaviour_scripts) {
+        script->OnStart();
+      }
+    }
+  }
   
   void UpdatePhysics(const std::unique_ptr<physics::Physics>& physics) {
     // todo implement
   }
 
-  void TriggerInputs(const std::set<entities::Key>& keys) {
-    for (const auto& key : keys) {
-      for (const auto& game_object : game_objects_) {
-        auto behaviour_scripts = game_object->GetComponentsByType<entities::BehaviourScript>();
-        for (const auto& script : behaviour_scripts) script->OnInput(key);
+  void TriggerListeners(const std::set<entities::Key>& keys) {
+    for (const auto& game_object : game_objects_) {
+      auto behaviour_scripts = game_object->GetComponentsByType<entities::BehaviourScript>();
+      for (const auto& script : behaviour_scripts) {
+        for (const auto& key : keys)
+          script->OnInput(key);
+
+        script->OnUpdate();
       }
     }
   }
@@ -52,6 +65,10 @@ class Scene::Impl {
       auto sprite_components = game_object->GetComponentsByType<Sprite>();
       for (const auto& sprite : sprite_components)
         sprite->Render(renderer, sprite->GetGameObject()->GetTransform());
+
+      auto animator_components = game_object->GetComponentsByType<Animator>();
+      for (const auto& animator : animator_components)
+        animator->Render(renderer, animator->GetGameObject()->GetTransform());
     }
 
     renderer->EndRenderFrame();
@@ -88,8 +105,12 @@ void Scene::AddObject(std::shared_ptr<GameObject> object) {
   impl_->AddObject(std::move(object));
 }
 
-void Scene::TriggerInputs(const std::set<entities::Key>& keys) {
-  impl_->TriggerInputs(keys);
+void Scene::InitialiseObjects() {
+  impl_->InitialiseObjects();
+}
+
+void Scene::TriggerListeners(const std::set<entities::Key>& keys) {
+  impl_->TriggerListeners(keys);
 }
 
 void Scene::UpdatePhysics(const std::unique_ptr<physics::Physics>& physics) {

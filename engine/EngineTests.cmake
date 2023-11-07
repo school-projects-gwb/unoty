@@ -5,15 +5,19 @@ add_executable(engine_tests
         src/data_handler/file_handler/file_handler.h
 
         include/entities/game_object.h
+        include/entities/transform.h
+        include/entities/camera.h
+        include/entities/sprite.h
+        include/entities/animator.h
+
+        src/entities/camera.cc
+        src/entities/sprite.cc
+        src/entities/animator.cc
+        src/entities/transform.cc
         src/entities/game_object.cc
 
-        include/entities/transform.h
-        src/entities/transform.cc
-
-        include/entities/camera.h
-        src/entities/camera.cc
-
         src/entities/tests/camera_test.cc
+        src/entities/tests/animator_test.cc
 )
 
 # Windows: Fetch GTest from repo

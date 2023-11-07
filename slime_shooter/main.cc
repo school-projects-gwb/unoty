@@ -14,7 +14,7 @@ int main() {
 //    t->start();
 
   engine::EngineConfig engine_config;
-  engine_config.render_tick_fps = 30;
+  engine_config.render_tick_fps = 60;
   engine_config.game_tick_fps = 30;
   engine_config.is_debug_mode = false;
   engine_config.window_title = "Slime Shooter";

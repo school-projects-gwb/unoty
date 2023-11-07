@@ -8,6 +8,7 @@
 #include "entities/behaviour_script.h"
 #include "movement_script.h"
 #include "entities/scene/scene_background.h"
+#include "entities/animator.h"
 
 using namespace engine::entities;
 
@@ -29,7 +30,13 @@ class GameScene : engine::entities::Scene {
 
       auto player_object = GameObject::Create();
 
-      player_object->AddComponent(Component::Create<Sprite>("resources/sprites/player/front_1.png"));
+      auto animator = Component::Create<Animator>("resources/sprites/player/front_1.png", 4, Point{32, 32});
+      animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_up.png", SpriteAnimationState::North);
+      animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_right.png", SpriteAnimationState::East);
+      animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_down.png", SpriteAnimationState::South);
+      animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_left.png", SpriteAnimationState::West);
+
+      player_object->AddComponent(animator);
       player_object->AddComponent(Component::Create<MovementScript>());
       player_object->GetTransform()->Position = {250, 250};
       player_object->SetLayer(1);

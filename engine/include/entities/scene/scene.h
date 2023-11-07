@@ -18,8 +18,10 @@ class Scene {
 
   void AddObject(std::shared_ptr<GameObject> object);
 
+  void InitialiseObjects();
+
   /// @brief Triggers all Components in Scene's GameObjects that have input handling functionality
-  void TriggerInputs(const std::set<entities::Key>& keys);
+  void TriggerListeners(const std::set<entities::Key>& keys);
 
   /// @brief Updates physics Components in Scene's GameObjects
   void UpdatePhysics(const std::unique_ptr<physics::Physics>& physics);

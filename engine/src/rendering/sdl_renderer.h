@@ -17,6 +17,7 @@ class SdlRenderer : public Renderer {
  public:
   SdlRenderer(int window_width, int window_height, const std::string& window_title);
   ~SdlRenderer() override;
+
   void SetBackgroundRenderColor(entities::Color background_color) override;
   void StartRenderFrame() override;
   void EndRenderFrame() override;
@@ -27,6 +28,11 @@ class SdlRenderer : public Renderer {
                     entities::SpriteFlip flip) override;
   void RenderSpriteFromSheet(const std::string& sprite_path, const entities::Rectangle& target_position,
                              const entities::Rectangle& position_in_sheet) override;
+  void RenderSpriteFromSheet(const std::string &sprite_path, const std::shared_ptr<entities::Transform> transform,
+                             const entities::Rectangle &position_in_sheet, entities::SpriteFlip flip) override;
+  void RenderSpriteFromSheetWithColorOverlay(const std::string &sprite_path, const std::shared_ptr<entities::Transform> transform,
+                             const entities::Rectangle &position_in_sheet, entities::Color color,
+                             entities::SpriteFlip flip) override;
 
   void Exit() override;
   void UpdateCameraPosition(engine::entities::Camera* camera) override;
@@ -45,7 +51,10 @@ class SdlRenderer : public Renderer {
   void InitSdl();
   void RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const entities::Point& destination_position,
                      int width, int height, entities::SpriteFlip flip, double rotation=0) const;
-  SDL_RendererFlip GetSdlRendererFlipFromSpriteFlip(entities::SpriteFlip sprite_flip) const;
+  static SDL_RendererFlip GetSdlRendererFlipFromSpriteFlip(entities::SpriteFlip sprite_flip) ;
+
+  static SDL_Rect GetSheetRectangle(const entities::Rectangle &position_in_sheet);
+  entities::Point GetScaledSize(float scale) const;
 };
 
 }
