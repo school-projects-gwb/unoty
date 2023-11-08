@@ -19,6 +19,7 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   void SetParent(std::shared_ptr<GameObject> parent);
   std::shared_ptr<GameObject> GetParent() const;
 
+  /// @brief Sets name, unique identifier (can only appear once; or else it will not be set)
   void SetName(const std::string& name);
   const std::string& GetName() const;
 
@@ -37,6 +38,20 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   template<class T>
   std::shared_ptr<T> GetComponentByType();
 
+  /// @brief Returns every single object from the current active Scene
+  static std::vector<std::shared_ptr<GameObject>> GetAllObjects();
+
+  /// @brief Get a vector (can be empty) of all objects in current active Scene that have the given tag name
+  static std::vector<std::shared_ptr<GameObject>> GetObjectsByTagName(const std::string& tag_name);
+
+  /// @brief Get singular object (can be nullptr) in current active Scene by name which acts as a unique identifier
+  static std::shared_ptr<GameObject> GetObjectByName(const std::string& name);
+
+  static void AddObject(std::shared_ptr<GameObject> object_to_add);
+
+  /// @brief If given object shared pointer exists in Scene it will be removed
+  static void RemoveObject(std::shared_ptr<GameObject> object_to_remove);
+
   template<class T>
   std::vector<std::shared_ptr<T>> GetComponentsByType();
 
@@ -44,7 +59,6 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   static std::shared_ptr<GameObject> Create(Args&&... args) {
     return std::make_shared<GameObject>(std::forward<Args>(args)...);
   }
-
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

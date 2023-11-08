@@ -16,8 +16,14 @@ class Scene {
   ~Scene();
   Scene();
 
-  void AddObject(std::shared_ptr<GameObject> object);
+  /// @brief Used internally to set name if not not yet set
+  void SetSceneName(const std::string& scene_name);
+  const std::string& GetSceneName();
 
+  void AddObject(std::shared_ptr<GameObject> object);
+  void RemoveObject(std::shared_ptr<GameObject> object_to_remove);
+
+  /// @brief Handles initialisation logic such as triggering OnStart on BehaviourScript components
   void InitialiseObjects();
 
   /// @brief Triggers all Components in Scene's GameObjects that have input handling functionality
@@ -35,8 +41,8 @@ class Scene {
   void SetBackground(std::unique_ptr<SceneBackground> background);
 
   std::vector<std::shared_ptr<GameObject>> GetObjectsByTagName(const std::string& tag_name);
-
   std::shared_ptr<GameObject> GetObjectByName(const std::string& name);
+  std::vector<std::shared_ptr<GameObject>> GetAllObjects();
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

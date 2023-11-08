@@ -6,7 +6,7 @@ void FileHandler::WriteFile(const std::string& file_path) {
 }
 
 json FileHandler::ReadFile(const std::string& file_path) {
-
+ return {};
 }
 
 } // namespace engine::data_handler

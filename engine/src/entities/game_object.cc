@@ -1,6 +1,8 @@
 #include <iostream>
 #include "entities/game_object.h"
 #include "entities/component.h"
+#include "entities/scene/scene_manager.h"
+#include "helpers/debug.h"
 
 namespace engine::entities {
 
@@ -19,7 +21,13 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
   }
 
   void SetName(const std::string &name) {
-    name_ = name;
+    auto name_check = GetObjectByName(name);
+    if (name_check == nullptr) {
+      name_ = name;
+      return;
+    }
+
+    helpers::Debug::Log("Name " + name + " already in use for another object. Object has not been renamed");
   }
 
   const std::string &GetName() const {
@@ -54,6 +62,25 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
     return transform_;
   }
 
+  static std::vector<std::shared_ptr<GameObject>> GetAllObjects() {
+    return SceneManager::GetInstance().GetAllObjects();
+  }
+
+  static std::shared_ptr<GameObject> GetObjectByName(const std::string &name) {
+    return SceneManager::GetInstance().GetObjectByName(name);
+  }
+
+  static std::vector<std::shared_ptr<GameObject>> GetObjectsByTagName(const std::string &tag_name) {
+    return SceneManager::GetInstance().GetObjectsByTagName(tag_name);
+  }
+
+  static void AddObject(std::shared_ptr<GameObject> object_to_add) {
+    SceneManager::GetInstance().AddObject(object_to_add);
+  }
+
+  static void RemoveObject(std::shared_ptr<GameObject> object_to_remove) {
+    SceneManager::GetInstance().RemoveObject(object_to_remove);
+  }
  private:
   std::string name_;
   std::string tag_name_;
@@ -109,6 +136,26 @@ bool GameObject::GetIsActive() const {
 
 std::shared_ptr<Transform> GameObject::GetTransform() {
   return impl_->GetTransform();
+}
+
+std::vector<std::shared_ptr<GameObject>> GameObject::GetAllObjects() {
+  return Impl::GetAllObjects();
+}
+
+std::shared_ptr<GameObject> GameObject::GetObjectByName(const std::string &name) {
+  return Impl::GetObjectByName(name);
+}
+
+std::vector<std::shared_ptr<GameObject>> GameObject::GetObjectsByTagName(const std::string &tag_name) {
+  return Impl::GetObjectsByTagName(tag_name);
+}
+
+void GameObject::RemoveObject(std::shared_ptr<GameObject> object_to_remove) {
+  Impl::RemoveObject(object_to_remove);
+}
+
+void GameObject::AddObject(std::shared_ptr<GameObject> object_to_add) {
+  Impl::AddObject(object_to_add);
 }
 
 }

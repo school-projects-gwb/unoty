@@ -8,7 +8,7 @@ namespace engine::entities::tests {
 
 class AnimatorTest : public testing::Test {
  protected:
-  std::string console_output;
+  std::string console_output_;
 
   void SetUp() override {
     // Arrange
@@ -23,29 +23,29 @@ class AnimatorTest : public testing::Test {
 TEST_F(AnimatorTest, SpritesInSheetInvalidIntegerSqrtError) {
   // Act
   Animator animator("", 3, {32, 32});
-  console_output = testing::internal::GetCapturedStderr();
+  console_output_ = testing::internal::GetCapturedStderr();
 
   // Assert
-  EXPECT_THAT(console_output, HasSubstr("sprites_in_sheet does not translate to an equal amount of rows and columns"));
+  EXPECT_THAT(console_output_, HasSubstr("sprites_in_sheet does not translate to an equal amount of rows and columns"));
 }
 
 TEST_F(AnimatorTest, SpritesInSheetValidIntegerSqrtNoError) {
   // Act
   Animator animator(GetDefaultValidAnimator());
-  console_output = testing::internal::GetCapturedStderr();
+  console_output_ = testing::internal::GetCapturedStderr();
 
   // Assert
-  EXPECT_EQ(console_output, "");
+  EXPECT_EQ(console_output_, "");
 }
 
 TEST_F(AnimatorTest, SetCurrentAnimationSpriteSheetInvalidIndexError) {
   // Act
   Animator animator(GetDefaultValidAnimator());
   animator.SetCurrentAnimationSpriteSheet(1000); // Index does not exist
-  console_output = testing::internal::GetCapturedStderr();
+  console_output_ = testing::internal::GetCapturedStderr();
 
   // Assert
-  EXPECT_THAT(console_output, HasSubstr("Animator: No valid sprite sheet at index"));
+  EXPECT_THAT(console_output_, HasSubstr("Animator: No valid sprite sheet at index"));
 }
 
 TEST_F(AnimatorTest, SetCurrentAnimationSpriteSheetValidIndexNoError) {
@@ -54,10 +54,10 @@ TEST_F(AnimatorTest, SetCurrentAnimationSpriteSheetValidIndexNoError) {
   int insert_index = 1;
   animator.SetSpriteSheetAtIndex("", insert_index);
   animator.SetCurrentAnimationSpriteSheet(insert_index); // Index does not exist
-  console_output = testing::internal::GetCapturedStderr();
+  console_output_ = testing::internal::GetCapturedStderr();
 
   // Assert
-  EXPECT_EQ(console_output, "");
+  EXPECT_EQ(console_output_, "");
 }
 
 }

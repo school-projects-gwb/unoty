@@ -1,5 +1,4 @@
 #include <iostream>
-#include <filesystem>
 #include "sdl_texture_registry.h"
 #include "helpers/path_helper.h"
 #include "helpers/debug.h"

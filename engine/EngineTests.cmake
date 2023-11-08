@@ -4,12 +4,20 @@ add_executable(engine_tests
         src/data_handler/file_handler/file_handler.cc
         src/data_handler/file_handler/file_handler.h
 
+        include/entities/scene/scene.h
+        include/entities/scene/scene_background.h
+        include/entities/behaviour_script.h
         include/entities/game_object.h
         include/entities/transform.h
         include/entities/camera.h
         include/entities/sprite.h
         include/entities/animator.h
 
+        src/entities/scene/scene.cc
+        src/entities/scene/scene_background.cc
+        src/entities/behaviour_script.cc
+        src/entities/scene/scene_manager.h
+        src/entities/scene/scene_manager.cc
         src/entities/camera.cc
         src/entities/sprite.cc
         src/entities/animator.cc
@@ -18,6 +26,7 @@ add_executable(engine_tests
 
         src/entities/tests/camera_test.cc
         src/entities/tests/animator_test.cc
+        src/entities/scene/tests/scene_test.cc
 )
 
 # Windows: Fetch GTest from repo

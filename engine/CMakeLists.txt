@@ -87,8 +87,8 @@ file(GLOB_RECURSE SOURCES
 
         src/engine/engine_tick.cc
         src/engine/engine_tick.h
-        src/engine/scene_manager.cc
-        src/engine/scene_manager.h
+        src/entities/scene/scene_manager.cc
+        src/entities/scene/scene_manager.h
 
         src/entities/artificial_intelligence/player_turret.cc
         src/entities/colliders/box_collider.cc

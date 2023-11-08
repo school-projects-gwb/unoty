@@ -9,6 +9,7 @@ add_compile_options("$<$<CONFIG:DEBUG>:-g>")
 add_executable(slime_shooter main.cc
         game_scene.h
         movement_script.h
+        menu_scene.h
 )
 
 target_include_directories(slime_shooter PRIVATE src)

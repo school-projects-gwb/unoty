@@ -1,7 +1,7 @@
 #include <filesystem>
 #include "engine/engine.h"
 #include "engine_tick.h"
-#include "scene_manager.h"
+#include "entities/scene/scene_manager.h"
 #include "../rendering/sdl_renderer.h"
 #include "../input/input.h"
 #include "../input/sdl_input.h"
@@ -15,7 +15,14 @@ namespace engine {
 
 class Engine::Impl {
  public:
-  explicit Impl(EngineConfig engine_config) : scene_manager_(), game_tick_() {
+  Impl() : game_tick_() {}
+
+  static Impl& GetInstance() {
+    static Impl instance;
+    return instance;
+  }
+
+  void InitWithConfig(EngineConfig engine_config) {
     is_debug_mode_ = engine_config.is_debug_mode;
 
     renderer_ = std::make_unique<ui::SdlRenderer>(engine_config.window_width, engine_config.window_height,
@@ -29,14 +36,21 @@ class Engine::Impl {
 
     game_tick_.Init(engine_config.game_tick_fps);
     render_tick_.Init(engine_config.render_tick_fps);
+
+    is_config_set_ = true;
   }
 
   void Start() {
     while (!input_->IsWindowClosed()) {
-      auto active_scene = scene_manager_.GetActiveScene();
+      auto active_scene = SceneManager::GetInstance().GetActiveScene();
 
       if (active_scene == nullptr) {
         helpers::Debug::Error("No starting Scene set.");
+        return;
+      }
+
+      if (!is_config_set_) {
+        helpers::Debug::Error("No EngineConfig found. Make sure to initiate Engine with InitWithConfig.");
         return;
       }
 
@@ -81,16 +95,17 @@ class Engine::Impl {
   }
 
   void AddScene(const std::string& name, entities::SceneCallbackFunction callback_function) {
-    scene_manager_.AddScene(name, callback_function);
+    SceneManager::GetInstance().AddScene(name, callback_function);
   }
 
   void SetActiveScene(const std::string& name) {
-    scene_manager_.SetActiveScene(name);
+    SceneManager::GetInstance().SetActiveScene(name);
   }
 
+  void SetActiveScene(const std::string& name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate) {
+    SceneManager::GetInstance().SetActiveScene(name, std::move(objects_to_migrate));
+  }
  private:
-  SceneManager scene_manager_;
-
   std::unique_ptr<ui::Renderer> renderer_;
   std::unique_ptr<input::Input> input_;
   std::unique_ptr<physics::Physics> physics_;
@@ -98,9 +113,22 @@ class Engine::Impl {
   EngineTick game_tick_;
   EngineTick render_tick_;
   bool is_debug_mode_ = false;
+  bool is_config_set_ = false;
 };
 
-Engine::Engine(EngineConfig engine_config) : impl_(new Impl(engine_config)) {}
+Engine::Engine() : impl_(std::make_unique<Impl>()) {
+
+}
+
+Engine &Engine::GetInstance() {
+  static Engine instance;
+  return instance;
+}
+
+void Engine::InitWithConfig(engine::EngineConfig config) {
+  impl_->InitWithConfig(config);
+}
+
 Engine::~Engine() = default;
 
 void Engine::Start() {
@@ -113,6 +141,10 @@ void Engine::AddScene(const std::string& scene_name, entities::SceneCallbackFunc
 
 void Engine::SetActiveScene(const std::string &scene_name) {
   impl_->SetActiveScene(scene_name);
+}
+
+void Engine::SetActiveScene(const std::string &scene_name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate) {
+  impl_->SetActiveScene(scene_name, std::move(objects_to_migrate));
 }
 
 }

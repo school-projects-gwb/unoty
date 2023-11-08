@@ -18,6 +18,14 @@ class Scene::Impl {
     camera_ = std::make_unique<Camera>();
   }
 
+  void SetSceneName(const std::string scene_name) {
+    if (scene_name_.empty()) scene_name_ = scene_name;
+  }
+
+  const std::string& GetName() {
+    return scene_name_;
+  }
+
   void AddObject(std::shared_ptr<GameObject> object) {
     // Insert new GameObject at position based on its layer
     // Makes sure objects get rendered in correct order of their layers
@@ -27,6 +35,13 @@ class Scene::Impl {
                                       });
 
     game_objects_.insert(insert_position, std::move(object));
+  }
+
+  void RemoveObject(std::shared_ptr<GameObject> object) {
+    game_objects_.erase(std::remove_if(game_objects_.begin(), game_objects_.end(),
+                                     [&object](const std::shared_ptr<GameObject>& obj) {
+                                       return obj == object;
+                                     }), game_objects_.end());
   }
 
   void InitialiseObjects() {
@@ -83,26 +98,50 @@ class Scene::Impl {
   }
 
   std::shared_ptr<GameObject> GetObjectByName(const std::string &name) {
-    // todo implement
+    for (const auto& game_object : game_objects_)
+      if (game_object->GetName() == name)
+        return game_object;
+
     return nullptr;
   }
 
   std::vector<std::shared_ptr<GameObject>> GetObjectsByTagName(const std::string &tag_name) {
-    // todo implement
-    return {};
+    std::vector<std::shared_ptr<GameObject>> compatible_objects;
+
+    for (const auto& game_object : game_objects_)
+      if (game_object->GetTagName() == tag_name)
+        compatible_objects.emplace_back(game_object);
+
+    return compatible_objects;
   }
 
+  std::vector<std::shared_ptr<GameObject>> GetObjects() {
+    return game_objects_;
+  }
  private:
   std::vector<std::shared_ptr<GameObject>> game_objects_;
   std::unique_ptr<Camera> camera_;
   std::unique_ptr<SceneBackground> background_;
+  std::string scene_name_ = "";
 };
 
 Scene::Scene() : impl_(new Impl()) {}
 Scene::~Scene() = default;
 
+void Scene::SetSceneName(const std::string& scene_name) {
+  impl_->SetSceneName(scene_name);
+}
+
+const std::string& Scene::GetSceneName() {
+  return impl_->GetName();
+}
+
 void Scene::AddObject(std::shared_ptr<GameObject> object) {
   impl_->AddObject(std::move(object));
+}
+
+void Scene::RemoveObject(std::shared_ptr<GameObject> object_to_remove) {
+  impl_->RemoveObject(object_to_remove);
 }
 
 void Scene::InitialiseObjects() {
@@ -135,6 +174,10 @@ std::shared_ptr<GameObject> Scene::GetObjectByName(const std::string &name) {
 
 std::vector<std::shared_ptr<GameObject>> Scene::GetObjectsByTagName(const std::string &tag_name) {
   return impl_->GetObjectsByTagName(tag_name);
+}
+
+std::vector<std::shared_ptr<GameObject>> Scene::GetAllObjects() {
+  return impl_->GetObjects();
 }
 
 }

@@ -29,6 +29,7 @@ class GameScene : engine::entities::Scene {
       background_object->GetTransform()->SetScale(2);
 
       auto player_object = GameObject::Create();
+      player_object->SetName("Player");
 
       auto animator = Component::Create<Animator>("resources/sprites/player/front_1.png", 4, Point{32, 32});
       animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_up.png", SpriteAnimationState::North);
