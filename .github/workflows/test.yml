@@ -1,0 +1,32 @@
+name: Google Test
+
+on:
+  pull_request:
+    branches:
+      [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev libbox2d-dev nlohmann-json3-dev libgtest-dev libgmock-dev
+      - name: "Install build tools"
+        run: |
+          sudo apt-get install -y cmake cmake-data build-essential ninja-build
+      - name: "Setup CMake"
+        run: |
+          mkdir build
+          cd build
+          cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            ..
+      - name: "Build"
+        run: |
+          cd build
+          cmake --build . --target engine engine_tests
+      - name: "Run tests"
+        run: ./build/out/engine_tests

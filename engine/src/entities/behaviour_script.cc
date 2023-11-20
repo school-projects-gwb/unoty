@@ -19,7 +19,7 @@ void BehaviourScript::OnUpdate() {
 
 }
 
-void BehaviourScript::OnInput(const Key &key) {
+void BehaviourScript::OnInput() {
 
 }
 

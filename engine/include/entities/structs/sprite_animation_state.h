@@ -7,6 +7,7 @@ namespace engine::entities {
 enum SpriteAnimationState {
   Default, North, South, West, East,
   NorthEast, NorthWest, SouthEast, SouthWest,
+  Reset
 };
 
 }

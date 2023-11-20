@@ -1,5 +1,5 @@
 #include "scene_manager.h"
-#include "helpers/debug.h"
+#include "utility/debug.h"
 #include <utility>
 
 namespace engine {
@@ -35,7 +35,7 @@ void SceneManager::SetActiveScene(const std::string &scene_name, std::vector<std
   if (!TryFindAndSetNewActiveScene(scene_name)) return;
 
   for (auto& object : objects_to_migrate)
-    active_scene_->AddObject(std::move(object)); // Move ownership to new Scene
+    active_scene_->AddObject(std::move(object)); // Move ownership of objects_to_migrate to new Scene
 
   active_scene_->InitialiseObjects();
 }
@@ -57,14 +57,14 @@ std::vector<std::shared_ptr<entities::GameObject>> SceneManager::GetAllObjects()
   return active_scene_->GetAllObjects();
 }
 
-std::shared_ptr<entities::GameObject> SceneManager::GetObjectByName(const std::string &name) {
+std::shared_ptr<entities::GameObject> SceneManager::GetObjectByName(const std::string &name, bool search_recursive) {
   if (active_scene_ == nullptr) return {};
-  return active_scene_->GetObjectByName(name);
+  return active_scene_->GetObjectByName(name, search_recursive);
 }
 
-std::vector<std::shared_ptr<entities::GameObject>> SceneManager::GetObjectsByTagName(const std::string &tag_name) {
+std::vector<std::shared_ptr<entities::GameObject>> SceneManager::GetObjectsByTagName(const std::string &tag_name, bool search_recursive) {
   if (active_scene_ == nullptr) return {};
-  return active_scene_->GetObjectsByTagName(tag_name);
+  return active_scene_->GetObjectsByTagName(tag_name, search_recursive);
 }
 
 void SceneManager::AddObject(std::shared_ptr<entities::GameObject> object_to_add) {

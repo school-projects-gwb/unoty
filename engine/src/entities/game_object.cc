@@ -2,7 +2,7 @@
 #include "entities/game_object.h"
 #include "entities/component.h"
 #include "entities/scene/scene_manager.h"
-#include "helpers/debug.h"
+#include "utility/debug.h"
 
 namespace engine::entities {
 
@@ -12,16 +12,8 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
     transform_ = std::make_shared<Transform>();
   }
 
-  void SetParent(std::shared_ptr<GameObject> parent) {
-    parent_ = parent;
-  }
-
-  std::shared_ptr<GameObject> GetParent() const {
-    return parent_;
-  }
-
   void SetName(const std::string &name) {
-    auto name_check = GetObjectByName(name);
+    auto name_check = GetSceneObjectByName(name);
     if (name_check == nullptr) {
       name_ = name;
       return;
@@ -62,23 +54,23 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
     return transform_;
   }
 
-  static std::vector<std::shared_ptr<GameObject>> GetAllObjects() {
+  static std::vector<std::shared_ptr<GameObject>> GetAllSceneObjects() {
     return SceneManager::GetInstance().GetAllObjects();
   }
 
-  static std::shared_ptr<GameObject> GetObjectByName(const std::string &name) {
-    return SceneManager::GetInstance().GetObjectByName(name);
+  static std::shared_ptr<GameObject> GetSceneObjectByName(const std::string &name, bool search_recursive = false) {
+    return SceneManager::GetInstance().GetObjectByName(name, search_recursive);
   }
 
-  static std::vector<std::shared_ptr<GameObject>> GetObjectsByTagName(const std::string &tag_name) {
-    return SceneManager::GetInstance().GetObjectsByTagName(tag_name);
+  static std::vector<std::shared_ptr<GameObject>> GetSceneObjectsByTagName(const std::string &tag_name, bool search_recursive = false) {
+    return SceneManager::GetInstance().GetObjectsByTagName(tag_name, search_recursive);
   }
 
-  static void AddObject(std::shared_ptr<GameObject> object_to_add) {
+  static void AddSceneObject(std::shared_ptr<GameObject> object_to_add) {
     SceneManager::GetInstance().AddObject(object_to_add);
   }
 
-  static void RemoveObject(std::shared_ptr<GameObject> object_to_remove) {
+  static void RemoveSceneObject(std::shared_ptr<GameObject> object_to_remove) {
     SceneManager::GetInstance().RemoveObject(object_to_remove);
   }
  private:
@@ -87,20 +79,12 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
   bool is_active_ = true;
   int layer_ = 0;
   std::shared_ptr<GameObject> parent_;
-  const GameObject* owner_;
+  GameObject* owner_;
   std::shared_ptr<Transform> transform_;
 };
 
 GameObject::GameObject() : impl_(std::make_unique<Impl>(this)) {}
 GameObject::~GameObject() = default;
-
-void GameObject::SetParent(std::shared_ptr<GameObject> parent) {
-  impl_->SetParent(parent);
-}
-
-std::shared_ptr<GameObject> GameObject::GetParent() const {
-  return impl_->GetParent();
-}
 
 void GameObject::SetName(const std::string &name) {
   impl_->SetName(name);
@@ -138,24 +122,28 @@ std::shared_ptr<Transform> GameObject::GetTransform() {
   return impl_->GetTransform();
 }
 
-std::vector<std::shared_ptr<GameObject>> GameObject::GetAllObjects() {
-  return Impl::GetAllObjects();
+std::shared_ptr<Transform> GameObject::GetTransform() const {
+  return impl_->GetTransform();
 }
 
-std::shared_ptr<GameObject> GameObject::GetObjectByName(const std::string &name) {
-  return Impl::GetObjectByName(name);
+std::vector<std::shared_ptr<GameObject>> GameObject::GetAllSceneObjects() {
+  return Impl::GetAllSceneObjects();
 }
 
-std::vector<std::shared_ptr<GameObject>> GameObject::GetObjectsByTagName(const std::string &tag_name) {
-  return Impl::GetObjectsByTagName(tag_name);
+std::shared_ptr<GameObject> GameObject::GetSceneObjectByName(const std::string &name, bool search_recursive) {
+  return Impl::GetSceneObjectByName(name, search_recursive);
 }
 
-void GameObject::RemoveObject(std::shared_ptr<GameObject> object_to_remove) {
-  Impl::RemoveObject(object_to_remove);
+std::vector<std::shared_ptr<GameObject>> GameObject::GetSceneObjectsByTagName(const std::string &tag_name, bool search_recursive) {
+  return Impl::GetSceneObjectsByTagName(tag_name, search_recursive);
 }
 
-void GameObject::AddObject(std::shared_ptr<GameObject> object_to_add) {
-  Impl::AddObject(object_to_add);
+void GameObject::RemoveSceneObject(std::shared_ptr<GameObject> object_to_remove) {
+  Impl::RemoveSceneObject(object_to_remove);
+}
+
+void GameObject::AddSceneObject(std::shared_ptr<GameObject> object_to_add) {
+  Impl::AddSceneObject(object_to_add);
 }
 
 }

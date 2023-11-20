@@ -10,11 +10,17 @@ class Sprite::Impl : public Component {
     sprite_path_ = sprite_path;
   }
 
-  void Render(const std::unique_ptr<engine::ui::Renderer>& renderer, std::shared_ptr<Transform> transform) const {
-    if (!has_color_overlay_)
-      renderer->RenderSprite(sprite_path_, transform, flip_);
-    else
-      renderer->RenderSpriteWithColorOverlay(sprite_path_, transform, color_, flip_);
+  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<Transform> transform) const {
+    ui::RenderInfo render_info;
+    render_info.sprite_path = sprite_path_;
+    render_info.transform = transform;
+    render_info.size = transform->GetSize();
+
+    if (!has_color_overlay_) {
+      renderer->RenderSprite(render_info, {flip_});
+    } else {
+      renderer->RenderSpriteWithColorOverlay(render_info, {flip_, color_});
+    }
   }
 
   void SetColor(entities::Color color) {
@@ -48,7 +54,7 @@ class Sprite::Impl : public Component {
 Sprite::~Sprite() = default;
 Sprite::Sprite(std::string sprite_path) : impl_(new Impl(std::move(sprite_path))) {}
 
-void Sprite::Render(const std::unique_ptr<engine::ui::Renderer>& renderer, std::shared_ptr<Transform> transform) const {
+void Sprite::Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<Transform> transform) const {
   impl_->Render(renderer, transform);
 }
 

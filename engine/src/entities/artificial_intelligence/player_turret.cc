@@ -20,7 +20,7 @@ class PlayerTurret::Impl {
 
   }
 
-  void OnInput(const Key& key) {
+  void OnInput() {
 
   }
 
@@ -46,8 +46,8 @@ void PlayerTurret::OnUpdate() {
   impl_->OnUpdate();
 }
 
-void PlayerTurret::OnInput(const Key& key) {
-  impl_->OnInput(key);
+void PlayerTurret::OnInput() {
+  impl_->OnInput();
 }
 
 void PlayerTurret::OnTriggerEnter2d(Collider& collider) {

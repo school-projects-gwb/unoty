@@ -1,5 +1,5 @@
 #include "entities/camera.h"
-#include "helpers/debug.h"
+#include "utility/debug.h"
 
 namespace engine::entities {
 

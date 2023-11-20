@@ -4,7 +4,7 @@
 #include <string>
 #include "entities/structs/point.h"
 #include "entities/structs/color.h"
-#include "engine/renderer.h"
+#include "rendering/renderer.h"
 
 namespace engine::entities {
 

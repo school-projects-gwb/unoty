@@ -1,5 +1,5 @@
 #include "entities/scene/scene_background.h"
-#include "engine/renderer.h"
+#include "rendering/renderer.h"
 #include <iostream>
 #include <utility>
 #include <map>
@@ -29,7 +29,7 @@ class SceneBackground::Impl {
 
  private:
   const Point tile_map_tile_pixel_size_ = {32, 32};
-  const Point tile_pixel_size_ = {64, 64};
+  const Point tile_pixel_size_ = {128, 128};
   const Point tile_map_col_row_amount_ = {5, 5};
   const std::string tile_map_image_path_;
   const Color background_color_ = {0, 0, 0, 255};
@@ -40,25 +40,27 @@ class SceneBackground::Impl {
   void RenderTileMap(const std::unique_ptr<engine::ui::Renderer>& renderer) const {
     // Render corners and sides
     for (auto position : tile_map_tile_positions_) {
-      Rectangle render_position = GetRenderPosition(position.first.x, position.first.y);
-      Rectangle sheet_position = GetSheetPosition(position.second.x, position.second.y);
-      renderer->RenderSpriteFromSheet(tile_map_image_path_, render_position, sheet_position);
+      structs::Rectangle render_position = GetRenderPosition(position.first.x, position.first.y);
+      structs::Rectangle sheet_position = GetSheetPosition(position.second.x, position.second.y);
+      renderer->GetSpriteRenderer()->RenderStaticSpriteFromSheet({tile_map_image_path_, {}, sheet_position,
+                                                                  render_position}, {});
     }
 
     // Render fill
     for (auto y = 1; y < tile_map_col_row_amount_.y-1; y++)
       for (auto x = 1; x < tile_map_col_row_amount_.x-1; x++) {
-        Rectangle render_position = GetRenderPosition(x, y);
-        Rectangle sheet_position = GetSheetPosition(2, 0);
-        renderer->RenderSpriteFromSheet(tile_map_image_path_, render_position, sheet_position);
+        structs::Rectangle render_position = GetRenderPosition(x, y);
+        structs::Rectangle sheet_position = GetSheetPosition(2, 0);
+        renderer->GetSpriteRenderer()->RenderStaticSpriteFromSheet({tile_map_image_path_, {}, sheet_position,
+                                                                    render_position}, {});
       }
   }
 
-  [[nodiscard]] Rectangle GetRenderPosition(int col, int row) const {
+  [[nodiscard]] structs::Rectangle GetRenderPosition(int col, int row) const {
     return {col * tile_pixel_size_.x, row * tile_pixel_size_.y, tile_pixel_size_.x, tile_pixel_size_.y};
   }
 
-  [[nodiscard]] Rectangle GetSheetPosition(int col, int row) const {
+  [[nodiscard]] structs::Rectangle GetSheetPosition(int col, int row) const {
     return {col, row, tile_map_tile_pixel_size_.x, tile_map_tile_pixel_size_.y};
   }
 

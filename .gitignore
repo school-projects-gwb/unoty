@@ -52,3 +52,6 @@ libs/
 
 !/dependencies/
 !/dependencies/**
+
+#Ik heb deze map nodig als ik valgrind wil gebruiken -D
+cmake-build-debug-wsl/**

@@ -3,7 +3,7 @@
 
 #include "component.h"
 #include "entities/structs/sprite_animation_state.h"
-#include "engine/renderer.h"
+#include "rendering/renderer.h"
 
 namespace engine::entities {
 
@@ -13,19 +13,17 @@ class Animator : public Component {
 
   /// @brief Initialises Animator by setting default sprite path and sprite sheet information
   ///
-  /// Make sure that the provided sprite sheet has an equal number of columns and rows and an equal sprite pixel size.
-  /// I.e.: A rectangular sprite sheet of 2 rows and 2 columns containing a total of four 32x32px sprites.
-  ///
   /// \param default_state_sprite_path The initial sprite value and also the static sprite that's rendered when the animation isn't active.
-  /// \param sprites_in_sheet The total amount of sprites in the sheet which has to translate to an equal number of cols and rows of sprites in the sheet.
+  /// \param sprites_in_sheet The total amount of sprites in the sheet
   /// \param sprite_pixel_size The per-sprite (individual) sprite pixel size that EACH sprite in the sprite sheet is equal to.
-  Animator(std::string default_state_sprite_path, int sprites_in_sheet = 4, Point sprite_pixel_size = {32, 32});
+  /// \param sheet_row_col_count The amount of rows and columns in the sheet
+  Animator(std::string default_state_sprite_path, int sprites_in_sheet = 4, Point sprite_pixel_size = {32, 32}, Point sheet_row_col_count = {2, 2});
 
   /// @brief Plays animation of current SpriteSheet
   void Play(bool is_looping);
   
   /// @brief Updates current animation state ticker when animation is playing and renders sprite
-  void Render(const std::unique_ptr<engine::ui::Renderer>& renderer, std::shared_ptr<entities::Transform> transform);
+  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<entities::Transform> transform);
 
   /// @brief Stops animation; resets to Default Sprite
   void Stop();

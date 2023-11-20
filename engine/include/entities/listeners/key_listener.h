@@ -1,17 +1,22 @@
 #ifndef ENGINE_INCLUDE_ENTITIES_LISTENERS_KEY_LISTENER_H_
 #define ENGINE_INCLUDE_ENTITIES_LISTENERS_KEY_LISTENER_H_
 
+#include <memory>
 #include "entities/structs/key.h"
+#include "listener.h"
 
 namespace engine::entities {
 
 /// @brief Triggers functions on key interaction
-class KeyListener {
+class KeyListener : public Listener {
  public:
-  virtual ~KeyListener() = default;
-
-  virtual void OnKeyPressed(Key key) = 0;
-  virtual void OnKeyReleased() = 0;
+  ~KeyListener();
+  KeyListener();
+  virtual void OnKeyPressed();
+  virtual void OnKeyReleased();
+ private:
+  class Impl;
+  const std::unique_ptr<Impl> impl_;
 };
 
 }

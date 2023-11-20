@@ -3,7 +3,7 @@
 
 #include <SDL_render.h>
 #include <string>
-#include "engine/renderer.h"
+#include "rendering/renderer.h"
 namespace engine::rendering {
 
 class TextureRegistryBase {

@@ -10,23 +10,24 @@ class EngineTick {
  public:
   void Init(int target_fps);
 
-  double GetDeltaTime();
-  [[nodiscard]] double GetCurrentTime() const;
-  [[nodiscard]] double GetFixedTimeStep() const;
-  [[nodiscard]] double GetAccumulator() const;
+  void StartFrame();
+  void UpdateCurrentFrame();
+  [[nodiscard]] bool ShouldIterate() const;
+  void UpdateFps();
 
-  void AppendAccumulator(double value);
-  void SubtractAccumulator(double value);
-
-  void IncreaseFrameCounter();
-  void IncreaseElapsed();
-  void ShowFps(const std::string& title);
+  [[nodiscard]] int GetMostRecentFps() const;
  private:
   double fixed_time_step_;
-  double accumulator_;
   double current_time_;
-  int frame_counter_;
   double elapsed_time_;
+  double previous_time_ = GetCurrentTime();
+  double fps_update_time_ = previous_time_;
+  double delta_time_;
+  int frame_counter_;
+  int most_recent_fps_;
+  double fps_update_interval_ = 1.0;
+
+  [[nodiscard]] double GetCurrentTime() const;
   std::chrono::time_point<std::chrono::high_resolution_clock> frame_start_time_;
 };
 

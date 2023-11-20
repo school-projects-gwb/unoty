@@ -1,7 +1,7 @@
 #include <iostream>
 #include "sdl_texture_registry.h"
-#include "helpers/path_helper.h"
-#include "helpers/debug.h"
+#include "utility/path_helper.h"
+#include "utility/debug.h"
 
 namespace engine::rendering {
 

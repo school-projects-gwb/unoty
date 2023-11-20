@@ -13,7 +13,7 @@ class BehaviourScript : public Component {
   BehaviourScript();
   virtual void OnStart();
   virtual void OnUpdate();
-  virtual void OnInput(const Key& key);
+  virtual void OnInput();
   virtual void OnTriggerEnter2d(Collider& collider);
   virtual void OnTriggerExit2d(Collider& collider);
  private:

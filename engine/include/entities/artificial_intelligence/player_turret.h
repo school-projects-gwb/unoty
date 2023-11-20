@@ -11,7 +11,7 @@ class PlayerTurret : public ArtificialIntelligence {
   void TrackObject(std::shared_ptr<GameObject> object) override;
   void OnStart() override;
   void OnUpdate() override;
-  void OnInput(const Key& key) override;
+  void OnInput() override;
   void OnTriggerEnter2d(Collider& collider) override;
   void OnTriggerExit2d(Collider& collider) override;
  private:

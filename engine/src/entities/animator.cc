@@ -4,15 +4,16 @@
 #include <cmath>
 #include "entities/animator.h"
 #include "entities/sprite.h"
-#include "helpers/debug.h"
+#include "utility/debug.h"
 
 namespace engine::entities {
 
 class Animator::Impl : public Component {
  public:
-  Impl(std::string default_state_sprite_path, int sprites_in_sheet, Point sprite_pixel_size) : default_state_sprite_(std::move(default_state_sprite_path)) {
+  Impl(std::string default_state_sprite_path, int sprites_in_sheet, Point sprite_pixel_size, Point sheet_col_row_count = {2, 2}) : default_state_sprite_(std::move(default_state_sprite_path)) {
     sprite_pixel_size_ = sprite_pixel_size;
-    SetSpritesInSheet(sprites_in_sheet);
+    sheet_col_row_count_ = sheet_col_row_count;
+    sprites_in_sheet_ = sprites_in_sheet;
     InitSpriteSheetFramePositionMap();
   }
 
@@ -22,7 +23,7 @@ class Animator::Impl : public Component {
     is_looping_ = is_looping;
   }
 
-  void Render(const std::unique_ptr<engine::ui::Renderer>& renderer, std::shared_ptr<entities::Transform> transform) {
+  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<entities::Transform> transform) {
     if (!is_playing_) {
       default_state_sprite_.Render(renderer, transform);
       return;
@@ -30,15 +31,18 @@ class Animator::Impl : public Component {
 
     entities::Point sprite_position_in_sheet_ = sprite_frame_to_sheet_position_map_[current_sprite_frame_];
 
+    ui::RenderInfo sprite_render_info;
+    sprite_render_info.sprite_path = current_active_sprite_sheet_;
+    sprite_render_info.transform = transform;
+    sprite_render_info.size = transform->GetSize();
+    sprite_render_info.position_in_sheet = {sprite_position_in_sheet_.x, sprite_position_in_sheet_.y,
+                                            sprite_pixel_size_.x, sprite_pixel_size_.y};
+
     if (has_color_overlay_) {
-      renderer->RenderSpriteFromSheetWithColorOverlay(current_active_sprite_sheet_, transform,
-                                                      {sprite_position_in_sheet_.x, sprite_position_in_sheet_.y,
-                                                       sprite_pixel_size_.x, sprite_pixel_size_.y}, sprite_sheet_color_,
-                                                      sprite_sheet_flip_);
+      renderer->RenderSpriteFromSheetWithColorOverlay(sprite_render_info,
+                                                      {sprite_sheet_flip_, sprite_sheet_color_,});
     } else {
-      renderer->RenderSpriteFromSheet(current_active_sprite_sheet_, transform,
-                                      {sprite_position_in_sheet_.x, sprite_position_in_sheet_.y,
-                                       sprite_pixel_size_.x, sprite_pixel_size_.y}, sprite_sheet_flip_);
+      renderer->RenderSpriteFromSheet(sprite_render_info, {sprite_sheet_flip_});
     }
 
     ProcessTickUpdate();
@@ -97,29 +101,29 @@ class Animator::Impl : public Component {
   int current_sprite_frame_ = 0;
   std::unordered_map<int, entities::Point> sprite_frame_to_sheet_position_map_;
   Point sprite_pixel_size_ = {32, 32};
+  Point sheet_col_row_count_ = {2, 2};
 
   bool is_playing_ = false;
   bool is_looping_ = false;
   int tick_rate_ = 10;
   int current_tick_ = 0;
 
-  void SetSpritesInSheet(int amount) {
-    double sqrt = std::sqrt(amount);
-    if (sqrt - std::floor(sqrt) == 0) {
-      sprites_in_sheet_ = amount;
-      return;
-    }
-
-    helpers::Debug::Error("Animator: sprites_in_sheet does not translate to an equal amount of rows and columns.");
-  }
-
   void InitSpriteSheetFramePositionMap() {
     // Maps positions for performance benefits; this way it only has to be calculated once
-    int sprite_sheet_column_count = std::sqrt(sprites_in_sheet_);
+    int current_row = 0;
+    int current_col = 0;
 
     for (auto sprite_number = 0; sprite_number < sprites_in_sheet_; ++sprite_number) {
-      int row = sprite_number / sprite_sheet_column_count;
-      int column = sprite_number % sprite_sheet_column_count;
+      int row = current_row;
+      int column = current_col;
+
+      if (current_col == sheet_col_row_count_.x - 1) {
+        current_row++;
+        current_col = 0;
+      } else {
+        current_col++;
+      }
+
       sprite_frame_to_sheet_position_map_[sprite_number] = {column, row};
     }
   }
@@ -145,14 +149,14 @@ class Animator::Impl : public Component {
 
 Animator::~Animator() = default;
 
-Animator::Animator(std::string default_state_sprite_path, int sprites_in_sheet, Point sprite_pixel_size) :
-impl_(new Impl(std::move(default_state_sprite_path), sprites_in_sheet, sprite_pixel_size)) {}
+Animator::Animator(std::string default_state_sprite_path, int sprites_in_sheet, Point sprite_pixel_size, Point sheet_row_col_count) :
+impl_(new Impl(std::move(default_state_sprite_path), sprites_in_sheet, sprite_pixel_size, sheet_row_col_count)) {}
 
 void Animator::Play(bool is_looping) {
   impl_->Play(is_looping);
 }
 
-void Animator::Render(const std::unique_ptr<engine::ui::Renderer>& renderer, std::shared_ptr<entities::Transform> transform) {
+void Animator::Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<entities::Transform> transform) {
   impl_->Render(renderer, transform);
 }
 

@@ -8,9 +8,24 @@ namespace engine::entities {
 /// @brief Contains logic to play audio
 class AudioSource : public Component {
  public:
-  AudioSource(const std::string& track);
+  explicit AudioSource(const std::string& track);
   ~AudioSource() override;
-  void Start();
+  void Play();
+  void Stop();
+
+  void TogglePaused();
+  bool IsPaused();
+  void ToggleLooping();
+  bool IsLooping();
+
+  void SetVolume(int volume);
+  int GetVolume();
+  void SetPitch(int pitch);
+  int GetPitch();
+  void SetSpeed(int speed);
+  int GetSpeed();
+
+  bool play_on_wake_ = false;
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

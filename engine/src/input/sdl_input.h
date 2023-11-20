@@ -5,7 +5,9 @@
 #include "entities/structs/key.h"
 #include "input.h"
 #include <set>
+#include <SDL_keycode.h>
 #include "entities/structs/point.h"
+#include "entities/structs/input.h"
 
 namespace engine::input {
 
@@ -13,20 +15,12 @@ class SdlInput : public Input {
  public:
   SdlInput();
   void ProcessInput() override;
-  [[nodiscard]] entities::Key GetLastKeyPress() const override;
-  [[nodiscard]] entities::Point GetLastMousePress() const override;
-  [[nodiscard]] bool GetIsMousePressed() const override;
-  [[nodiscard]] bool GetIsMouseReleased() const override;
-  [[nodiscard]] std::set<entities::Key> GetActiveKeys() const override;
-  [[nodiscard]] bool IsWindowClosed() override;
  private:
-  entities::Key last_key_press_ = entities::Key::None;
-  entities::Point last_mouse_press_ = {};
-  bool is_mouse_pressed_ = false;
-  bool is_mouse_released_ = false;
   std::unordered_map<SDL_Keycode, entities::Key> key_mappings_;
-  std::set<entities::Key> active_keys_;
-  bool is_window_closed_ = false;
+
+  entities::Input input_;
+
+  void InitKeyMappings();
 };
 
 }

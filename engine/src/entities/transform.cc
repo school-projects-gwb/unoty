@@ -1,5 +1,5 @@
 #include "entities/transform.h"
-#include "helpers/debug.h"
+#include "utility/debug.h"
 namespace engine::entities {
 
 class Transform::Impl {
@@ -34,9 +34,18 @@ class Transform::Impl {
     return scale_;
   }
 
+  void SetSize(entities::Point size) {
+    size_ = size;
+  }
+
+  entities::Point GetSize() const {
+    return size_;
+  }
+
  private:
   double rotation_ = 0.0;
   float scale_ = 1;
+  entities::Point size_;
 };
 
 Transform::Transform() : impl_(new Impl()) {}
@@ -61,6 +70,14 @@ void Transform::SetScale(float scale) {
 
 float Transform::GetScale() const {
   return impl_->GetScale();
+}
+
+void Transform::SetSize(entities::Point size) {
+  impl_->SetSize(size);
+}
+
+entities::Point Transform::GetSize() const {
+  return impl_->GetSize();
 }
 
 }

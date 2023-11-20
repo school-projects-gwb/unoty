@@ -15,10 +15,13 @@ class Engine {
   static Engine& GetInstance();
 
   /// @brief Initialises configuration; will not be able to Start() engine before having done this.
-  void InitWithConfig(engine::EngineConfig config);
+  void Init();
 
   /// @brief Starts engine loop based on EngineConfig and current active Scene
   void Start();
+
+  /// @brief Stops engine loop after current game tick, shuts down engine and application
+  void Stop();
 
   void AddScene(const std::string& scene_name, entities::SceneCallbackFunction callback_function);
 
@@ -27,11 +30,20 @@ class Engine {
   /// Note that any GameObjects in this Scene will be discarded if they are not tracked anywhere else
   void SetActiveScene(const std::string& scene_name);
 
+  void ToggleDebugMode() const;
+  [[nodiscard]] bool IsDebugModeEnabled() const;
+
+  /// @brief Shuts down engine
+  ///
+  /// @warning DO NOT use from within game script code; use Stop() instead. This function effectively destroys Engine pointer.
+  /// Also ensure this function gets called AFTER Start() to prevent memory leaks and ensure correct shutdown.
+  void Shutdown();
+
   /// @overload With GameObjects that will be transferred to the new Scene
   void SetActiveScene(const std::string& scene_name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate);
  private:
   class Impl;
-  const std::unique_ptr<Impl> impl_;
+  std::unique_ptr<Impl> impl_;
 
   Engine();
 };
