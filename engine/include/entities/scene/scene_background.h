@@ -8,6 +8,19 @@
 
 namespace engine::entities {
 
+/// @param tile_map_image_path Path to tile map; assume 32x32 pixels per tile, 9 tiles total.
+/// @param tile_map_col_row_amount Amount of tile columns and rows that should be rendered
+/// @param tile_map_tile_pixel_size The pixel size of each individual tile in the TileMap
+/// @param tile_render_pixel_size The pixel size of each individual sprite in sheet that will be rendered to screen
+/// @param background_color Color of background used outside of the tile map
+struct TileMapConfig {
+  std::string tile_map_image_path;
+  entities::Point tile_map_col_row_amount;
+  entities::Point tile_map_tile_pixel_size = {32, 32};
+  entities::Point tile_render_pixel_size = {128, 128};
+  entities::Color background_color;
+};
+
 /// @brief Contains Scene background TileMap and color information
 class SceneBackground {
  public:
@@ -20,14 +33,9 @@ class SceneBackground {
    /// Row 1: [x0y0] Top left tile;  [x1y0] Top right tile;  [x2y0] Fill tile
    /// Row 2: [x0y1] Bottom left tile;  [x1y1] Bottom right tile;  [x2y1] Right side tile
    /// Row 3: [x0y2] Top side tile;  [x1y2] Left side tile;  [x2y2] Bottom side tile
-   ///
-   /// @param tile_map_image_path Path to tile map; assume 32x32 pixels per tile, 9 tiles total.
-   /// @param tile_map_col_row_amount Amount of tile columns and rows that should be rendered
-   /// @param background_color Color of background used outside of the tile map
-  SceneBackground(const std::string& tile_map_image_path, entities::Point tile_map_col_row_amount,
-                  entities::Color background_color);
+  SceneBackground(const TileMapConfig tile_map_config);
 
-   ~SceneBackground();
+  ~SceneBackground();
 
   /// @brief Processes rendering of background color and (if set) tile map
   void RenderBackground(const std::unique_ptr<engine::ui::Renderer>& renderer);

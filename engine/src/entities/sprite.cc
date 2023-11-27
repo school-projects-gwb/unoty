@@ -1,4 +1,3 @@
-#include <iostream>
 #include "entities/sprite.h"
 #include "entities/structs/sprite_flip.h"
 
@@ -25,11 +24,10 @@ class Sprite::Impl : public Component {
 
   void SetColor(entities::Color color) {
     int default_value = 255;
-    if (color.r != default_value || color.g != default_value || color.b != default_value) {
-      // Only set when Color isn't default color to prevent unnecessary color modulation application when rendering
-      color_ = color;
-      has_color_overlay_ = true;
-    }
+    if (color.r != default_value || color.g != default_value || color.b != default_value)
+      has_color_overlay_ = true; // Prevent unnecessary color overlay application when color is default
+
+    color_ = color;
   }
 
   [[nodiscard]] entities::Color GetColor() const {

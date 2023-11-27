@@ -4,7 +4,7 @@
 #include "string"
 #include "../statistic_type.h"
 
-namespace slime_shooter {
+namespace slime_shooter::statistic_upgrades {
 
 enum class UpgradeType {
   Minor, Regular, Major, Base
@@ -45,6 +45,21 @@ const StatisticUpgrade DefaultStatisticUpgradeValues[kMaxStatisticUpgrades] = {
     {"TurretSpeedRegular", "Turret speed", 0.35, StatisticType::TurretSpeed, UpgradeType::Regular},
     {"TurretSpeedMajor", "Turret speed", 0.5, StatisticType::TurretSpeed, UpgradeType::Major},
 };
+
+std::unordered_map<std::string, StatisticUpgrade> StatisticUpgradeMap;
+
+void InitializeStatisticUpgradeMap() {
+  for (const auto& upgrade : DefaultStatisticUpgradeValues) {
+    // Assuming the 'name' is unique
+    StatisticUpgradeMap[upgrade.name] = upgrade;
+  }
+}
+
+// Function to get a StatisticUpgrade based on the 'name'
+StatisticUpgrade GetStatisticUpgrade(const std::string& name) {
+  auto it = StatisticUpgradeMap.find(name);
+  return (it != StatisticUpgradeMap.end()) ? it->second : StatisticUpgrade{}; // Return a default-constructed object if not found
+}
 
 }
 

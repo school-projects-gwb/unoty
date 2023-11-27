@@ -1,13 +1,10 @@
 #ifndef SLIME_SHOOTER_SRC_PLAYER_SLIME_SHOOTER_SRC_PLAYER_PLAYER_WEAPON_LOGIC_H_
 #define SLIME_SHOOTER_SRC_PLAYER_SLIME_SHOOTER_SRC_PLAYER_PLAYER_WEAPON_LOGIC_H_
 
-#include <unordered_map>
 #include "entities/behaviour_script.h"
 #include "entities/game_object.h"
-#include "entities/animator.h"
 #include "entities/structs/input.h"
-#include "entities/structs/vector.h"
-#include "statistics/statistics.h"
+#include "entities/structs/vector_2d.h"
 
 using namespace engine::entities;
 

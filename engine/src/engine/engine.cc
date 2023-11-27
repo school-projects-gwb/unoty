@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <memory>
+#include <utility>
 #include "engine/engine.h"
 #include "engine_tick.h"
 #include "entities/scene/scene_manager.h"
@@ -85,7 +86,7 @@ class Engine::Impl {
   }
 
   void AddScene(const std::string& name, entities::SceneCallbackFunction callback_function) {
-    SceneManager::GetInstance().AddScene(name, callback_function);
+    SceneManager::GetInstance().AddScene(name, std::move(callback_function));
   }
 
   void SetActiveScene(const std::string& name) {
@@ -108,6 +109,10 @@ class Engine::Impl {
     audio::SdlAudioManager::Cleanup();
     renderer_->Exit();
     ui::SdlFontRegistry::Cleanup();
+  }
+
+  void SetFps(int frames_per_second) {
+    game_tick_.SetTargetFps(frames_per_second);
   }
  private:
   std::unique_ptr<ui::Renderer> renderer_;
@@ -165,6 +170,10 @@ void Engine::SetActiveScene(const std::string &scene_name, std::vector<std::shar
 void Engine::Shutdown() {
   impl_->CleanupEngine();
   impl_.reset();
+}
+
+void Engine::SetFps(int frames_per_second) {
+  impl_->SetFps(frames_per_second);
 }
 
 }

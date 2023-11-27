@@ -19,11 +19,13 @@ using VariantValue = std::variant<
     int,
     double,
     bool,
+    float,
     DataObject,
     std::vector<std::string>,
     std::vector<int>,
     std::vector<double>,
     std::vector<bool>,
+    std::vector<float>,
     std::vector<DataObject>
 >;
 

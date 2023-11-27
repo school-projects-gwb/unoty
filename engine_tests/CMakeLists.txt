@@ -13,7 +13,8 @@ add_executable(engine_tests
         src/entities/game_object_test.cc
 
         src/entities/scene/scene_test.cc
-        src/entities/structs/vector_test.cc)
+        src/entities/structs/vector_test.cc
+        src/utility/object_pool_test.cc)
 
 # Windows: Fetch GTest from repo
 if (WIN32)

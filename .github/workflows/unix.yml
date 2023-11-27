@@ -1,16 +1,16 @@
-name: GNU/Linux build
+name: GNU/Linux
 
 on:
+  workflow_call:
   pull_request:
     branches:
-      [ develop, main ]
+      [ main, develop ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: "Install dependencies"
         run: |
           sudo apt-get update
@@ -24,8 +24,9 @@ jobs:
           cd build
           cmake \
             -DCMAKE_BUILD_TYPE=Release \
-            ../engine
+            ..
       - name: "Build"
         run: |
           cd build
           cmake --build . --target engine
+          cmake --build . --target slime_shooter game_resources

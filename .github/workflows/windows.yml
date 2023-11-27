@@ -1,0 +1,29 @@
+name: Windows
+
+on:
+  workflow_call:
+  pull_request:
+    branches:
+      [ main, develop ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install dependencies"
+        run: |
+          choco install -y ninja cmake mingw
+          ninja --version
+          cmake --version
+      - name: "Configure CMake"
+        run: |
+          mkdir build
+          cd build
+          mkdir out
+          cmake -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" ..
+      - name: "Build"
+        run: |
+          cd build
+          cmake --build . --target engine 
+          cmake --build . --target slime_shooter game_resources

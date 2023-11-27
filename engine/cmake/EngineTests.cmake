@@ -56,6 +56,8 @@ add_executable(engine_tests
         src/data_handler/data_object/builders/data_object_builder.cc
         src/data_handler/data_object/builders/data_object_builder.h
         src/entities/tests/game_object_test.cc
+
+        src/utility/object_pool_test.cc
 )
 
 # Windows: Fetch GTest from repo

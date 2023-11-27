@@ -31,7 +31,8 @@ void SdlTextRenderer::RenderText(TextRenderInfo& text_render_info) {
     SDL_Rect destination_rect = {calculated_position.x, calculated_position.y, text_surface->w, text_surface->h};
     RenderText(text_texture, destination_rect);
   } else {
-    SDL_Rect destination_rect = {text_render_info.target_position.x, text_render_info.target_position.y, text_surface->w, text_surface->h};
+    SDL_Rect destination_rect = {(int)text_render_info.target_position.x, (int)text_render_info.target_position.y,
+                                 text_surface->w, text_surface->h};
     RenderText(text_texture, destination_rect);
   }
 

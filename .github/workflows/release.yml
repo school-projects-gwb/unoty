@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-unix:
+    name: "Build (GNU/Linux)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "Build"
+        uses: ./.github/workflows/unix.yml
+      - name: "Create tarball"
+        run: |
+          tar -czvf unoty-unix.tar.gz ./build/out
+      - name: "Upload binaries"
+        uses: actions/upload-artifact@v3
+        with:
+          name: unoty-unix
+          path: unoty-unix.tar.gz
+  build-windows:
+    name: "Build (Windows)"
+    runs-on: windows-latest
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "Build"
+        uses: ./.github/workflows/windows.yml
+      - name: "Create zip"
+        run: |
+          powershell Compress-Archive ./build/out unoty-windows.zip
+      - name: "Upload binaries"
+        uses: actions/upload-artifact@v3
+        with:
+          name: unoty-windows
+          path: unoty-windows.zip
+  create-release:
+    name: "Create release"
+    runs-on: ubuntu-latest
+    needs: [ build-unix, build-windows ]
+    steps:
+      - name: "Download GNU/Linux binaries"
+        uses: actions/download-artifact@v3
+        with:
+          name: unoty-unix
+      - name: "Download Windows binaries"
+        uses: actions/download-artifact@v3
+        with:
+          name: unoty-windows
+      - name: "Form release"
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          files: |
+            unoty-unix.tar.gz
+            unoty-windows.zip
+

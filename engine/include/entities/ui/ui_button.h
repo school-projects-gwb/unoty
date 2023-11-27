@@ -24,7 +24,7 @@ class UiButton : public UiObject {
   void SetBackgroundColor(entities::Color background_color) override;
 
   /// @brief Affects both button background and text element position
-  void SetPosition(entities::Point position);
+  void SetPosition(entities::Vector2d position);
 
   /// @brief Affects only the size of the button background element
   void SetSize(entities::Point size);

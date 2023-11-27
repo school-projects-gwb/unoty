@@ -4,12 +4,12 @@ set(CMAKE_CXX_STANDARD 17)
 
 if (UNIX AND NOT APPLE)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
-endif()
+elseif (WIN32)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
+endif ()
 
 add_compile_options(-Wall -Wpedantic)
 add_compile_options("$<$<CONFIG:DEBUG>:-g>")
-
-#include(cmake/EngineTests.cmake)
 
 add_library(${PROJECT_NAME} SHARED
         include/data_handler/file_handler/file_handler.h
@@ -45,7 +45,7 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/structs/sprite_flip.h
         include/entities/structs/element_position.h
         include/entities/structs/input.h
-        include/entities/structs/vector.h
+        include/entities/structs/vector_2d.h
 
         include/entities/ui/ui_button.h
         include/entities/ui/ui_object.h
@@ -86,7 +86,7 @@ add_library(${PROJECT_NAME} SHARED
         src/audio/sdl_audio/sdl_music_audio_mp3.cc
         src/audio/audio.h
         src/audio/null_audio.h
-        
+
         include/rendering/renderer.h
         include/rendering/sprite_renderer.h
         include/rendering/text_renderer.h
@@ -140,11 +140,14 @@ add_library(${PROJECT_NAME} SHARED
         src/rendering/renderers/sdl_text_renderer.cc
 
         src/rendering/fonts/sdl_font_registry.cc
+        include/utility/timer.h
+        include/utility/object_pool.h
+        include/utility/randomizer.h
 )
 
 if (WIN32)
     include(cmake/WIN32.cmake)
-else () # unix
+else ()
     include(FindPkgConfig)
     find_package(SDL2 REQUIRED COMPONENTS SDL2)
     find_package(SDL2_image REQUIRED)

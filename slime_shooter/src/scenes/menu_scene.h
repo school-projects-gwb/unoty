@@ -10,18 +10,27 @@
 #include "entities/scene/scene_background.h"
 #include "entities/animator.h"
 #include "ui/menu/buttons/play_game_button.h"
-#include "ui/menu/buttons/load_level_button.h"
-#include "ui/menu/buttons/level_editor_button.h"
+#include "ui/menu/buttons/edit_level_button.h"
+#include "ui/menu/buttons/create_level_button.h"
 #include "ui/menu/highscore.h"
-#include "ui/menu/buttons/button_click_listener.h"
+#include "ui/button_click_listener.h"
+#include "data_handler/data_object.h"
+#include "data_handler/serializer.h"
+#include "data_handler/file_handler/file_handler.h"
+#include "config/level_loader_config.h"
+#include "ui/menu/level_selector/level_selector.h"
+#include "ui/menu/buttons/quit_game_button.h"
+#include "ui/menu/buttons/delete_level_button.h"
 
 using namespace engine::entities;
+using namespace engine::data_handler;
 
 namespace slime_shooter {
 
 class MenuScene : engine::entities::Scene {
  public:
   static Scene* MenuSceneInit() {
+    engine::Engine::GetInstance().SetFps(30);
     auto* scene = new MenuScene();
 
     auto music = std::make_unique<AudioSource>("resources/audio/menu.mp3");
@@ -45,41 +54,42 @@ class MenuScene : engine::entities::Scene {
     or_text->SetFont(GameFont::Default, 20);
     or_text->SetColor(GameColor::Ui::TextGray);
 
-    auto level_label_text = GameObject::Create<UiText>();
-    level_label_text->SetContent("LEVEL:");
-    level_label_text->GetTransform()->Position = {425, 210};
-    level_label_text->SetFont(GameFont::Default, 16);
-    level_label_text->SetColor(GameColor::Ui::TextRed);
-
-    auto level_value_text = GameObject::Create<UiText>();
-    level_value_text->SetContent("default");
-    level_value_text->GetTransform()->Position = {530, 210};
-    level_value_text->SetFont(GameFont::Default, 16);
-    level_value_text->SetColor(GameColor::Ui::TextWhite);
-
     scene->AddObject(logo_text);
     scene->AddObject(or_text);
-    scene->AddObject(level_label_text);
-    scene->AddObject(level_value_text);
 
     auto highscore = GameObject::Create<Highscore>();
     scene->AddObject(highscore);
 
     auto play_game_button = GameObject::Create<PlayGameButton>();
-    auto load_level_button = GameObject::Create<LoadLevelButton>();
-    auto level_editor_button = GameObject::Create<LevelEditorButton>();
+    auto load_level_button = GameObject::Create<EditLevelButton>();
+    auto level_editor_button = GameObject::Create<CreateLevelButton>();
+    auto delete_level_button = GameObject::Create<DeleteLevelButton>();
+    auto quit_game_button = GameObject::Create<QuitGameButton>();
 
     scene->AddObject(play_game_button);
     scene->AddObject(load_level_button);
     scene->AddObject(level_editor_button);
+    scene->AddObject(delete_level_button);
+    scene->AddObject(quit_game_button);
 
     auto button_click_listener = GameObject::Create<ButtonMouseClickListener>();
     scene->AddListener(button_click_listener);
+
+    auto debug_toggler = std::make_shared<DebugToggleScript>();
+    scene->AddListener(debug_toggler);
+
+    auto level_selector = GameObject::Create<LevelSelector>(SwitchLevel);
+    scene->AddObject(level_selector);
 
     scene->SetCamera(std::move(camera));
     scene->SetBackground(std::move(scene_background));
 
     return scene;
+  }
+
+  static void SwitchLevel(const std::pair<std::string, std::string>& new_level) {
+    GameConfig::SetPropertyValue("active_level_path", new_level.second);
+    LevelLoaderConfig::ReloadLevelData();
   }
 };
 

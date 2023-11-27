@@ -13,6 +13,9 @@ class DebugToggleScript : public KeyListener {
   void OnKeyPressed() override {
     if (Input::HasPressedKey(Key::UnoZ))
       engine::Engine::GetInstance().ToggleDebugMode();
+
+    if (Input::HasPressedKey(Key::UnoP))
+      engine::Engine::GetInstance().SetActiveScene("menu_scene");
   }
 };
 

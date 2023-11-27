@@ -38,17 +38,17 @@ class Statistics : public BehaviourScript {
     statistics_[type_to_set] = Get(type_value_to_use);
   }
 
-  [[nodiscard]] UpgradeType GetCurrentUpgradeType() const {
+  [[nodiscard]] statistic_upgrades::UpgradeType GetCurrentUpgradeType() const {
     auto player_level = GetInt(StatisticType::Level);
 
-    if (player_level <= 5) return UpgradeType::Minor;
-    if (player_level <= 10) return UpgradeType::Regular;
-    if (player_level >= 15) return UpgradeType::Major;
+    if (player_level <= 5) return statistic_upgrades::UpgradeType::Minor;
+    if (player_level <= 10) return statistic_upgrades::UpgradeType::Regular;
+    if (player_level >= 15) return statistic_upgrades::UpgradeType::Major;
 
-    return UpgradeType::Minor;
+    return statistic_upgrades::UpgradeType::Minor;
   }
 
-  void ApplyUpgrade(StatisticUpgrade upgrade) {
+  void ApplyUpgrade(statistic_upgrades::StatisticUpgrade upgrade) {
     Set(upgrade.statistic_type, Get(upgrade.statistic_type) + upgrade.value);
   }
  private:

@@ -6,27 +6,30 @@
 #include "entities/animator.h"
 #include "statistics/statistics.h"
 #include "enemies/enemy_logic.h"
+#include "enemy_base.h"
 
 using namespace engine::entities;
 
 namespace slime_shooter {
 
-class PinkSlimeEnemy : public GameObject {
+class PinkSlimeEnemy : public EnemyBase {
  public:
-  PinkSlimeEnemy() {
+  PinkSlimeEnemy() : EnemyBase() {
     auto animator = Component::Create<Animator>("resources/sprites/enemies/slime_pink.png",
                                                 4, Point{16, 16}, Point{2, 2});
     animator->SetSpriteSheetAtIndex("resources/sprites/enemies/slime_pink.png", 0);
     animator->SetCurrentAnimationSpriteSheet(0);
     animator->Play(true);
 
-    auto enemy_logic = Component::Create<EnemyLogic>();
-
     AddComponent(animator);
-    AddComponent(enemy_logic);
 
     GetTransform()->SetSize({60, 60});
-    SetLayer(1);
+  }
+
+  static std::shared_ptr<EnemyBase> Create() {
+    auto object = GameObject::Create<PinkSlimeEnemy>();
+    object->SetIsActive(false);
+    return object;
   }
 };
 

@@ -1,17 +1,16 @@
 #include <gtest/gtest.h>
 
-#include "entities/structs/vector.h"
+#include "entities/structs/vector_2d.h"
 
 TEST(VectorTest, NormalizationValid) {
   // Arrange
-  engine::entities::Vector v(3.0, 4.0);
-
+  engine::entities::Vector2d v(3, 4);
   // Act
-  float expectedX = 3.0 / 5.0;
-  float expectedY = 4.0 / 5.0;
+  float expected_x = 3.0 / 5.0;
+  float expected_y = 4.0 / 5.0;
   v.normalize();
 
   // Assert
-  EXPECT_FLOAT_EQ(v.x, expectedX);
-  EXPECT_FLOAT_EQ(v.y, expectedY);
+  EXPECT_FLOAT_EQ(v.x, expected_x);
+  EXPECT_FLOAT_EQ(v.y, expected_y);
 }

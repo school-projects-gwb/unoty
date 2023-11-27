@@ -44,6 +44,8 @@ if(WIN32)
     file(GLOB SDL2_DLLS "${SDL2_DLL_DIR}/*.dll")
     file(GLOB SDL2_IMAGE_DLLS "${SDL2_IMAGE_DLL_DIR}/*.dll")
     file(GLOB SDL2_MIXER_DLLS "${SDL2_MIXER_DLL_DIR}/*.dll")
+    file(GLOB SDL2_TTF_DLLS "${SDL2_TTF_DLL_DIR}/*.dll")
+    file(GLOB BOX2D_DLLS "${BOX2D_DLL_DIR}/*.dll")
 
     file(GLOB BOX2D_DLLS "${BOX2D_DLL_DIR}/*.dll")
     file(GLOB SDL2_TTF_DLLS "${SDL2_TTF_DLL_DIR}/*.dll")

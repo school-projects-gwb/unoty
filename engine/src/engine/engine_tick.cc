@@ -4,7 +4,7 @@
 
 namespace engine {
   void EngineTick::Init(int target_fps) {
-    fixed_time_step_ = 1.0 / target_fps;
+    SetTargetFps(target_fps);
     current_time_ = GetCurrentTime();
   }
 
@@ -45,5 +45,9 @@ namespace engine {
       frame_counter_ = 0;
       fps_update_time_ = current_time_;
     }
+  }
+
+  void EngineTick::SetTargetFps(int new_frames_per_second) {
+    fixed_time_step_ = 1.0 / new_frames_per_second;
   }
 }

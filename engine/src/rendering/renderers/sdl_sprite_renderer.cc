@@ -30,7 +30,7 @@ void SdlSpriteRenderer::RenderSpriteWithColorOverlay(const RenderInfo& render_in
   auto* texture = static_cast<SDL_Texture *>(rendering::TextureRegistry::GetInstance().GetTexture(render_info.sprite_path));
   SDL_SetTextureColorMod(texture, render_options.color.r, render_options.color.g, render_options.color.b);
 
-  RenderSprite({render_info.sprite_path, render_info.transform}, {render_options.flip});
+  RenderSprite(render_info, {render_options.flip});
 
   SDL_SetTextureColorMod(texture, 255, 255, 255);
 }
@@ -85,7 +85,7 @@ SDL_Rect SdlSpriteRenderer::GetSheetRectangle(const entities::structs::Rectangle
 }
 
 void SdlSpriteRenderer::RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rect,
-                                const entities::Point& destination_position, int width, int height,
+                                const entities::Vector2d& destination_position, int width, int height,
                                 entities::SpriteFlip flip, double rotation, bool is_position_fixed) const {
   SDL_Rect destination_rectangle;
 

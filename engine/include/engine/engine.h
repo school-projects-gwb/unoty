@@ -41,6 +41,9 @@ class Engine {
 
   /// @overload With GameObjects that will be transferred to the new Scene
   void SetActiveScene(const std::string& scene_name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate);
+
+  /// @brief Used to dynamically update target frames per second between Scenes for example
+  void SetFps(int frames_per_second);
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;

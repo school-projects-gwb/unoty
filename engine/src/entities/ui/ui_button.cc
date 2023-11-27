@@ -43,7 +43,7 @@ class UiButton::Impl : public GameObject {
     button_background_->SetBackgroundColor(background_color);
   }
 
-  void SetPosition(entities::Point position) {
+  void SetPosition(entities::Vector2d position) {
     transform_->Position = position;
     button_background_->GetTransform()->Position = position;
     button_text_->GetTransform()->Position = position;
@@ -86,7 +86,7 @@ void UiButton::SetBackgroundColor(const entities::Color background_color) {
   impl_->SetBackgroundColor(background_color);
 }
 
-void UiButton::SetPosition(entities::Point position) {
+void UiButton::SetPosition(entities::Vector2d position) {
   impl_->SetPosition(position);
 }
 

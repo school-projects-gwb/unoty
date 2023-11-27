@@ -112,8 +112,8 @@ TEST_F(DataObjectTest, ParseGameObject) {
   auto transform_data = std::get<DataObject>(data_object.GetValue("transform"));
 
   EXPECT_EQ(std::get<std::string>(data_object.GetValue("script_name")), "Player");
-  EXPECT_EQ(std::get<int>(transform_data.GetValue("position_x")), 5);
-  EXPECT_EQ(std::get<int>(transform_data.GetValue("position_y")), 10);
+  EXPECT_EQ(std::get<float>(transform_data.GetValue("position_x")), 5);
+  EXPECT_EQ(std::get<float>(transform_data.GetValue("position_y")), 10);
 }
 
 // Test for setting and getting std::vector<int> values

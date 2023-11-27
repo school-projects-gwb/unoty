@@ -2,9 +2,7 @@
 #define SLIME_SHOOTER_SRC_UI_SLIME_SHOOTER_SRC_UI_TEST_BUTTON_H_
 
 #include "engine/engine_config.h"
-#include "ui/hud/score/score_text.h"
 #include "entities/ui/ui_button.h"
-#include "iostream"
 
 using namespace engine::entities;
 

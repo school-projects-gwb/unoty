@@ -15,6 +15,8 @@ class EngineTick {
   [[nodiscard]] bool ShouldIterate() const;
   void UpdateFps();
 
+  void SetTargetFps(int new_frames_per_second);
+
   [[nodiscard]] int GetMostRecentFps() const;
  private:
   double fixed_time_step_;

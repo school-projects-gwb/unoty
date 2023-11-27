@@ -90,7 +90,7 @@ class Scene::Impl {
 
   static void RenderDebug(const std::unique_ptr<ui::Renderer>& renderer, const std::string& font_path, int most_recent_fps) {
     ui::TextRenderInfo render_info{font_path, 12, "FPS: " + std::to_string(most_recent_fps),
-                                   Point{50, 25}, ElementPosition::TopRight};
+                                   Vector2d{50, 25}, ElementPosition::TopRight};
     renderer->GetTextRenderer()->RenderText(render_info);
   }
 

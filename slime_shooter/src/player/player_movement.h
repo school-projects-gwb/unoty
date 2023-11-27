@@ -6,7 +6,7 @@
 #include "entities/game_object.h"
 #include "entities/animator.h"
 #include "entities/structs/input.h"
-#include "entities/structs/vector.h"
+#include "entities/structs/vector_2d.h"
 #include "statistics/statistics.h"
 
 using namespace engine::entities;
@@ -23,7 +23,7 @@ class MovementScript : public BehaviourScript {
   }
 
   void OnInput() override {
-    Vector vector {0, 0};
+    Vector2d vector {0, 0};
 
     for (auto key : Input::GetActiveKeys()) {
       if (key == Key::UnoUpArrow) vector.y--;

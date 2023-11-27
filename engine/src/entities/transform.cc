@@ -38,18 +38,18 @@ class Transform::Impl {
     size_ = size;
   }
 
-  entities::Point GetSize() const {
+  [[nodiscard]] entities::Point GetSize() const {
     return size_;
   }
 
  private:
   double rotation_ = 0.0;
   float scale_ = 1;
-  entities::Point size_;
+  entities::Point size_ {0,0};
 };
 
 Transform::Transform() : impl_(new Impl()) {}
-Transform::Transform(engine::entities::Point position, float rotation, float scale)
+Transform::Transform(engine::entities::Vector2d position, float rotation, float scale)
 : impl_(new Impl(rotation, scale)) {
   Position = position;
 }

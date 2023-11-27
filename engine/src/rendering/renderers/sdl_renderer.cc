@@ -73,7 +73,12 @@ std::unique_ptr<TextRenderer> &SdlRenderer::GetTextRenderer() {
 void SdlRenderer::UpdateCameraPosition(engine::entities::Camera* camera) {
   // Get position camera is tracking
   auto center_target_position = camera->GetTransform()->Position;
-  if (center_target_position.x == 0 && center_target_position.y == 0) return; // Assume static camera position
+  // TODO possibly improve this logic
+  if (center_target_position.x == 0 && center_target_position.y == 0) {
+    camera_position_.x = 0;
+    camera_position_.y = 0;
+    return;
+  }
 
   auto target_transform = camera->GetTrackingTransform();
 

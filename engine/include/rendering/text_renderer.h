@@ -5,6 +5,7 @@
 #include "string"
 #include "entities/structs/element_position.h"
 #include "entities/structs/color.h"
+#include "entities/structs/vector_2d.h"
 
 namespace engine::ui {
 
@@ -12,7 +13,7 @@ struct TextRenderInfo {
   std::string font_path;
   int font_size;
   std::string content;
-  entities::Point target_position;
+  entities::Vector2d target_position;
   entities::ElementPosition element_position = entities::ElementPosition::CustomPosition;
   entities::Color text_color = {255, 255, 255, 255};
 };

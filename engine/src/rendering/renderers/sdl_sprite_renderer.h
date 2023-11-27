@@ -33,7 +33,7 @@ class SdlSpriteRenderer : public ui::SpriteRenderer {
   int window_width_;
   int window_height_;
 
-  void RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const entities::Point& destination_position,
+  void RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const entities::Vector2d& destination_position,
                      int width, int height, entities::SpriteFlip flip, double rotation=0, bool is_position_fixed = false) const;
   static SDL_RendererFlip GetSdlRendererFlipFromSpriteFlip(entities::SpriteFlip sprite_flip) ;
 

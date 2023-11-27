@@ -14,9 +14,13 @@ class SceneBackground::Impl {
   explicit Impl(entities::Color background_color) : background_color_(background_color) {
   }
 
-  Impl(std::string tile_map_image_path, entities::Point tile_map_col_row_amount, entities::Color background_color)
-      : tile_map_col_row_amount_(tile_map_col_row_amount), tile_map_image_path_(std::move(tile_map_image_path)),
-        background_color_(background_color), has_tile_map_(true) {
+  Impl(const TileMapConfig tile_map_config)
+      : tile_map_tile_pixel_size_(tile_map_config.tile_map_tile_pixel_size),
+      tile_render_pixel_size_(tile_map_config.tile_render_pixel_size),
+      tile_map_col_row_amount_(tile_map_config.tile_map_col_row_amount),
+      tile_map_image_path_(std::move(tile_map_config.tile_map_image_path)),
+      background_color_(tile_map_config.background_color),
+      has_tile_map_(true) {
     InitTileMapTilePositions();
   }
 
@@ -29,9 +33,9 @@ class SceneBackground::Impl {
 
  private:
   const Point tile_map_tile_pixel_size_ = {32, 32};
-  const Point tile_pixel_size_ = {128, 128};
+  const Point tile_render_pixel_size_ = {128, 128};
   const Point tile_map_col_row_amount_ = {5, 5};
-  const std::string tile_map_image_path_;
+  std::string tile_map_image_path_;
   const Color background_color_ = {0, 0, 0, 255};
   bool is_background_set_ = false;
   const bool has_tile_map_ = false;
@@ -57,7 +61,7 @@ class SceneBackground::Impl {
   }
 
   [[nodiscard]] structs::Rectangle GetRenderPosition(int col, int row) const {
-    return {col * tile_pixel_size_.x, row * tile_pixel_size_.y, tile_pixel_size_.x, tile_pixel_size_.y};
+    return {col * tile_render_pixel_size_.x, row * tile_render_pixel_size_.y, tile_render_pixel_size_.x, tile_render_pixel_size_.y};
   }
 
   [[nodiscard]] structs::Rectangle GetSheetPosition(int col, int row) const {
@@ -96,10 +100,8 @@ class SceneBackground::Impl {
 
 SceneBackground::SceneBackground(entities::Color background_color) : impl_(new Impl(background_color)) {}
 
-SceneBackground::SceneBackground(const std::string& tile_map_image_path, entities::Point tile_map_col_row_amount,
-                                 entities::Color background_color)
-                                 : impl_(new Impl(tile_map_image_path, tile_map_col_row_amount,
-                                                  background_color)) {}
+SceneBackground::SceneBackground(const TileMapConfig tile_map_config)
+                                 : impl_(new Impl(tile_map_config)) {}
 
 SceneBackground::~SceneBackground() = default;
 
