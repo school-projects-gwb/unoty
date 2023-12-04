@@ -5,6 +5,7 @@
 #include "entities/game_object.h"
 #include "entities/structs/input.h"
 #include "statistics/statistics.h"
+#include "experience/experience_object_pool.h"
 
 using namespace engine::entities;
 
@@ -26,12 +27,33 @@ class EnemyLogic : public BehaviourScript {
     int delta_y = target_position.y - current_position.y;
 
     Vector2d vector = {delta_x, delta_y};
-    vector.normalize();
+    vector.Normalize();
 
     current_position.x += vector.x * speed_;
     current_position.y += vector.y * speed_;
 
     transform_->Position = {current_position.x, current_position.y};
+  }
+
+  void TakeDamage(bool is_from_turret) {
+    auto player_damage = player_statistics_->Get(StatisticType::Damage);
+    health_ -= is_from_turret ? player_damage * 0.65f : player_damage;
+
+    if (health_ >= 0) return;
+
+    auto experience = ExperienceObjectPool::GetInstance().Acquire();
+    experience->SetAmount(experience_);
+    experience->GetTransform()->Position = {transform_->Position.x + 36, transform_->Position.y + 36};
+
+    ResetStatistics();
+  }
+
+  bool HasDied() const {
+    return health_ < 0;
+  }
+
+  void SetExperienceAmount(int amount) {
+    experience_ = amount;
   }
 
  private:
@@ -42,7 +64,7 @@ class EnemyLogic : public BehaviourScript {
 
   float original_speed_ = 2;
   float original_health_ = 1;
-  const int experience_ = 2;
+  int experience_ = 1;
 
   float speed_ = 2;
   float health_ = 1;

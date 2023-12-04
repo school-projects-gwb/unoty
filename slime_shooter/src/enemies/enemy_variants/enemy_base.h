@@ -12,10 +12,22 @@ namespace slime_shooter {
 class EnemyBase : public GameObject {
  public:
   EnemyBase() {
-    auto enemy_logic = Component::Create<EnemyLogic>();
-    AddComponent(enemy_logic);
+    enemy_logic_ = Component::Create<EnemyLogic>();
+    AddComponent(enemy_logic_);
     SetLayer(2);
+    SetTagName("enemy");
   }
+
+  void TakeDamage(bool is_from_turret) {
+    enemy_logic_->TakeDamage(is_from_turret);
+  }
+
+  bool HasDied() {
+    return enemy_logic_->HasDied();
+  }
+
+ private:
+  std::shared_ptr<EnemyLogic> enemy_logic_;
 };
 
 }

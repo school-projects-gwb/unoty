@@ -10,32 +10,36 @@ namespace slime_shooter {
 class Highscore : public GameObject {
  public:
   Highscore() {
-    auto highscore_label_text = GameObject::Create<UiText>();
-    highscore_label_text->SetContent("HIGHSCORE:");
-    highscore_label_text->GetTransform()->Position = {925, 100};
-    highscore_label_text->SetFont(GameFont::Default, 18);
-    highscore_label_text->SetColor(GameColor::Ui::TextRed);
+    auto high_score_label_text = GameObject::Create<UiText>();
+    high_score_label_text->SetContent("HIGHSCORE:");
+    high_score_label_text->GetTransform()->Position = {925, 100};
+    high_score_label_text->SetFont(GameFont::Default, 18);
+    high_score_label_text->SetColor(GameColor::Ui::TextRed);
 
-    auto highscore_label_value = GameObject::Create<UiText>();
-    highscore_label_value->SetContent("42069");
-    highscore_label_value->GetTransform()->Position = {1125, 100};
-    highscore_label_value->SetFont(GameFont::Default, 18);
-    highscore_label_value->SetColor(GameColor::Ui::TextWhite);
+    high_score_label_value_ = GameObject::Create<UiText>();
+    high_score_label_value_->SetContent(GameConfig::GetPropertyValue("high_score"));
+    high_score_label_value_->GetTransform()->Position = {1125, 100};
+    high_score_label_value_->SetFont(GameFont::Default, 18);
+    high_score_label_value_->SetColor(GameColor::Ui::TextWhite);
 
-    auto highscore_reset_button = GameObject::Create<UiButton>(TriggerResetHighscore);
-    highscore_reset_button->SetText("RESET", GameFont::Default, 12, GameColor::Ui::SecondaryButtonText);
-    highscore_reset_button->SetPosition({925, 145});
-    highscore_reset_button->SetBackgroundColor(GameColor::Ui::BackgroundDark);
-    highscore_reset_button->SetSize({60, 13});
-    highscore_reset_button->SetTagName("button");
+    auto high_score_reset_button = GameObject::Create<UiButton>(TriggerResetHighscore);
+    high_score_reset_button->SetText("RESET", GameFont::Default, 12, GameColor::Ui::SecondaryButtonText);
+    high_score_reset_button->SetPosition({925, 145});
+    high_score_reset_button->SetBackgroundColor(GameColor::Ui::BackgroundDark);
+    high_score_reset_button->SetSize({60, 13});
+    high_score_reset_button->SetTagName("button");
 
-    AddChildObject(highscore_label_text);
-    AddChildObject(highscore_label_value);
-    AddChildObject(highscore_reset_button);
+    AddChildObject(high_score_label_text);
+    AddChildObject(high_score_label_value_);
+    AddChildObject(high_score_reset_button);
   }
 
+ private:
+  static inline std::shared_ptr<UiText> high_score_label_value_;
+
   static void TriggerResetHighscore() {
-    engine::helpers::Debug::Log("Button trigger: reset highscore");
+    GameConfig::SetPropertyValue("high_score", "0");
+    high_score_label_value_->SetContent("0");
   }
 };
 

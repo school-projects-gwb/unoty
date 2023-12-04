@@ -4,14 +4,14 @@
 namespace engine::audio {
 
 void SdlChunkAudioWav::Play() {
-  channel_ = SdlAudioManager::get_instance().PlaySound(track_number_, volume_, (int)((!loop_) - 1));
+  channel_ = SdlAudioManager::get_instance().PlaySound(track_, volume_, (int)((!loop_) - 1));
 }
 void SdlChunkAudioWav::Stop() {
-  SdlAudioManager::get_instance().StopSound(track_number_, channel_);
+  SdlAudioManager::get_instance().StopSound(track_, channel_);
 }
 
 void SdlChunkAudioWav::TogglePaused() {
-  paused_ = SdlAudioManager::get_instance().PauseSound(track_number_, channel_);
+  paused_ = SdlAudioManager::get_instance().PauseSound(track_, channel_);
 }
 bool SdlChunkAudioWav::IsPaused() {
   return paused_;

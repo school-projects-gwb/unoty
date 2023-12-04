@@ -30,7 +30,8 @@ class Transform {
   [[nodiscard]] entities::Point GetSize() const;
 
   /// @brief Sets Position of object; public property for easy access
-
+  /// If the gameobject has a rigidbody, assigning a new position should be done via the rigidbody.
+  /// Otherwise the next physics step will overwrite it with calculations based on the rigidbodies position.
   Vector2d Position={0, 0};
 
   /// @brief Checks whether given position is "inside" Transform by comparing Transform's width, height, x- and y positions.

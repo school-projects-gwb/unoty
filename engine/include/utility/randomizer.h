@@ -21,6 +21,11 @@ class Randomizer {
     return dist(random_engine_);
   }
 
+  float RandomFloat(float min, float max) {
+    std::uniform_real_distribution<float> dist(min, max);
+    return dist(random_engine_);
+  }
+
   bool RandomBool() {
     std::uniform_int_distribution<int> dist(0, 1);
     return dist(random_engine_) == 1;

@@ -19,6 +19,8 @@
 #include "enemies/enemy_spawner.h"
 #include "config/level_loader_config.h"
 #include "upgrades/base_upgrade.h"
+#include "ui/popup/popup.h"
+#include "ui/button_click_listener.h"
 
 using namespace engine::entities;
 
@@ -68,6 +70,25 @@ class GameScene : Scene {
     scene_->AddObject(hud);
     scene_->AddObject(enemy_spawner);
 
+    auto debug_enemy = EnemyObjectPool::GetInstance().Acquire();
+    debug_enemy->GetTransform()->Position = {500, 500};
+    scene_->AddObject(debug_enemy);
+
+    auto popup = GameObject::Create<Popup>();
+    popup->SetLayer(5);
+    scene_->AddObject(popup);
+
+    auto game_over_popup = GameObject::Create<GameOverPopup>();
+    game_over_popup->SetLayer(5);
+    scene_->AddObject(game_over_popup);
+
+    auto upgrade_handler = GameObject::Create<UpgradeHandler>();
+    upgrade_handler->SetLayer(5);
+    scene_->AddObject(upgrade_handler);
+
+    auto button_click_listener = GameObject::Create<ButtonMouseClickListener>();
+    scene_->AddListener(button_click_listener);
+
     // Add Camera and Background to Scene
     scene_->SetCamera(std::move(camera));
     scene_->SetBackground(std::move(scene_background));
@@ -98,7 +119,7 @@ class GameScene : Scene {
 
     if (speed_upgrade_position != LevelLoaderConfig::EmptyValue()) {
       auto speed_upgrade = GameObject::Create<BaseUpgrade>(
-          statistic_upgrades::GetStatisticUpgrade("Speed"),
+          statistic_upgrades::GetStatisticUpgradeByName("Speed"),
           LevelLoaderConfig::GetPositionFromString(speed_upgrade_position));
       speed_upgrade->SetLayer(2);
       scene_->AddObject(speed_upgrade);
@@ -106,7 +127,7 @@ class GameScene : Scene {
 
     if (health_upgrade_position != LevelLoaderConfig::EmptyValue()) {
       auto health_upgrade = GameObject::Create<BaseUpgrade>(
-          statistic_upgrades::GetStatisticUpgrade("Health"),
+          statistic_upgrades::GetStatisticUpgradeByName("Health"),
           LevelLoaderConfig::GetPositionFromString(health_upgrade_position));
       health_upgrade->SetLayer(2);
       scene_->AddObject(health_upgrade);

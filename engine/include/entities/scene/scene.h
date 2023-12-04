@@ -6,7 +6,7 @@
 #include "rendering/renderer.h"
 #include "entities/camera.h"
 #include "entities/structs/key.h"
-#include "engine/physics.h"
+#include "physics/physics_engine.h"
 #include "scene_background.h"
 #include "entities/audio_source.h"
 #include "entities/listeners/listener.h"
@@ -39,7 +39,7 @@ class Scene {
   void TriggerListeners();
 
   /// @brief Updates physics Components in Scene's GameObjects
-  void UpdatePhysics(const std::unique_ptr<physics::Physics>& physics);
+  void UpdatePhysics(const std::unique_ptr<physics::PhysicsEngine>& physics);
 
   /// @brief Render all renderable Components in Scene's GameObjects
   void RenderObjects(const std::unique_ptr<ui::Renderer>& renderer);
@@ -56,6 +56,9 @@ class Scene {
   std::vector<std::shared_ptr<GameObject>> GetObjectsByTagName(const std::string& tag_name, bool search_recursive = false);
   std::shared_ptr<GameObject> GetObjectByName(const std::string& name, bool search_recursive = false);
   std::vector<std::shared_ptr<GameObject>> GetAllObjects();
+
+  /// @brief Clears all objects in current active Scene
+  void ClearAllObjects();
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

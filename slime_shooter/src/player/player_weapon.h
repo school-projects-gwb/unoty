@@ -20,6 +20,7 @@ class PlayerWeapon : public GameObject {
     AddComponent(player_weapon_logic);
 
     GetTransform()->SetSize({65, 65});
+    SetName("PlayerWeapon");
     SetLayer(1);
   }
 };

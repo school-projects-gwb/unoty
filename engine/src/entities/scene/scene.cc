@@ -5,10 +5,11 @@
 #include "rendering/renderer.h"
 #include "entities/sprite.h"
 #include "entities/behaviour_script.h"
-#include "engine/physics.h"
+#include "physics/physics_engine.h"
 #include "entities/animator.h"
 #include "scene_object_registry.h"
 #include "entities/ui/ui_object.h"
+#include "entities/particle_emitter.h"
 
 namespace engine::entities {
 
@@ -55,8 +56,8 @@ class Scene::Impl {
     if(background_music_ != nullptr && background_music_->play_on_wake_) background_music_->Play();
   }
   
-  void UpdatePhysics(const std::unique_ptr<physics::Physics>& physics) {
-    // todo implement
+  void UpdatePhysics(const std::unique_ptr<physics::PhysicsEngine>& physics) {
+    physics->ExecutePhysicsStep();
   }
 
   void TriggerListeners() {
@@ -117,6 +118,10 @@ class Scene::Impl {
   std::vector<std::shared_ptr<GameObject>> GetObjects() {
     return object_registry_->GetObjects();
   }
+
+  void ClearAllObjects() {
+    object_registry_->Reset();
+  }
  private:
   std::unique_ptr<SceneObjectRegistry> object_registry_;
   std::unique_ptr<Camera> camera_;
@@ -159,6 +164,9 @@ class Scene::Impl {
 
     for (const auto& animator : game_object->GetComponentsByType<Animator>())
       animator->Render(renderer->GetSpriteRenderer(), game_object->GetTransform());
+
+    for (const auto& particle_emitter : game_object->GetComponentsByType<ParticleEmitter>())
+      particle_emitter->Render(renderer->GetSpriteRenderer(), game_object->GetTransform());
 
     if (auto ui_object = std::dynamic_pointer_cast<UiObject>(game_object))
       ui_object->Render(renderer);
@@ -204,7 +212,7 @@ void Scene::TriggerListeners() {
   impl_->TriggerListeners();
 }
 
-void Scene::UpdatePhysics(const std::unique_ptr<physics::Physics>& physics) {
+void Scene::UpdatePhysics(const std::unique_ptr<physics::PhysicsEngine>& physics) {
   impl_->UpdatePhysics(physics);
 }
 
@@ -238,6 +246,10 @@ std::vector<std::shared_ptr<GameObject>> Scene::GetObjectsByTagName(const std::s
 
 std::vector<std::shared_ptr<GameObject>> Scene::GetAllObjects() {
   return impl_->GetObjects();
+}
+
+void Scene::ClearAllObjects() {
+  impl_->ClearAllObjects();
 }
 
 }

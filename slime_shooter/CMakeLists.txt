@@ -74,6 +74,20 @@ add_executable(slime_shooter src/main.cc
         src/config/source_files/level_editor_config.cc
         src/config/source_files/level_loader_config.cc
         src/config/source_files/game_config.cc
+        src/player_base/base_logic.h
+        src/ui/popup/popup.h
+        src/ui/popup/popup_title.h
+        src/ui/popup/popup_content.h
+        src/upgrades/base_upgrade_logic.h
+        src/player_base/particle/smoke_emitter.h
+        src/player/player_experience.h
+        src/upgrades/upgrade_handler/upgrade_handler.h
+        src/upgrades/upgrade_handler/upgrade_option.h
+        src/experience/experience_object_pool.h
+        src/experience/experience.h
+        src/experience/experience_logic.h
+        src/ui/game_over/game_over_popup.h
+        src/player/player_health.h
 )
 
 target_include_directories(slime_shooter PRIVATE src)

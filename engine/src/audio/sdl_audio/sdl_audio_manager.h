@@ -7,6 +7,7 @@
 #include <SDL_mixer.h>
 #include <vector>
 #include <iostream>
+#include <map>
 
 namespace engine::audio {
 
@@ -21,15 +22,15 @@ class SdlAudioManager {
   SdlAudioManager& operator=(SdlAudioManager&&) = delete;
 
   int LoadMusic(const std::string& filename);
-  int LoadSound(const std::string &filename);
+  std::string LoadSound(const std::string &filename);
   int PlayMusic(int m, int volume, int loops);
-  int PlaySound(int s, int volume, int loops);
+  int PlaySound(const std::string& s, int volume, int loops);
   void StopMusic(int m) const;
-  void StopSound(int s, int channel);
+  void StopSound(const std::string& s, int channel);
   [[nodiscard]] bool PauseMusic(int m) const;
-  bool PauseSound(int s, int channel);
+  bool PauseSound(const std::string& s, int channel);
   void FreeMusic(int m);
-  void FreeSound(int s, int channel);
+  void FreeSound(const std::string& s, int channel);
 
 
   static void Cleanup(){
@@ -37,7 +38,7 @@ class SdlAudioManager {
   }
  private:
   std::vector<Mix_Music*> music_;
-  std::vector<std::pair<Mix_Chunk*, int>> sounds_;
+  std::map<std::string, std::pair<Mix_Chunk*, int>> sounds_;
   int current_music_ = -1;
 
   static SdlAudioManager instance_;

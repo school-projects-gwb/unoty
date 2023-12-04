@@ -10,11 +10,12 @@
 #include "rendering/renderer.h"
 #include "../rendering/textures/texture_registry.h"
 #include "../rendering/fonts/sdl_font_registry.h"
-#include "engine/physics.h"
-#include "../physics/impl_physics.h"
+#include "physics/physics_engine.h"
+#include "physics/box2d_physics_engine.h"
 #include "utility/debug.h"
 #include "../audio/audio_factory_wrapper.h"
 #include "../audio/audio_factory.h"
+#include "entities/structs/input.h"
 
 namespace engine {
 
@@ -36,8 +37,7 @@ class Engine::Impl {
 
     input_ = std::make_unique<input::SdlInput>();
 
-    physics_ = std::make_unique<physics::ImplPhysics>();
-    physics_->Initialize();
+    physics_ = std::make_unique<physics::Box2dPhysicsEngine>();
 
     game_tick_.Init(EngineConfig::game_tick_fps);
 
@@ -63,6 +63,12 @@ class Engine::Impl {
       while (game_tick_.ShouldIterate()) {
         game_tick_.UpdateCurrentFrame();
 
+        if (EngineConfig::is_paused) {
+          input_->ProcessInput();
+          unpause_handling_callback_();
+          continue;
+        }
+
         active_scene->UpdatePhysics(physics_);
         input_->ProcessInput();
         active_scene->TriggerListeners();
@@ -81,8 +87,16 @@ class Engine::Impl {
     }
   }
 
+  void Pause(std::function<void()> unpause_handling_callback) {
+    unpause_handling_callback_ = std::move(unpause_handling_callback);
+    // Make sure input is reset so that it doesn't accidentally trigger anything in unpause callback logic
+    entities::Input::SetLastKeyPress(entities::Key::UnoNone);
+    EngineConfig::is_paused = true;
+  }
+
   void Stop() {
     is_quit_game_ = true;
+    physics_->DeregisterAllBodies();
   }
 
   void AddScene(const std::string& name, entities::SceneCallbackFunction callback_function) {
@@ -90,6 +104,7 @@ class Engine::Impl {
   }
 
   void SetActiveScene(const std::string& name) {
+    physics_->DeregisterAllBodies();
     SceneManager::GetInstance().SetActiveScene(name);
   }
 
@@ -111,17 +126,24 @@ class Engine::Impl {
     ui::SdlFontRegistry::Cleanup();
   }
 
+  std::unique_ptr<physics::PhysicsEngine>& GetPhysicsEngine() {
+    return physics_;
+  }
+
   void SetFps(int frames_per_second) {
     game_tick_.SetTargetFps(frames_per_second);
   }
+
  private:
   std::unique_ptr<ui::Renderer> renderer_;
   std::unique_ptr<input::Input> input_;
-  std::unique_ptr<physics::Physics> physics_;
+  std::unique_ptr<physics::PhysicsEngine> physics_;
 
   EngineTick game_tick_;
   bool is_config_set_ = false;
   bool is_quit_game_ = false;
+
+  std::function<void()> unpause_handling_callback_;
 };
 
 Engine::Engine() : impl_(std::make_unique<Impl>()) {
@@ -143,12 +165,16 @@ void Engine::Start() {
   impl_->Start();
 }
 
+void Engine::Pause(std::function<void()> unpause_handling_callback) {
+  impl_->Pause(std::move(unpause_handling_callback));
+}
+
 void Engine::Stop() {
   impl_->Stop();
 }
 
 void Engine::AddScene(const std::string& scene_name, entities::SceneCallbackFunction callback_function) {
-  impl_->AddScene(scene_name, callback_function);
+  impl_->AddScene(scene_name, std::move(callback_function));
 }
 
 void Engine::SetActiveScene(const std::string &scene_name) {
@@ -170,6 +196,10 @@ void Engine::SetActiveScene(const std::string &scene_name, std::vector<std::shar
 void Engine::Shutdown() {
   impl_->CleanupEngine();
   impl_.reset();
+}
+
+std::unique_ptr<physics::PhysicsEngine>& Engine::GetPhysicsEngine() {
+  return impl_->GetPhysicsEngine();
 }
 
 void Engine::SetFps(int frames_per_second) {

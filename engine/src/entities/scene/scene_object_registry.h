@@ -23,6 +23,7 @@ class SceneObjectRegistry {
   template<class T>
   std::vector<std::shared_ptr<T>> GetListenersByType();
 
+  void Reset();
  private:
   std::vector<std::shared_ptr<GameObject>> game_objects_;
   std::vector<std::shared_ptr<KeyListener>> key_listeners_;

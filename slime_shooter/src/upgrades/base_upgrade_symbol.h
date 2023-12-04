@@ -12,7 +12,7 @@ namespace slime_shooter  {
 
 class BaseUpgradeSymbol : public GameObject {
  public:
-  BaseUpgradeSymbol(statistic_upgrades::StatisticUpgrade upgrade, Vector2d position) {
+  BaseUpgradeSymbol(const statistic_upgrades::StatisticUpgrade& upgrade, Vector2d position) {
     std::string symbol_sprite_path = upgrade.name == "Speed" ? "resources/sprites/world/speedbuff.png" : "resources/sprites/world/health-regen.png";
     auto symbol_sprite = Component::Create<Sprite>(symbol_sprite_path);
     AddComponent(symbol_sprite);

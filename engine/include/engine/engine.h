@@ -20,6 +20,11 @@ class Engine {
   /// @brief Starts engine loop based on EngineConfig and current active Scene
   void Start();
 
+  /// @brief "Pauses" the game loop; it will only run the unpause_handling_callback.
+  ///
+  /// Inside the unpause_handling_callback logic can be added to conditionally unpause the game again.
+  void Pause(std::function<void()> unpause_handling_callback);
+
   /// @brief Stops engine loop after current game tick, shuts down engine and application
   void Stop();
 
@@ -44,6 +49,8 @@ class Engine {
 
   /// @brief Used to dynamically update target frames per second between Scenes for example
   void SetFps(int frames_per_second);
+
+  std::unique_ptr<physics::PhysicsEngine>& GetPhysicsEngine();
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;

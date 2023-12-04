@@ -23,7 +23,11 @@ class OrangeSlimeEnemy : public EnemyBase {
 
     AddComponent(animator);
 
+    auto logic = GetComponentByType<EnemyLogic>();
+    logic->SetExperienceAmount(2);
+
     GetTransform()->SetSize({60, 60});
+    SetTagName("enemy");
   }
 
   static std::shared_ptr<EnemyBase> Create() {

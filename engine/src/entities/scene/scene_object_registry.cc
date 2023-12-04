@@ -88,4 +88,10 @@ std::shared_ptr<GameObject> SceneObjectRegistry::RecursiveNameSearch(const std::
   return nullptr;
 }
 
+void SceneObjectRegistry::Reset() {
+  key_listeners_.clear();
+  mouse_listeners_.clear();
+  game_objects_.clear();
+}
+
 }

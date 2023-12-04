@@ -14,8 +14,10 @@ void SdlSpriteRenderer::Init(void* renderer, int window_width, int window_height
 void SdlSpriteRenderer::RenderRectangle(const RenderInfo &render_info, const RenderOptions &render_options) {
   Uint8 r, g, b, a;
   SDL_GetRenderDrawColor(renderer_, &r, &g, &b, &a);
-
   SDL_SetRenderDrawColor(renderer_, render_options.color.r, render_options.color.g, render_options.color.b, render_options.color.a);
+
+  SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND);
+
   SDL_Rect rectangle;
   rectangle.x = render_info.target_position.x;
   rectangle.y = render_info.target_position.y;
@@ -24,6 +26,7 @@ void SdlSpriteRenderer::RenderRectangle(const RenderInfo &render_info, const Ren
 
   SDL_RenderFillRect(renderer_, &rectangle);
   SDL_SetRenderDrawColor(renderer_, r, g, b, a);
+  SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_NONE);
 }
 
 void SdlSpriteRenderer::RenderSpriteWithColorOverlay(const RenderInfo& render_info, const RenderOptions& render_options) {

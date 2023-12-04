@@ -24,7 +24,7 @@ Please do not submit pull requests with new features or core library changes. In
 - Fast broadphase AABB queries
 - Collision groups and categories
 
-### Physics
+### PhysicsEngine
 - Continuous physics with time of impact solver
 - Persistent body-joint-contact graph
 - Island solution and sleep management

@@ -29,6 +29,10 @@ class Statistics : public BehaviourScript {
     } catch (const std::out_of_range& e) { return 0; }
   }
 
+  void Append(StatisticType type, float value_to_append) {
+    statistics_[type] = statistics_[type] + value_to_append;
+  }
+
   void Set(StatisticType type, float value) {
     statistics_[type] = value;
   }
@@ -48,7 +52,7 @@ class Statistics : public BehaviourScript {
     return statistic_upgrades::UpgradeType::Minor;
   }
 
-  void ApplyUpgrade(statistic_upgrades::StatisticUpgrade upgrade) {
+  void ApplyUpgrade(const statistic_upgrades::StatisticUpgrade& upgrade) {
     Set(upgrade.statistic_type, Get(upgrade.statistic_type) + upgrade.value);
   }
  private:

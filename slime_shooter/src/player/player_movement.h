@@ -13,13 +13,18 @@ using namespace engine::entities;
 
 namespace slime_shooter {
 
-class MovementScript : public BehaviourScript {
+class PlayerMovement : public BehaviourScript {
  public:
   void OnStart() override {
     transform_ = GetGameObject().GetTransform();
     animator_ = GetGameObject().GetComponentByType<Animator>();
-    walk_sound_ = GetGameObject().GetComponentByType<AudioSource>();
     statistics_ = GetGameObject().GetComponentByType<Statistics>();
+
+    walk_sound_ = Component::Create<AudioSource>("resources/audio/footstep.wav");
+    walk_sound_->ToggleLooping();
+    walk_sound_->SetVolume(10);
+    walk_sound_->SetSpeed(75);
+    GetGameObject().AddComponent(walk_sound_);
   }
 
   void OnInput() override {
@@ -35,12 +40,13 @@ class MovementScript : public BehaviourScript {
     auto animation_state = DetermineAnimationState(vector.x, vector.y);
     ProcessAnimation(animation_state);
 
-    vector.normalize();
+    vector.Normalize();
     // Update character position with normalized movement
     float movement_speed = statistics_->Get(StatisticType::MovementSpeed);
 
-    transform_->Position.x += vector.x * movement_speed;
-    transform_->Position.y += vector.y * movement_speed;
+    vector.x = transform_->Position.x + (vector.x * movement_speed);
+    vector.y = transform_->Position.y + (vector.y * movement_speed);
+    engine::Engine::GetInstance().GetPhysicsEngine()->SetRigidBodyAndTransformPosition(GetGameObject(), vector);
   }
 
   SpriteAnimationState DetermineAnimationState(int x_axis, int y_axis) {
@@ -55,12 +61,14 @@ class MovementScript : public BehaviourScript {
       return SpriteAnimationState::South;
     } else if (x_axis < 0) {
       return SpriteAnimationState::West;
-    } else if (x_axis > 0) {
+    } else {
       return SpriteAnimationState::East;
     }
   }
 
-
+  void StopWalkSound() {
+    walk_sound_->Stop();
+  }
  private:
   std::shared_ptr<Transform> transform_;
   std::shared_ptr<Animator> animator_;

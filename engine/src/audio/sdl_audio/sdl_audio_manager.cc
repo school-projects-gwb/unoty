@@ -15,23 +15,22 @@ int SdlAudioManager::LoadMusic(const std::string &filename) {
   music_.push_back(m);
   return (int)music_.size()-1;
 }
-int SdlAudioManager::LoadSound(const std::string &filename) {
+std::string SdlAudioManager::LoadSound(const std::string &filename) {
   Mix_Chunk *s = Mix_LoadWAV(filename.c_str());
+  std::string base_filename = filename.substr(filename.find_last_of("/\\") + 1);
 
   if(s == nullptr) {
     printf("Failed to load music. SDL_Mixer error: %s\n", Mix_GetError());
-    return -1;
+    return "";
   }
 
-  for (int i = 0; i < (int)sounds_.size(); i++) {
-    if (sounds_[i].first != nullptr && *sounds_[i].first->abuf == *s->abuf) {
-      sounds_[i].second++;
-      return i;
-    }
+  if (sounds_[base_filename].first != nullptr) {
+    sounds_[base_filename].second++;
+  } else {
+    sounds_[base_filename] = {s, 1};
   }
 
-  sounds_.emplace_back(s, 1);
-  return (int)sounds_.size()-1;
+  return base_filename;
 }
 
 int SdlAudioManager::PlayMusic(int m, int volume, int loops) {
@@ -46,7 +45,7 @@ int SdlAudioManager::PlayMusic(int m, int volume, int loops) {
 
   return 0;
 }
-int SdlAudioManager::PlaySound(int s, int volume, int loops) {
+int SdlAudioManager::PlaySound(const std::string& s, int volume, int loops) {
   int channel = Mix_PlayChannel(-1, sounds_[s].first, loops);
   if (channel != -1) {
     Mix_Volume(channel, volume);
@@ -59,7 +58,7 @@ void SdlAudioManager::StopMusic(int m) const {
     Mix_HaltMusic();
   }
 }
-void SdlAudioManager::StopSound(int s, int channel) {
+void SdlAudioManager::StopSound(const std::string& s, int channel) {
   auto ch = Mix_GetChunk(channel);
   if (ch != nullptr && *sounds_[s].first->abuf == *ch->abuf) {
     Mix_HaltChannel(channel);
@@ -79,7 +78,7 @@ bool SdlAudioManager::PauseMusic(int m) const {
     return true;
   }
 }
-bool SdlAudioManager::PauseSound(int s, int channel) {
+bool SdlAudioManager::PauseSound(const std::string& s, int channel) {
   auto ch = Mix_GetChunk(channel);
   if (ch == nullptr || *sounds_[s].first->abuf != *ch->abuf) {
     return false;
@@ -101,7 +100,7 @@ void SdlAudioManager::FreeMusic(int m) {
   Mix_FreeMusic(music_[m]);
   music_[m] = nullptr;
 }
-void SdlAudioManager::FreeSound(int s, int channel) {
+void SdlAudioManager::FreeSound(const std::string& s, int channel) {
   sounds_[s].second--;
   if (sounds_[s].second == 0){
     Mix_HaltChannel(channel);

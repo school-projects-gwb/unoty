@@ -6,6 +6,7 @@
 #include "entities/sprite.h"
 #include "statistics/upgrades/statistic_upgrade.h"
 #include "base_upgrade_symbol.h"
+#include "base_upgrade_logic.h"
 
 using namespace engine::entities;
 
@@ -20,7 +21,17 @@ class BaseUpgrade : public GameObject {
     auto symbol = GameObject::Create<BaseUpgradeSymbol>(upgrade, position);
     AddChildObject(symbol);
 
+    auto upgrade_pickup_sound = Component::Create<AudioSource>("resources/audio/base_upgrade.wav");
+    upgrade_pickup_sound->SetVolume(10);
+    upgrade_pickup_sound->SetSpeed(75);
+    AddComponent(upgrade_pickup_sound);
+
+    auto base_upgrade_logic = GameObject::Create<BaseUpgradeLogic>(upgrade, frame_sprite,
+                                                                   symbol->GetComponentByType<Sprite>());
+    AddComponent(base_upgrade_logic);
+
     GetTransform()->Position = position;
+    GetTransform()->SetSize({100, 100});
     GetTransform()->SetScale(0.65);
   }
 };

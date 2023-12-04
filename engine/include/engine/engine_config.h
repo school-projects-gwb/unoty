@@ -9,6 +9,7 @@ namespace engine {
 struct EngineConfig {
   static int game_tick_fps;
   static bool is_debug_mode;
+  static bool is_paused;
   static std::string debug_font_path;
 
   // Rendering

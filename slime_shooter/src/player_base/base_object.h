@@ -4,6 +4,7 @@
 #include "engine/engine_config.h"
 #include "entities/game_object.h"
 #include "entities/sprite.h"
+#include "base_logic.h"
 
 using namespace engine::entities;
 
@@ -16,6 +17,9 @@ class BaseObject : public GameObject {
     AddComponent(base_object_sprite);
     GetTransform()->Position = {275, 325};
     GetTransform()->SetSize({700, 430});
+
+    auto base_logic = GameObject::Create<BaseLogic>();
+    AddComponent(base_logic);
   }
 };
 

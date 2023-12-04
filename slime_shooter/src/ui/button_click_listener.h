@@ -18,7 +18,7 @@ class ButtonMouseClickListener : public MouseListener {
     auto click_position = Input::GetMousePointerPosition();
     Vector2d click_position_float = {click_position.x, click_position.y};
 
-    for(auto game_object : button_objects_) {
+    for(const auto& game_object : button_objects_) {
       if (game_object->GetTransform()->IsInPositionBounds(click_position_float)) {
         auto button = GameObject::Cast<UiButton>(game_object);
         button->TriggerClick();

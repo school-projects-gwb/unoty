@@ -80,7 +80,7 @@ class LevelSelector : public UiObject {
   static int CalculateNextIndex(bool is_next) {
     int next_index = is_next ? selected_level_index_+1 : selected_level_index_-1;
     if (next_index < 0) next_index = level_paths_.size()-1;
-    if (next_index > level_paths_.size()-1) next_index = 0;
+    if (next_index > (int)level_paths_.size()-1) next_index = 0;
 
     return next_index;
   }

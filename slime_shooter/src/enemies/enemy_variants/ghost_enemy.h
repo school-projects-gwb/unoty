@@ -23,6 +23,9 @@ class GhostEnemy : public EnemyBase {
     auto attack = Component::Create<EnemyAttack>();
     AddComponent(attack);
 
+    auto logic = GetComponentByType<EnemyLogic>();
+    logic->SetExperienceAmount(2);
+
     GetTransform()->SetSize({75, 75});
   }
 

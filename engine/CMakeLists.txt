@@ -11,6 +11,8 @@ endif ()
 add_compile_options(-Wall -Wpedantic)
 add_compile_options("$<$<CONFIG:DEBUG>:-g>")
 
+#include(cmake/EngineTests.cmake)
+
 add_library(${PROJECT_NAME} SHARED
         include/data_handler/file_handler/file_handler.h
         include/data_handler/data_object.h
@@ -18,7 +20,7 @@ add_library(${PROJECT_NAME} SHARED
 
         include/engine/engine.h
         include/engine/engine_config.h
-        include/engine/physics.h
+        include/physics/physics_engine.h
 
         include/entities/artificial_intelligence/artificial_intelligence.h
         include/entities/artificial_intelligence/player_turret.h
@@ -46,6 +48,7 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/structs/element_position.h
         include/entities/structs/input.h
         include/entities/structs/vector_2d.h
+        include/entities/structs/rigid_body_type.h
 
         include/entities/ui/ui_button.h
         include/entities/ui/ui_object.h
@@ -60,6 +63,8 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/rigid_body.h
         include/entities/sprite.h
         include/entities/transform.h
+        include/entities/particle.h
+        include/entities/particle_emitter.h
 
         include/entities/ui/ui_object.h
         include/entities/ui/ui_text.h
@@ -127,11 +132,15 @@ add_library(${PROJECT_NAME} SHARED
         src/entities/game_object.cc
         src/entities/sprite.cc
         src/entities/transform.cc
+        src/entities/particle_emitter.cc
+        src/entities/particle.cc
 
         src/input/input.cc
         src/input/sdl_input.cc
 
-        src/physics/impl_physics.cc
+        src/physics/box2d_physics_engine.h
+        src/physics/box2d_physics_engine.cc
+        src/physics/rigid_body.cc
 
         src/rendering/textures/sdl_texture_registry.cc
 
@@ -140,9 +149,11 @@ add_library(${PROJECT_NAME} SHARED
         src/rendering/renderers/sdl_text_renderer.cc
 
         src/rendering/fonts/sdl_font_registry.cc
+        
         include/utility/timer.h
         include/utility/object_pool.h
         include/utility/randomizer.h
+        include/entities/structs/precise_point.h
 )
 
 if (WIN32)
@@ -161,13 +172,17 @@ else ()
                 SDL2::SDL2
                 SDL2_image::SDL2_image
                 SDL2_mixer::SDL2_mixer
-                SDL2_ttf::SDL2_ttf)
+                SDL2_ttf::SDL2_ttf
+                box2d::box2d
+        )
     elseif (UNIX)
         target_link_libraries(${PROJECT_NAME} PRIVATE
                 SDL2::Main
                 SDL2::Image
                 SDL2::Mixer
-                SDL2::TTF)
+                SDL2::TTF
+                box2d::box2d
+        )
     endif ()
 endif ()
 

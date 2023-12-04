@@ -91,7 +91,7 @@ class AudioSelector : public UiObject {
   static int CalculateNextIndex(bool is_next) {
     int next_index = is_next ? selected_audio_index_+1 : selected_audio_index_-1;
     if (next_index < 0) next_index = audio_file_paths_.size()-1;
-    if (next_index > audio_file_paths_.size()-1) next_index = 0;
+    if (next_index > (int)audio_file_paths_.size()-1) next_index = 0;
 
     return next_index;
   }

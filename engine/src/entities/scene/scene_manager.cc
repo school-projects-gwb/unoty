@@ -42,6 +42,7 @@ void SceneManager::SetActiveScene(const std::string &scene_name, std::vector<std
 
 bool SceneManager::TryFindAndSetNewActiveScene(const std::string &scene_name) {
   if (scenes_.find(scene_name) == scenes_.end()) return false;
+  if (active_scene_ != nullptr) active_scene_->ClearAllObjects();
   auto scene = std::shared_ptr<entities::Scene>( scenes_[scene_name]());
   active_scene_ = scene;
 

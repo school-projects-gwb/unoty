@@ -36,10 +36,9 @@ class GameConfig {
     auto deserialized_config = engine::data_handler::Serializer::Deserialize(engine::data_handler::SerializerType::Json,
                                                                             config_file_data);
 
-    auto active_level_path = deserialized_config.GetValue("active_level_path");
-
-    if (std::holds_alternative<std::string>(active_level_path))
-      config_data_["active_level_path"] = std::get<std::string>(active_level_path);
+    for (auto value : deserialized_config.GetData())
+      if (std::holds_alternative<std::string>(value.second))
+        config_data_[value.first] = std::get<std::string>(value.second);
   }
 
  private:

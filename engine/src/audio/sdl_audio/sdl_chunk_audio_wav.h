@@ -18,10 +18,10 @@ public:
       path = std::move(file_path);
       volume_ = CALCULATE_VOLUME(volume_);
 
-      track_number_ = engine::audio::SdlAudioManager::get_instance().LoadSound(path);
+      track_ = engine::audio::SdlAudioManager::get_instance().LoadSound(path);
     }
     ~SdlChunkAudioWav() override {
-      engine::audio::SdlAudioManager::get_instance().FreeSound(track_number_, channel_);
+      engine::audio::SdlAudioManager::get_instance().FreeSound(track_, channel_);
     }
 
   void Play() override;
@@ -38,7 +38,7 @@ public:
   int GetSpeed() override;
 
  private:
-  int track_number_ = -1;
+  std::string track_;
   int channel_ = -1;
 };
 }

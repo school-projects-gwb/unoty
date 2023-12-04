@@ -23,6 +23,9 @@ class PinkSlimeEnemy : public EnemyBase {
 
     AddComponent(animator);
 
+    auto logic = GetComponentByType<EnemyLogic>();
+    logic->SetExperienceAmount(2);
+
     GetTransform()->SetSize({60, 60});
   }
 

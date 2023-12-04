@@ -18,6 +18,8 @@ class PlayerTurret : public GameObject {
 
     GetTransform()->SetSize({200, 200});
     SetLayer(1);
+    SetName("player_turret");
+    SetIsActive(false);
   }
 };
 

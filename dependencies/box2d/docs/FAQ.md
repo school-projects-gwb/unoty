@@ -2,7 +2,7 @@
 
 ## What is Box2D?
 
-Box2D is a feature rich 2D rigid body physics engine, written in C++ by Erin Catto. It has been used in many games, including Crayon Physics Deluxe, winner of the 2008 Independant Game Festival Grand Prize.
+Box2D is a feature rich 2D rigid body physics engine, written in C++ by Erin Catto. It has been used in many games, including Crayon PhysicsEngine Deluxe, winner of the 2008 Independant Game Festival Grand Prize.
 
 Box2D uses the [MIT license](https://en.wikipedia.org/wiki/MIT_License) license and can be used free of charge.
 
@@ -34,7 +34,7 @@ If you grab the latest code from the git master branch you will likely find feat
 
 You should have a working knowledge of C++ before you use Box2D. You should understand classes, inheritance, and pointers. There are plenty of resources on the web for learning C++. You should also understand your development environment: compilation, linking, and debugging.
 
-### Math and Physics
+### Math and PhysicsEngine
 
 You should have a basic knowledge of rigid bodies, force, torque, and impulses. If you come across a math or physics concept you don't understand, please read about it on Wikipedia. Visit this [page](http://box2d.org/publications/) if you want a deeper knowledge of the algorithms used in Box2D.
 

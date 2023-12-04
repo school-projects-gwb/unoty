@@ -10,7 +10,6 @@
 #include "utility/object_pool.h"
 #include "enemy_object_pool.h"
 #include "random"
-#include "utility/randomizer.h"
 
 using namespace engine::entities;
 

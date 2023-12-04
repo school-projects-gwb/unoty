@@ -9,8 +9,8 @@ namespace engine::entities {
 /// @brief Collider - box/square shape
 class BoxCollider : public Collider {
  public:
-  ~BoxCollider();
   BoxCollider();
+  ~BoxCollider() override;
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

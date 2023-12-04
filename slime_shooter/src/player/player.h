@@ -8,6 +8,8 @@
 #include "statistics/statistics.h"
 #include "player_weapon.h"
 #include "player_turret.h"
+#include "player_experience.h"
+#include "player_health.h"
 
 using namespace engine::entities;
 
@@ -24,18 +26,18 @@ class Player : public GameObject {
     animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_down.png", SpriteAnimationState::South);
     animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_left.png", SpriteAnimationState::West);
 
-    auto walk_sound = Component::Create<AudioSource>("resources/audio/footstep.wav");
-    walk_sound->ToggleLooping();
-    walk_sound->SetVolume(10);
-    walk_sound->SetSpeed(75);
-    
-    auto script = Component::Create<MovementScript>();
+    auto script = Component::Create<PlayerMovement>();
     auto statistics = Component::Create<Statistics>();
+    auto experience = Component::Create<PlayerExperience>();
+    auto rigid_body = Component::Create<RigidBody>(*this, engine::physics::RigidBodyType::RBDynamic);
+    auto health = GameObject::Create<PlayerHealth>();
 
     AddComponent(animator);
     AddComponent(script);
     AddComponent(statistics);
-    AddComponent(walk_sound);
+    AddComponent(experience);
+    AddComponent(rigid_body);
+    AddComponent(health);
 
     auto weapon = GameObject::Create<PlayerWeapon>();
     AddChildObject(weapon);
@@ -44,10 +46,10 @@ class Player : public GameObject {
     turret->GetTransform()->Position = {800, 650}; // TODO update when turret has AI logic
     AddChildObject(turret);
 
-    GetTransform()->Position = {875, 650};
     GetTransform()->SetSize({100, 100});
+    rigid_body->SetPosition({875, 650});
 
-    SetLayer(1);
+    SetLayer(5);
   }
 };
 
