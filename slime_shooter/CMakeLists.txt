@@ -88,6 +88,9 @@ add_executable(slime_shooter src/main.cc
         src/experience/experience_logic.h
         src/ui/game_over/game_over_popup.h
         src/player/player_health.h
+        src/player/projectile/projectile_object_pool.h
+        src/player/projectile/projectile.h
+        src/player/projectile/projectile_logic.h
 )
 
 target_include_directories(slime_shooter PRIVATE src)

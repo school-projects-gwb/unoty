@@ -26,7 +26,7 @@ namespace slime_shooter {
 
 class LevelEditorScene : engine::entities::Scene {
  public:
-  static Scene* LevelEditorSceneInit() {
+  static Scene *LevelEditorSceneInit() {
     engine::Engine::GetInstance().SetFps(30);
     scene_ = new LevelEditorScene();
     is_new_level_ = LevelEditorConfig::IsNewLevel();
@@ -35,7 +35,7 @@ class LevelEditorScene : engine::entities::Scene {
     LoadDraggableObjects();
 
     auto audio_path = LevelEditorConfig::IsNewLevel() ?
-        "resources/audio/game.mp3" : LevelLoaderConfig::GetPropertyValue("background_music_path");
+                      "resources/audio/game.ogg" : LevelLoaderConfig::GetPropertyValue("background_music_path");
     scene_->SetBackgroundMusic(CreateSceneBackgroundMusic(audio_path));
 
     auto base_object = GameObject::Create<>();
@@ -54,7 +54,7 @@ class LevelEditorScene : engine::entities::Scene {
     scene_->SetCamera(std::move(camera));
 
     auto tile_map_path = LevelEditorConfig::IsNewLevel() ?
-        "resources/sprites/world/tilemap.png" : LevelLoaderConfig::GetPropertyValue("tile_map_path");
+                         "resources/sprites/world/tilemap.png" : LevelLoaderConfig::GetPropertyValue("tile_map_path");
     scene_->SetBackground(CreateSceneBackground(tile_map_path));
 
     auto drag_handler = std::make_shared<DragHandler>();
@@ -64,16 +64,16 @@ class LevelEditorScene : engine::entities::Scene {
   }
 
  private:
-  static inline Scene* scene_;
+  static inline Scene *scene_;
   static inline std::unordered_map<std::string, std::string> level_values_;
   static inline bool is_new_level_;
 
-  static void UpdateTileMapImage(const std::string& image_path) {
+  static void UpdateTileMapImage(const std::string &image_path) {
     level_values_["tile_map_path"] = image_path;
     scene_->SetBackground(CreateSceneBackground(image_path));
   }
 
-  static void UpdateAudio(const std::string& audio_path) {
+  static void UpdateAudio(const std::string &audio_path) {
     level_values_["background_music_path"] = audio_path;
     scene_->SetBackgroundMusic(CreateSceneBackgroundMusic(audio_path));
   }
@@ -98,9 +98,10 @@ class LevelEditorScene : engine::entities::Scene {
   }
 
   static void TriggerSaveLevel() {
-    for (const auto& object : scene_->GetObjectsByTagName("draggable_object")) {
+    for (const auto &object : scene_->GetObjectsByTagName("draggable_object")) {
       auto draggable_object = GameObject::Cast<DraggableObject>(object);
-      auto world_position = LevelLoaderConfig::GetWorldPositionFromEditorPosition(draggable_object->GetTransform()->Position);
+      auto world_position =
+          LevelLoaderConfig::GetWorldPositionFromEditorPosition(draggable_object->GetTransform()->Position);
       level_values_[draggable_object->key_name] = LevelLoaderConfig::StringifyPosition(world_position);
     }
 
@@ -134,12 +135,14 @@ class LevelEditorScene : engine::entities::Scene {
 
   static void LoadDraggableObjects() {
     LoadDraggableObject("speed_upgrade", "resources/sprites/world/speedbuff.png",
-               is_new_level_ ? "651,755" : LevelLoaderConfig::GetPropertyValue("speed_upgrade"));
+                        is_new_level_ ? "651,755" : LevelLoaderConfig::GetPropertyValue("speed_upgrade"));
     LoadDraggableObject("health_upgrade", "resources/sprites/world/health-regen.png",
-               is_new_level_ ? "1165,755" : LevelLoaderConfig::GetPropertyValue("health_upgrade"));
+                        is_new_level_ ? "1165,755" : LevelLoaderConfig::GetPropertyValue("health_upgrade"));
   }
 
-  static void LoadDraggableObject(const std::string& key_name, const std::string& upgrade_sprite_path, const std::string& position) {
+  static void LoadDraggableObject(const std::string &key_name,
+                                  const std::string &upgrade_sprite_path,
+                                  const std::string &position) {
     auto draggable_object = GameObject::Create<DraggableObject>();
     draggable_object->sprite_path = upgrade_sprite_path;
     draggable_object->position_in_editor = LevelLoaderConfig::GetEditorPositionFromString(position);

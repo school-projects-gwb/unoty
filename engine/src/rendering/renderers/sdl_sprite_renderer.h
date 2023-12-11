@@ -39,6 +39,8 @@ class SdlSpriteRenderer : public ui::SpriteRenderer {
 
   static SDL_Rect GetSheetRectangle(const entities::structs::Rectangle &position_in_sheet);
   entities::Point GetScaledSize(float scale, entities::Point size) const;
+
+  void RenderDebugRectangles(const std::vector<std::pair<entities::Vector2d, entities::Vector2d>> &debug_rectangles) override;
 };
 
 }

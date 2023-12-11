@@ -22,14 +22,14 @@ TTF_Font* SdlFontRegistry::LoadFont(const std::string& font_path, int font_size)
 
   if (font_map.find(key) == font_map.end()) {
     // Not found, create new font from font at path
-    std::string full_path = helpers::PathHelper::GetFullPathFromRelative(font_path);
+    std::string full_path = utility::PathHelper::GetFullPathFromRelative(font_path);
     TTF_Font* font = TTF_OpenFont(full_path.c_str(), font_size);
     if (font) {
       font_map[key] = font;
       return font;
     }
 
-    helpers::Debug::Error("Failed to load font at path: " + full_path);
+    utility::Debug::Error("Failed to load font at path: " + full_path);
   }
   return nullptr;
 }

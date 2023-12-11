@@ -5,6 +5,8 @@
 #include <vector>
 #include <optional>
 
+namespace engine::utility {
+
 /// @brief Enables random number generation and some other randomization functionality
 class Randomizer {
  public:
@@ -48,6 +50,8 @@ std::optional<T> Randomizer::RandomElement(const std::vector<T>& elements) {
 
   std::uniform_int_distribution<size_t> dist(0, elements.size() - 1);
   return elements[dist(random_engine_)];
+}
+
 }
 
 #endif //RANDOM_UTILS_LIBRARY_H

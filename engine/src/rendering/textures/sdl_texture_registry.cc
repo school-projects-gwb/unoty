@@ -22,14 +22,14 @@ void* SdlTextureRegistry::RegisterTexture(const std::string& image_path) {
 
   // Texture not found; register new one
   if (it == texture_registry.end()) {
-    std::string full_path = helpers::PathHelper::GetFullPathFromRelative(image_path);
+    std::string full_path = utility::PathHelper::GetFullPathFromRelative(image_path);
     const char* image_path_c_str = full_path.c_str();
 
     // Loads image into memory
     SDL_Surface* image_surface = IMG_Load(image_path_c_str);
 
     if (!image_surface) {
-      helpers::Debug::Error("Image not found at path: " + full_path);
+      utility::Debug::Error("Image not found at path: " + full_path);
       return nullptr;
     }
 

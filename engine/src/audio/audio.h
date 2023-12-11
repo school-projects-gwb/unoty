@@ -1,18 +1,18 @@
-
 #ifndef ENGINE_SRC_AUDIO_AUDIO_H
 #define ENGINE_SRC_AUDIO_AUDIO_H
 
 #include <string>
+
 class Audio {
  public:
-  std::string path;
+  std::string file_path_;
   bool loop_ = false;
 
   virtual void Play() = 0;
   virtual void Stop() = 0;
 
   virtual void TogglePaused() = 0;
-  virtual bool IsPaused() = 0 ;
+  virtual bool IsPaused() = 0;
 
   virtual void SetVolume(int volume) = 0;
   virtual int GetVolume() = 0;
@@ -24,11 +24,9 @@ class Audio {
   virtual ~Audio() = default;
 
  protected:
-  // 100 for %
   int volume_ = 100;
   int pitch_ = 100;
   int speed_ = 100;
-
   bool paused_ = false;
 };
 

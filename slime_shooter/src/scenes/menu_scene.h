@@ -29,16 +29,16 @@ namespace slime_shooter {
 
 class MenuScene : engine::entities::Scene {
  public:
-  static Scene* MenuSceneInit() {
+  static Scene *MenuSceneInit() {
     engine::Engine::GetInstance().SetFps(30);
-    auto* scene = new MenuScene();
+    auto *scene = new MenuScene();
 
-    auto music = std::make_unique<AudioSource>("resources/audio/menu.mp3");
+    auto music = std::make_unique<AudioSource>("resources/audio/menu.ogg");
     music->play_on_wake_ = true;
     music->ToggleLooping();
     music->SetVolume(20);
     scene->SetBackgroundMusic(std::move(music));
-    
+
     auto scene_background = std::make_unique<SceneBackground>(GameColor::Ui::BackgroundDark);
     auto camera = std::make_unique<Camera>();
 
@@ -87,7 +87,7 @@ class MenuScene : engine::entities::Scene {
     return scene;
   }
 
-  static void SwitchLevel(const std::pair<std::string, std::string>& new_level) {
+  static void SwitchLevel(const std::pair<std::string, std::string> &new_level) {
     GameConfig::SetPropertyValue("active_level_path", new_level.second);
     LevelLoaderConfig::ReloadLevelData();
   }

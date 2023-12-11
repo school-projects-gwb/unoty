@@ -23,12 +23,10 @@ void BehaviourScript::OnInput() {
 
 }
 
-void BehaviourScript::OnTriggerEnter2d(Collider &collider) {
-
+void BehaviourScript::OnCollisionEnter(GameObject* &colliding_object) {
 }
 
-void BehaviourScript::OnTriggerExit2d(Collider &collider) {
-
+void BehaviourScript::OnCollisionExit(GameObject* &colliding_object) {
 }
 
 }

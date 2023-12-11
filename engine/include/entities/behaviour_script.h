@@ -14,8 +14,8 @@ class BehaviourScript : public Component {
   virtual void OnStart();
   virtual void OnUpdate();
   virtual void OnInput();
-  virtual void OnTriggerEnter2d(Collider& collider);
-  virtual void OnTriggerExit2d(Collider& collider);
+  virtual void OnCollisionEnter(GameObject* &colliding_object);
+  virtual void OnCollisionExit(GameObject* &colliding_object);
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

@@ -30,20 +30,20 @@ class SmokeEmitter : public ParticleEmitter {
   // Override to create smoke-specific particles
   std::vector<std::shared_ptr<Particle>> CreateParticles(float delta_time, Vector2d start_position) override {
     std::vector<std::shared_ptr<Particle>> new_particles;
-    int particle_amount = Randomizer::GetInstance().RandomInt(5, 20);
+    int particle_amount = engine::utility::Randomizer::GetInstance().RandomInt(5, 20);
 
     new_particles.reserve(particle_amount);
     start_position.x += 115.0f;
     start_position.y += 125.0f;
 
     for(int i = 0; i < particle_amount; i++) {
-      int random_speed = Randomizer::GetInstance().RandomInt(-5, 5);
+      int random_speed = engine::utility::Randomizer::GetInstance().RandomInt(-5, 5);
       Vector2d velocity(random_speed, (-25 + random_speed));
 
       auto transform = std::make_shared<Transform>();
 
-      auto random_x = Randomizer::GetInstance().RandomFloat(-10.0f, 10.0f);
-      auto random_y = Randomizer::GetInstance().RandomFloat(-10.0f, 10.0f);
+      auto random_x = engine::utility::Randomizer::GetInstance().RandomFloat(-10.0f, 10.0f);
+      auto random_y = engine::utility::Randomizer::GetInstance().RandomFloat(-10.0f, 10.0f);
 
       transform->Position = {start_position.x + random_x, start_position.y + random_y};
       transform->SetSize({10,10});

@@ -72,7 +72,7 @@ class UpgradeHandler : public GameObject {
     auto applicable_upgrades = statistic_upgrades::GetStatisticUpgradesByType(current_upgrade_type);
 
     for (const auto& option : options_)
-      option->SetContent(Randomizer::GetInstance().RandomElement(applicable_upgrades).value());
+      option->SetContent(engine::utility::Randomizer::GetInstance().RandomElement(applicable_upgrades).value());
 
     engine::Engine::GetInstance().Pause([this]() { ProcessUpgrade(); });
   }

@@ -49,6 +49,8 @@ class SpriteRenderer {
 
   /// @overload Renders sprite from sheet with all the same options as RenderSprite including a Color Overlay
   virtual void RenderSpriteFromSheetWithColorOverlay(const RenderInfo& render_info, const RenderOptions& render_optionsp) = 0;
+
+  virtual void RenderDebugRectangles(const std::vector<std::pair<entities::Vector2d, entities::Vector2d>> &debug_rectangles) = 0;
 };
 
 }

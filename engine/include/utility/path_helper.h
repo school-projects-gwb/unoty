@@ -4,7 +4,7 @@
 #include <string>
 #include <filesystem>
 
-namespace engine::helpers {
+namespace engine::utility {
 
 /// @brief Helper for paths
 class PathHelper {

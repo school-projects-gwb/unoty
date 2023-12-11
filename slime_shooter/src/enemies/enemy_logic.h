@@ -6,6 +6,7 @@
 #include "entities/structs/input.h"
 #include "statistics/statistics.h"
 #include "experience/experience_object_pool.h"
+#include "enemy_object_pool.h"
 
 using namespace engine::entities;
 
@@ -13,31 +14,12 @@ namespace slime_shooter {
 
 class EnemyLogic : public BehaviourScript {
  public:
-  void OnStart() override {
-    Initialise();
-  }
-
-  void OnUpdate() override {
-    if (!is_initialised_) Initialise(); // Not initialised when object is added through object pool "at runtime"
-
-    auto target_position = target_transform_->Position;
-    auto current_position = transform_->Position;
-
-    int delta_x = target_position.x - current_position.x;
-    int delta_y = target_position.y - current_position.y;
-
-    Vector2d vector = {delta_x, delta_y};
-    vector.Normalize();
-
-    current_position.x += vector.x * speed_;
-    current_position.y += vector.y * speed_;
-
-    transform_->Position = {current_position.x, current_position.y};
-  }
-
   void TakeDamage(bool is_from_turret) {
     auto player_damage = player_statistics_->Get(StatisticType::Damage);
     health_ -= is_from_turret ? player_damage * 0.65f : player_damage;
+
+    if (!hit_slowdown_timer_.IsRunning()) speed_ = on_hit_slowdown_modifier * speed_;
+    hit_slowdown_timer_.Start();
 
     if (health_ >= 0) return;
 
@@ -46,9 +28,15 @@ class EnemyLogic : public BehaviourScript {
     experience->GetTransform()->Position = {transform_->Position.x + 36, transform_->Position.y + 36};
 
     ResetStatistics();
+    GetGameObject().SetIsActive(false);
+
+    death_sound_->Play();
+
+    auto current_level = player_statistics_->GetInt(StatisticType::Level);
+    player_statistics_->Append(StatisticType::Score, current_level+1);
   }
 
-  bool HasDied() const {
+  [[nodiscard]] bool HasDied() const {
     return health_ < 0;
   }
 
@@ -62,12 +50,40 @@ class EnemyLogic : public BehaviourScript {
   std::shared_ptr<Transform> transform_;
   std::shared_ptr<Transform> target_transform_;
 
-  float original_speed_ = 2;
+  float original_speed_ = 1.5f;
   float original_health_ = 1;
   int experience_ = 1;
 
-  float speed_ = 2;
+  float speed_ = 1.5f;
   float health_ = 1;
+
+  engine::utility::Timer hit_slowdown_timer_;
+  double on_hit_slowdown_time_ = 1;
+  float on_hit_slowdown_modifier = 0.6;
+
+  std::shared_ptr<AudioSource> death_sound_;
+
+  void OnUpdate() override {
+    if (!is_initialised_) Initialise(); // Not initialised when object is added through object pool "at runtime"
+
+    if (hit_slowdown_timer_.IsRunning() && hit_slowdown_timer_.HasElapsed(on_hit_slowdown_time_)) {
+      speed_ = original_speed_;
+      hit_slowdown_timer_.Stop();
+    }
+
+    auto target_position = target_transform_->Position;
+    auto current_position = transform_->Position;
+
+    int delta_x = target_position.x - current_position.x;
+    int delta_y = target_position.y - current_position.y;
+
+    Vector2d direction = {delta_x, delta_y};
+    direction.Normalize();
+    direction.x *= speed_;
+    direction.y *= speed_;
+
+    engine::Engine::GetInstance().GetPhysicsEngine()->SetLinearVelocity(GetGameObject(), direction);
+  }
 
   void Initialise() {
     auto player = GameObject::GetSceneObjectByName("Player");
@@ -75,6 +91,11 @@ class EnemyLogic : public BehaviourScript {
     player_statistics_ = player->GetComponentByType<Statistics>();
     target_transform_ = player->GetTransform();
     transform_ = GetGameObject().GetTransform();
+
+    death_sound_ = Component::Create<AudioSource>("resources/audio/enemy_death.wav");
+    death_sound_->SetVolume(10);
+    death_sound_->SetSpeed(75);
+    GetGameObject().AddComponent(death_sound_);
 
     ResetStatistics();
 

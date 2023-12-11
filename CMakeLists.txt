@@ -4,6 +4,8 @@ project(unoty)
 set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+
     set(SDL2_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
     set(SDL2_IMAGE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2_image")
     set(SDL2_MIXER_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2_mixer")

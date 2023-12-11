@@ -17,20 +17,20 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   std::shared_ptr<Transform> GetTransform();
   std::shared_ptr<Transform> GetTransform() const;
 
-  void SetParent(GameObject* parent) {
+  void SetParent(GameObject *parent) {
     parent_object_ = parent;
   }
 
-  GameObject* GetParent() {
+  GameObject *GetParent() {
     return parent_object_;
   }
 
   /// @brief Sets name, unique identifier (can only appear once; or else it will not be set)
-  void SetName(const std::string& name);
-  const std::string& GetName() const;
+  void SetName(const std::string &name);
+  const std::string &GetName() const;
 
-  void SetTagName(const std::string& tag_name);
-  const std::string& GetTagName() const;
+  void SetTagName(const std::string &tag_name);
+  const std::string &GetTagName() const;
 
   void SetLayer(int layer);
   int GetLayer() const;
@@ -44,13 +44,13 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   /// @brief Get a vector (can be empty) of all objects in current active Scene that have the given tag name
   ///
   /// \param search_recursive Whether to search recursively through child GameObjects
-  static std::vector<std::shared_ptr<GameObject>> GetSceneObjectsByTagName(const std::string& tag_name,
+  static std::vector<std::shared_ptr<GameObject>> GetSceneObjectsByTagName(const std::string &tag_name,
                                                                            bool search_recursive = false);
 
   /// @brief Get singular object (can be nullptr) in current active Scene by name which acts as a unique identifier
   ///
-  /// \param search_recursive Whether to search recursively through child GameObjects
-  static std::shared_ptr<GameObject> GetSceneObjectByName(const std::string& name, bool search_recursive = false);
+  /// @param search_recursive Whether to search recursively through child GameObjects
+  static std::shared_ptr<GameObject> GetSceneObjectByName(const std::string &name, bool search_recursive = false);
 
   /// @brief Used when adding new GameObject to Scene from i.e. a BehaviourScript script
   ///
@@ -60,13 +60,13 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   /// @brief If given object shared pointer exists in Scene it will be removed
   static void RemoveSceneObject(std::shared_ptr<GameObject> object_to_remove);
 
-  template <typename... Args>
-  static std::shared_ptr<GameObject> Create(Args&&... args) {
+  template<typename... Args>
+  static std::shared_ptr<GameObject> Create(Args &&... args) {
     return std::make_shared<GameObject>(std::forward<Args>(args)...);
   }
 
-  template <typename T, typename... Args>
-  static std::shared_ptr<T> Create(Args&&... args) {
+  template<typename T, typename... Args>
+  static std::shared_ptr<T> Create(Args &&... args) {
     return std::make_shared<T>(std::forward<Args>(args)...);
   }
 
@@ -82,7 +82,7 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   template<class T>
   void AddChildObject(std::shared_ptr<T> child_object);
 
-  template <class T>
+  template<class T>
   void RemoveChildObject(std::shared_ptr<T> child_object);
 
   std::vector<std::shared_ptr<GameObject>> GetChildObjects() {
@@ -94,12 +94,18 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   static std::shared_ptr<T> Cast(std::shared_ptr<GameObject> target_object) {
     return std::dynamic_pointer_cast<T>(target_object);
   }
+
+  /// @brief Used to cast raw pointer GameObject to different implementation type
+  template<class T>
+  static T *Cast(GameObject *target_object) {
+    return dynamic_cast<T *>(target_object);
+  }
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;
   std::vector<std::shared_ptr<Component>> components_;
   std::vector<std::shared_ptr<GameObject>> child_objects_;
-  GameObject* parent_object_ = nullptr;
+  GameObject *parent_object_ = nullptr;
 
   friend class Impl;
 };
@@ -112,9 +118,10 @@ void GameObject::AddComponent(std::shared_ptr<T> component) {
 
 template<class T>
 std::shared_ptr<T> GameObject::GetComponentByType() {
-  auto found_component = std::find_if(components_.begin(), components_.end(), [](const std::shared_ptr<Component>& component) {
-    return std::dynamic_pointer_cast<T>(component) != nullptr;
-  });
+  auto found_component =
+      std::find_if(components_.begin(), components_.end(), [](const std::shared_ptr<Component> &component) {
+        return std::dynamic_pointer_cast<T>(component) != nullptr;
+      });
 
   if (found_component != components_.end()) return std::dynamic_pointer_cast<T>(*found_component);
 
@@ -125,7 +132,7 @@ template<class T>
 std::vector<std::shared_ptr<T>> GameObject::GetComponentsByType() {
   std::vector<std::shared_ptr<T>> matching_components;
 
-  for (const auto& component : components_) {
+  for (const auto &component : components_) {
     auto typedComponent = std::dynamic_pointer_cast<T>(component);
     if (typedComponent) matching_components.push_back(typedComponent);
   }
@@ -143,7 +150,7 @@ void GameObject::AddChildObject(std::shared_ptr<T> child_object) {
 template<class T>
 void GameObject::RemoveChildObject(std::shared_ptr<T> child_object) {
   auto it = std::remove_if(child_objects_.begin(), child_objects_.end(),
-                           [&child_object](const std::shared_ptr<T>& obj) {
+                           [&child_object](const std::shared_ptr<T> &obj) {
                              return obj == child_object;
                            });
 
@@ -157,6 +164,5 @@ void GameObject::RemoveChildObject(std::shared_ptr<T> child_object) {
 }
 
 }
-
 
 #endif //ENGINE_INCLUDE_ENTITIES_GAME_OBJECT_H_

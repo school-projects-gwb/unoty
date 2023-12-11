@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace engine::helpers {
+namespace engine::utility {
 
 /// @brief Used to log messages and errors in the standard output
 class Debug {

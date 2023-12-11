@@ -53,6 +53,7 @@ class DebugToggleScript : public KeyListener {
 
   void InitPlayer() {
     player_ = GameObject::GetSceneObjectByName("Player");
+    if (player_ == nullptr) return;
     player_statistics_ = player_->GetComponentByType<Statistics>();
   }
 };

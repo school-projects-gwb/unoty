@@ -5,10 +5,17 @@
 
 namespace engine::entities {
 
+enum class ColliderType {
+  Box, Circle
+};
+
 /// @brief Base for colliders
 class Collider : public Component {
  public:
   virtual ~Collider() = default;
+
+  // @brief Used internally for type checking purposes
+  [[nodiscard]] virtual ColliderType GetType() const = 0;
 };
 
 }

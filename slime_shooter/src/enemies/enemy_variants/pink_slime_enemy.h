@@ -7,6 +7,8 @@
 #include "statistics/statistics.h"
 #include "enemies/enemy_logic.h"
 #include "enemy_base.h"
+#include "entities/rigid_body.h"
+#include "entities/colliders/box_collider.h"
 
 using namespace engine::entities;
 
@@ -26,11 +28,20 @@ class PinkSlimeEnemy : public EnemyBase {
     auto logic = GetComponentByType<EnemyLogic>();
     logic->SetExperienceAmount(2);
 
+    auto collider = Component::Create<BoxCollider>(Vector2d{60, 60});
+    auto rigid_body = Component::Create<RigidBody>(*this, engine::physics::RigidBodyType::Dynamic, collider);
+    AddComponent(rigid_body);
+    AddComponent(collider);
+
     GetTransform()->SetSize({60, 60});
   }
 
   static std::shared_ptr<EnemyBase> Create() {
     auto object = GameObject::Create<PinkSlimeEnemy>();
+
+    auto rigid_body = object->GetComponentByType<RigidBody>();
+    rigid_body->Register();
+
     object->SetIsActive(false);
     return object;
   }

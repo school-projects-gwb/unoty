@@ -12,7 +12,7 @@ void SdlTextRenderer::Init(void* renderer, int window_width, int window_height) 
   window_height_ = window_height;
 
   if (TTF_Init() == -1) {
-    helpers::Debug::Error("Error: SDL_TTF could not be initialised.");
+    utility::Debug::Error("Error: SDL_TTF could not be initialised.");
   }
 }
 

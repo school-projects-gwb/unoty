@@ -17,7 +17,7 @@ namespace slime_shooter {
 
 class EnemySpawnerLogic : public BehaviourScript {
  public:
-  EnemySpawnerLogic() : timer_() { }
+  EnemySpawnerLogic() : timer_() {}
 
   void OnStart() override {
     timer_.Start();
@@ -34,11 +34,11 @@ class EnemySpawnerLogic : public BehaviourScript {
   }
 
  private:
-  bool can_spawn_ = false; // TODO enable again when more enemy logic is added
+  bool can_spawn_ = true;
   std::shared_ptr<Statistics> player_statistics_;
-  float spawn_rate_seconds_ = 1.4f;
+  float spawn_rate_seconds_ = 3.5; // TODO reset at some point (default is 1.4f)
   int spawn_rate_changed_counter_ = 0;
-  Timer timer_;
+  engine::utility::Timer timer_;
   int min_x = 100, min_y = 100, max_x = 1700, max_y = 1275;
 
   void ProcessSpawnRateChange() {
@@ -59,12 +59,15 @@ class EnemySpawnerLogic : public BehaviourScript {
     auto enemy = EnemyObjectPool::GetInstance().Acquire();
     if (enemy == nullptr) return;
 
-    int enemy_pos_x = Randomizer::GetInstance().RandomInt(min_x, max_x); // Get x-position within bounds
-    int enemy_pos_y = Randomizer::GetInstance().RandomBool() ? min_y : max_y; // Randomly spawn at top or bottom
+    int enemy_pos_x =
+        engine::utility::Randomizer::GetInstance().RandomInt(min_x, max_x); // Get x-position within bounds
+    int enemy_pos_y =
+        engine::utility::Randomizer::GetInstance().RandomBool() ? min_y : max_y; // Randomly spawn at top or bottom
 
     if (enemy->GetComponentByType<EnemyAttack>()) enemy->GetComponentByType<EnemyAttack>()->StartAttack();
 
     enemy->GetTransform()->Position = {enemy_pos_x, enemy_pos_y};
+    enemy->GetComponentByType<RigidBody>()->SetPosition({enemy_pos_x, enemy_pos_y});
   }
 };
 

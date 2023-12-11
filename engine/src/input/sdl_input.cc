@@ -8,7 +8,7 @@ SdlInput::SdlInput() {
   InitKeyMappings();
 }
 
-void SdlInput::ProcessInput() {
+void SdlInput::ProcessInput(const entities::Point &camera_position) {
   SDL_Event event;
 
   // Reset some input values
@@ -16,8 +16,6 @@ void SdlInput::ProcessInput() {
   entities::Input::ClearReleasedKeys();
   entities::Input::SetIsMouseClicked(false);
   entities::Input::SetIsMouseMoved(false);
-  entities::Input::SetIsMouseReleased(false);
-  entities::Input::SetIsMousePressed(false);
 
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
@@ -50,7 +48,7 @@ void SdlInput::ProcessInput() {
           entities::Input::SetLastKeyPress(key_mappings_[event.button.button]);
           entities::Input::SetIsMousePressed(true);
           entities::Input::SetIsMouseReleased(false);
-          entities::Input::SetMousePointerPosition({event.button.x, event.button.y});
+          entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y}, camera_position));
         }
         break;
       case SDL_MOUSEBUTTONUP:
@@ -61,15 +59,19 @@ void SdlInput::ProcessInput() {
           entities::Input::SetLastKeyPress(entities::Key::UnoNone);
           entities::Input::SetIsMousePressed(false);
           entities::Input::SetIsMouseReleased(true);
-          entities::Input::SetMousePointerPosition({event.button.x, event.button.y});
+          entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y}, camera_position));
         }
         break;
       case SDL_MOUSEMOTION:
-        entities::Input::SetMousePointerPosition({event.button.x, event.button.y});
         entities::Input::SetIsMouseMoved(true);
+        entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y}, camera_position));
         break;
     }
   }
+
+  entities::Point mouse_position{};
+  SDL_GetMouseState(&mouse_position.x, &mouse_position.y);
+  entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera(mouse_position, camera_position));
 }
 
 void SdlInput::InitKeyMappings() {
@@ -140,6 +142,10 @@ void SdlInput::InitKeyMappings() {
   // Mouse buttons
   key_mappings_[SDL_BUTTON_LEFT] = entities::Key::UnoLeftMouseButton;
   key_mappings_[SDL_BUTTON_RIGHT] = entities::Key::UnoRightMouseButton;
+}
+
+entities::Point SdlInput::GetMousePositionRelativeToCamera(const entities::Point &mouse_position, const entities::Point &camera_position) {
+  return {mouse_position.x + camera_position.x, mouse_position.y + camera_position.y};
 }
 
 }

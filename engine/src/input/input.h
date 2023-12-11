@@ -11,7 +11,7 @@ namespace engine::input {
 class Input {
  public:
   virtual ~Input() = default;
-  virtual void ProcessInput() = 0;
+  virtual void ProcessInput(const entities::Point &camera_position) = 0;
 };
 
 }

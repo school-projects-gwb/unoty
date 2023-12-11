@@ -19,7 +19,7 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
       return;
     }
 
-    helpers::Debug::Log("Name " + name + " already in use for another object. Object has not been renamed");
+    utility::Debug::Log("Name " + name + " already in use for another object. Object has not been renamed");
   }
 
   const std::string &GetName() const {

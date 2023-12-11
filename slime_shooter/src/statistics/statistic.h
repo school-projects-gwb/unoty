@@ -22,7 +22,7 @@ const Statistic DefaultStatisticValues[kMaxStatistics] = {
     {StatisticType::MaxHealth, 5},
     {StatisticType::ProjectileSize, 1},
     {StatisticType::Score, 0},
-    {StatisticType::MovementSpeed, 5},
+    {StatisticType::MovementSpeed, 3},
     {StatisticType::TurretSpeed, 3}
 };
 

@@ -24,11 +24,11 @@ class PlayerTurret::Impl {
 
   }
 
-  void OnTriggerEnter2d(Collider& collider) {
+  void OnTriggerEnter2d(GameObject* &colliding_object) {
 
   }
 
-  void OnTriggerExit2d(Collider& collider) {
+  void OnTriggerExit2d(GameObject* &colliding_object) {
 
   }
  private:
@@ -50,12 +50,12 @@ void PlayerTurret::OnInput() {
   impl_->OnInput();
 }
 
-void PlayerTurret::OnTriggerEnter2d(Collider& collider) {
-  impl_->OnTriggerEnter2d(collider);
+void PlayerTurret::OnCollisionEnter(GameObject* &colliding_object) {
+  impl_->OnTriggerEnter2d(colliding_object);
 }
 
-void PlayerTurret::OnTriggerExit2d(Collider& collider) {
-  impl_->OnTriggerEnter2d(collider);
+void PlayerTurret::OnCollisionExit(GameObject* &colliding_object) {
+  impl_->OnTriggerEnter2d(colliding_object);
 }
 
 void PlayerTurret::TrackObject(std::shared_ptr<GameObject> object) {

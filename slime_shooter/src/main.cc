@@ -13,11 +13,11 @@ int main() {
   slime_shooter::GameConfig::ReloadConfig();
   slime_shooter::LevelLoaderConfig::ReloadLevelData();
 
-  engine::EngineConfig::game_tick_fps = 60;
   engine::EngineConfig::is_debug_mode = true;
   engine::EngineConfig::no_sound_mode = false;
   engine::EngineConfig::debug_font_path = slime_shooter::GameFont::Default;
   engine::EngineConfig::window_title = "Slime Shooter";
+  engine::EngineConfig::gravity = {0.0f, 0.0f};
 
   engine::Engine::GetInstance().Init();
 

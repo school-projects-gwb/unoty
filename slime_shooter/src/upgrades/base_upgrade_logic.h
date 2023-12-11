@@ -34,7 +34,7 @@ class BaseUpgradeLogic : public BehaviourScript {
   }
 
  private:
-  Timer timer_;
+  engine::utility::Timer timer_;
   int current_player_level_ = 1;
   bool is_active_ = false;
   const statistic_upgrades::StatisticUpgrade upgrade_;

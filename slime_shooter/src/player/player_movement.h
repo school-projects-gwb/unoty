@@ -15,10 +15,25 @@ namespace slime_shooter {
 
 class PlayerMovement : public BehaviourScript {
  public:
+  void StopWalkSound() {
+    walk_sound_->Stop();
+  }
+ private:
+  std::shared_ptr<Transform> transform_;
+  std::shared_ptr<Animator> animator_;
+  std::shared_ptr<RigidBody> rigid_body_;
+  std::shared_ptr<AudioSource> walk_sound_;
+  std::shared_ptr<Statistics> statistics_;
+
+  bool is_moving_ = false;
+  SpriteAnimationState previous_animation_state_;
+  SpriteAnimationState current_animation_state_;
+
   void OnStart() override {
     transform_ = GetGameObject().GetTransform();
     animator_ = GetGameObject().GetComponentByType<Animator>();
     statistics_ = GetGameObject().GetComponentByType<Statistics>();
+    rigid_body_ = GetGameObject().GetComponentByType<RigidBody>();
 
     walk_sound_ = Component::Create<AudioSource>("resources/audio/footstep.wav");
     walk_sound_->ToggleLooping();
@@ -31,22 +46,28 @@ class PlayerMovement : public BehaviourScript {
     Vector2d vector {0, 0};
 
     for (auto key : Input::GetActiveKeys()) {
-      if (key == Key::UnoUpArrow) vector.y--;
-      if (key == Key::UnoDownArrow) vector.y++;
-      if (key == Key::UnoLeftArrow) vector.x--;
-      if (key == Key::UnoRightArrow) vector.x++;
+      if (key == Key::UnoW) vector.y--;
+      if (key == Key::UnoS) vector.y++;
+      if (key == Key::UnoA) vector.x--;
+      if (key == Key::UnoD) vector.x++;
     }
 
     auto animation_state = DetermineAnimationState(vector.x, vector.y);
     ProcessAnimation(animation_state);
 
+    if (vector.x == 0 && vector.y == 0)
+    {
+      rigid_body_->SetLinearVelocity(vector);
+      return;
+    }
+
     vector.Normalize();
     // Update character position with normalized movement
     float movement_speed = statistics_->Get(StatisticType::MovementSpeed);
 
-    vector.x = transform_->Position.x + (vector.x * movement_speed);
-    vector.y = transform_->Position.y + (vector.y * movement_speed);
-    engine::Engine::GetInstance().GetPhysicsEngine()->SetRigidBodyAndTransformPosition(GetGameObject(), vector);
+    vector.x *= movement_speed;
+    vector.y *= movement_speed;
+    rigid_body_->SetLinearVelocity(vector);
   }
 
   SpriteAnimationState DetermineAnimationState(int x_axis, int y_axis) {
@@ -65,19 +86,6 @@ class PlayerMovement : public BehaviourScript {
       return SpriteAnimationState::East;
     }
   }
-
-  void StopWalkSound() {
-    walk_sound_->Stop();
-  }
- private:
-  std::shared_ptr<Transform> transform_;
-  std::shared_ptr<Animator> animator_;
-  std::shared_ptr<AudioSource> walk_sound_;
-  std::shared_ptr<Statistics> statistics_;
-
-  bool is_moving_ = false;
-  SpriteAnimationState previous_animation_state_;
-  SpriteAnimationState current_animation_state_;
 
   void ProcessAnimation(SpriteAnimationState animation_state) {
     if (animation_state == SpriteAnimationState::Default) {

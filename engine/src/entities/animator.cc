@@ -5,12 +5,16 @@
 #include "entities/animator.h"
 #include "entities/sprite.h"
 #include "utility/debug.h"
+#include "utility/timer.h"
 
 namespace engine::entities {
 
 class Animator::Impl : public Component {
  public:
-  Impl(std::string default_state_sprite_path, int sprites_in_sheet, Point sprite_pixel_size, Point sheet_col_row_count = {2, 2}) : default_state_sprite_(std::move(default_state_sprite_path)) {
+  Impl(std::string default_state_sprite_path,
+       int sprites_in_sheet,
+       Point sprite_pixel_size,
+       Point sheet_col_row_count = {2, 2}) : default_state_sprite_(std::move(default_state_sprite_path)) {
     sprite_pixel_size_ = sprite_pixel_size;
     sheet_col_row_count_ = sheet_col_row_count;
     sprites_in_sheet_ = sprites_in_sheet;
@@ -23,7 +27,7 @@ class Animator::Impl : public Component {
     is_looping_ = is_looping;
   }
 
-  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<entities::Transform> transform) {
+  void Render(const std::unique_ptr<ui::SpriteRenderer> &renderer, std::shared_ptr<entities::Transform> transform) {
     if (!is_playing_) {
       default_state_sprite_.Render(renderer, transform);
       return;
@@ -45,7 +49,7 @@ class Animator::Impl : public Component {
       renderer->RenderSpriteFromSheet(sprite_render_info, {sprite_sheet_flip_});
     }
 
-    ProcessTickUpdate();
+    ProcessSpriteFrameUpdate();
   }
 
   void Stop() {
@@ -88,13 +92,17 @@ class Animator::Impl : public Component {
     has_color_overlay_ = true;
   }
 
+  void SetAnimationFrameTimeSeconds(double frame_time_seconds) {
+    animation_frame_time_seconds_ = frame_time_seconds;
+  }
+
  private:
   Sprite default_state_sprite_;
   std::unordered_map<int, std::string> sprite_sheets_;
   std::string current_active_sprite_sheet_;
   std::string default_state_sprite_path_;
   entities::SpriteFlip sprite_sheet_flip_ = entities::SpriteFlip::FlipNone;
-  entities::Color sprite_sheet_color_ {255, 255, 255};
+  entities::Color sprite_sheet_color_{255, 255, 255};
   bool has_color_overlay_ = false;
 
   int sprites_in_sheet_ = 1;
@@ -105,8 +113,9 @@ class Animator::Impl : public Component {
 
   bool is_playing_ = false;
   bool is_looping_ = false;
-  int tick_rate_ = 10;
-  int current_tick_ = 0;
+
+  double animation_frame_time_seconds_ = 0.15;
+  engine::utility::Timer animation_timer_;
 
   void InitSpriteSheetFramePositionMap() {
     // Maps positions for performance benefits; this way it only has to be calculated once
@@ -131,32 +140,37 @@ class Animator::Impl : public Component {
   bool IsValidSpriteSheetIndex(int index) {
     auto iterator = sprite_sheets_.find(index);
     if (iterator == sprite_sheets_.end())
-      helpers::Debug::Error("Animator: No valid sprite sheet at index " + std::to_string(index) + ".");
+      utility::Debug::Error("Animator: No valid sprite sheet at index " + std::to_string(index) + ".");
 
     return iterator != sprite_sheets_.end();
   }
 
-  void ProcessTickUpdate() {
-    if (++current_tick_ < tick_rate_) return;
+  void ProcessSpriteFrameUpdate() {
+    if (!animation_timer_.HasElapsed(animation_frame_time_seconds_)) return;
 
-    current_tick_ = 0;
     if (++current_sprite_frame_ == sprites_in_sheet_) {
       current_sprite_frame_ = 0;
       if (!is_looping_) Stop();
     }
+
+    animation_timer_.Start();
   }
 };
 
 Animator::~Animator() = default;
 
-Animator::Animator(std::string default_state_sprite_path, int sprites_in_sheet, Point sprite_pixel_size, Point sheet_row_col_count) :
-impl_(new Impl(std::move(default_state_sprite_path), sprites_in_sheet, sprite_pixel_size, sheet_row_col_count)) {}
+Animator::Animator(std::string default_state_sprite_path,
+                   int sprites_in_sheet,
+                   Point sprite_pixel_size,
+                   Point sheet_row_col_count) :
+    impl_(new Impl(std::move(default_state_sprite_path), sprites_in_sheet, sprite_pixel_size, sheet_row_col_count)) {}
 
 void Animator::Play(bool is_looping) {
   impl_->Play(is_looping);
 }
 
-void Animator::Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<entities::Transform> transform) {
+void Animator::Render(const std::unique_ptr<ui::SpriteRenderer> &renderer,
+                      std::shared_ptr<entities::Transform> transform) {
   impl_->Render(renderer, transform);
 }
 
@@ -190,6 +204,10 @@ void Animator::SetFlip(entities::SpriteFlip flip) {
 
 void Animator::SetColor(entities::Color color) {
   impl_->SetColor(color);
+}
+
+void Animator::SetAnimationFrameTimeSeconds(double frame_time_seconds) {
+  impl_->SetAnimationFrameTimeSeconds(frame_time_seconds);
 }
 
 }

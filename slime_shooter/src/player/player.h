@@ -10,6 +10,8 @@
 #include "player_turret.h"
 #include "player_experience.h"
 #include "player_health.h"
+#include "entities/colliders/box_collider.h"
+#include "entities/colliders/circle_collider.h"
 
 using namespace engine::entities;
 
@@ -29,7 +31,12 @@ class Player : public GameObject {
     auto script = Component::Create<PlayerMovement>();
     auto statistics = Component::Create<Statistics>();
     auto experience = Component::Create<PlayerExperience>();
-    auto rigid_body = Component::Create<RigidBody>(*this, engine::physics::RigidBodyType::RBDynamic);
+
+    GetTransform()->SetSize({100, 100});
+
+    auto collider = Component::Create<BoxCollider>(Vector2d{100, 100});
+    auto rigid_body = Component::Create<RigidBody>(*this, engine::physics::RigidBodyType::Dynamic, collider);
+
     auto health = GameObject::Create<PlayerHealth>();
 
     AddComponent(animator);
@@ -37,6 +44,7 @@ class Player : public GameObject {
     AddComponent(statistics);
     AddComponent(experience);
     AddComponent(rigid_body);
+    AddComponent(collider);
     AddComponent(health);
 
     auto weapon = GameObject::Create<PlayerWeapon>();
@@ -46,7 +54,6 @@ class Player : public GameObject {
     turret->GetTransform()->Position = {800, 650}; // TODO update when turret has AI logic
     AddChildObject(turret);
 
-    GetTransform()->SetSize({100, 100});
     rigid_body->SetPosition({875, 650});
 
     SetLayer(5);

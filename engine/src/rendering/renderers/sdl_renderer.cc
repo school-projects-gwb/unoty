@@ -77,6 +77,7 @@ void SdlRenderer::UpdateCameraPosition(engine::entities::Camera* camera) {
   if (center_target_position.x == 0 && center_target_position.y == 0) {
     camera_position_.x = 0;
     camera_position_.y = 0;
+    camera->SetPosition({0, 0});
     return;
   }
 
@@ -88,6 +89,8 @@ void SdlRenderer::UpdateCameraPosition(engine::entities::Camera* camera) {
 
   camera_position_.x = camera_x;
   camera_position_.y = camera_y;
+
+  camera->SetPosition({camera_x, camera_y});
 }
 
 const entities::Point& SdlRenderer::GetCameraPosition() const {

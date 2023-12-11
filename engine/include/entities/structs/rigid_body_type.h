@@ -4,7 +4,7 @@
 namespace engine::physics {
 
 enum RigidBodyType {
-  RBNone, RBStatic, RBDynamic, RBKinematic
+  None, Static, Dynamic, Kinematic
 };
 
 } //namespace engine::physics

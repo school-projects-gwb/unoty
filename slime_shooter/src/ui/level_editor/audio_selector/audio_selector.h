@@ -9,11 +9,11 @@
 
 using namespace engine::entities;
 
-namespace slime_shooter  {
+namespace slime_shooter {
 
 class AudioSelector : public UiObject {
  public:
-  AudioSelector(std::function<void(const std::string&)> set_audio_callback) {
+  AudioSelector(std::function<void(const std::string &)> set_audio_callback) {
     set_audio_callback_ = set_audio_callback;
 
     auto title_text = GameObject::Create<UiText>();
@@ -33,8 +33,8 @@ class AudioSelector : public UiObject {
     selected_audio_text_->SetFont(GameFont::Default, 16);
     AddChildObject(selected_audio_text_);
 
-    audio_file_paths_.push_back({"Track 1", "resources/audio/game.mp3"});
-    audio_file_paths_.push_back({"Track 2", "resources/audio/game_2.mp3"});
+    audio_file_paths_.emplace_back("Track 1", "resources/audio/game.ogg");
+    audio_file_paths_.emplace_back("Track 2", "resources/audio/game_2.ogg");
 
     if (LevelEditorConfig::IsNewLevel()) {
       auto first_audio_element = audio_file_paths_.begin();
@@ -45,7 +45,7 @@ class AudioSelector : public UiObject {
     } else {
       int index = 0;
       auto current_music_path = LevelLoaderConfig::GetPropertyValue("background_music_path");
-      for (const auto& audio_path : audio_file_paths_) {
+      for (const auto &audio_path : audio_file_paths_) {
         if (audio_path.second == current_music_path) {
           selected_audio_index_ = index;
           selected_audio_ = {audio_path.first, audio_path.second};
@@ -76,7 +76,7 @@ class AudioSelector : public UiObject {
   }
 
  private:
-  static inline std::function<void(const std::string&)> set_audio_callback_;
+  static inline std::function<void(const std::string &)> set_audio_callback_;
   static inline std::shared_ptr<UiText> selected_audio_text_;
   static inline int selected_audio_index_;
   static inline std::pair<std::string, std::string> selected_audio_;
@@ -89,9 +89,9 @@ class AudioSelector : public UiObject {
   }
 
   static int CalculateNextIndex(bool is_next) {
-    int next_index = is_next ? selected_audio_index_+1 : selected_audio_index_-1;
-    if (next_index < 0) next_index = audio_file_paths_.size()-1;
-    if (next_index > (int)audio_file_paths_.size()-1) next_index = 0;
+    int next_index = is_next ? selected_audio_index_ + 1 : selected_audio_index_ - 1;
+    if (next_index < 0) next_index = audio_file_paths_.size() - 1;
+    if (next_index > (int) audio_file_paths_.size() - 1) next_index = 0;
 
     return next_index;
   }

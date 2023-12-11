@@ -14,13 +14,13 @@ namespace engine::input {
 class SdlInput : public Input {
  public:
   SdlInput();
-  void ProcessInput() override;
+  void ProcessInput(const entities::Point &camera_position) override;
  private:
   std::unordered_map<SDL_Keycode, entities::Key> key_mappings_;
-
   entities::Input input_;
 
   void InitKeyMappings();
+  entities::Point GetMousePositionRelativeToCamera(const entities::Point &mouse_position, const entities::Point &camera_position);
 };
 
 }

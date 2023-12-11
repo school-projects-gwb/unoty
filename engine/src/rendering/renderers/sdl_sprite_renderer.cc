@@ -126,4 +126,28 @@ entities::Point SdlSpriteRenderer::GetScaledSize(float scale, entities::Point si
   return {width, height};
 }
 
+void SdlSpriteRenderer::RenderDebugRectangles(const std::vector<std::pair<entities::Vector2d,
+                                              entities::Vector2d>> &debug_rectangles) {
+  Uint8 r, g, b, a;
+  SDL_GetRenderDrawColor(renderer_, &r, &g, &b, &a);
+  SDL_SetRenderDrawColor(renderer_, 255, 255, 255, 255);  // Set color to white for borders
+
+  SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND);
+
+  for (const auto& rect : debug_rectangles) {
+    // Draw border
+    SDL_Rect borderRect;
+    auto camera_position = sdl_renderer_->GetCameraPosition();
+    std::cout << rect.first.x << " " << rect.first.y << "\n";
+    borderRect.x = rect.first.x - (camera_position.x - (rect.second.x/2));
+    borderRect.y = rect.first.y - (camera_position.y - (rect.second.y/2));
+    borderRect.w = rect.second.x;
+    borderRect.h = rect.second.y;
+    SDL_RenderDrawRect(renderer_, &borderRect);
+  }
+
+  SDL_SetRenderDrawColor(renderer_, r, g, b, a);
+  SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_NONE);
+}
+
 }

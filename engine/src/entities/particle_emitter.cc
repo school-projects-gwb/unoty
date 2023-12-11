@@ -70,7 +70,7 @@ class ParticleEmitter::Impl {
  private:
   std::shared_ptr<Sprite> sprite_;
   std::vector<std::shared_ptr<Particle>> particles_;
-  Timer timer_;
+  engine::utility::Timer timer_;
   float delta_time_;
   bool emitting_;
   float duration_;

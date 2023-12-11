@@ -11,8 +11,6 @@ endif ()
 add_compile_options(-Wall -Wpedantic)
 add_compile_options("$<$<CONFIG:DEBUG>:-g>")
 
-#include(cmake/EngineTests.cmake)
-
 add_library(${PROJECT_NAME} SHARED
         include/data_handler/file_handler/file_handler.h
         include/data_handler/data_object.h
@@ -78,18 +76,12 @@ add_library(${PROJECT_NAME} SHARED
         include/data_handler/data_object.h
 
         src/entities/audio_source.cc
-        src/audio/audio_factory.h
         src/audio/audio_factory.cc
-        src/audio/audio_factory_wrapper.h
         src/audio/audio_factory_wrapper.cc
         src/audio/audio_factory_base.h
-        src/audio/sdl_audio/sdl_audio_manager.h
-        src/audio/sdl_audio/sdl_audio_manager.cc
-        src/audio/sdl_audio/sdl_chunk_audio_wav.h
-        src/audio/sdl_audio/sdl_chunk_audio_wav.cc
-        src/audio/sdl_audio/sdl_music_audio_mp3.h
-        src/audio/sdl_audio/sdl_music_audio_mp3.cc
-        src/audio/audio.h
+        src/audio/sdl_mixer/sdl_mixer_adapter.cc
+        src/audio/sdl_mixer/sdl_music_wrapper.cc
+        src/audio/sdl_mixer/sdl_sound_effect_wrapper.cc
         src/audio/null_audio.h
 
         include/rendering/renderer.h
@@ -141,19 +133,22 @@ add_library(${PROJECT_NAME} SHARED
         src/physics/box2d_physics_engine.h
         src/physics/box2d_physics_engine.cc
         src/physics/rigid_body.cc
+        src/physics/box2d_contact_listener.h
 
         src/rendering/textures/sdl_texture_registry.cc
-
         src/rendering/renderers/sdl_renderer.cc
         src/rendering/renderers/sdl_sprite_renderer.cc
         src/rendering/renderers/sdl_text_renderer.cc
-
         src/rendering/fonts/sdl_font_registry.cc
-        
+
         include/utility/timer.h
         include/utility/object_pool.h
         include/utility/randomizer.h
         include/entities/structs/precise_point.h
+        include/entities/structs/debug_info.h
+        include/entities/foresight_camera.h
+        src/entities/foresight_camera.cc
+
 )
 
 if (WIN32)
@@ -195,8 +190,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${SDL2_INCLUDE_DIRS}
         ${SDL2_IMAGE_INCLUDE_DIRS}
         ${SDL2_MIXER_INCLUDE_DIRS}
-        ${BOX2D_INCLUDE_DIRS}
-        ${SDL2_TTF_INCLUDE_DIRS})
+        ${SDL2_TTF_INCLUDE_DIRS}
+        ${BOX2D_INCLUDE_DIRS})
 
 install(DIRECTORY include/engine
         DESTINATION include/engine

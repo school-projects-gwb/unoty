@@ -22,6 +22,11 @@ class Transform::Impl {
     rotation_ = rotation < min_rotation ? min_rotation : max_rotation;
   }
 
+  [[nodiscard]] entities::Point GetScaledSize() const {
+    return {static_cast<int>(static_cast<float>(size_.x) * scale_),
+            static_cast<int>(static_cast<float>(size_.y) * scale_)};
+  }
+
   [[nodiscard]] double GetRotation() const {
     return rotation_;
   }
@@ -45,12 +50,12 @@ class Transform::Impl {
  private:
   double rotation_ = 0.0;
   float scale_ = 1;
-  entities::Point size_ {0,0};
+  entities::Point size_{0, 0};
 };
 
 Transform::Transform() : impl_(new Impl()) {}
 Transform::Transform(engine::entities::Vector2d position, float rotation, float scale)
-: impl_(new Impl(rotation, scale)) {
+    : impl_(new Impl(rotation, scale)) {
   Position = position;
 }
 
@@ -79,5 +84,9 @@ void Transform::SetSize(entities::Point size) {
 entities::Point Transform::GetSize() const {
   return impl_->GetSize();
 }
+entities::Point Transform::GetScaledSize() const {
+  return impl_->GetScaledSize();
+}
+
 
 }

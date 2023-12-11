@@ -10,5 +10,6 @@ std::string engine::EngineConfig::debug_font_path = "/resources/fonts/PressStart
 int engine::EngineConfig::window_width = 1280;
 int engine::EngineConfig::window_height = 700;
 std::string engine::EngineConfig::window_title = "Slime Shooter";
+entities::Vector2d engine::EngineConfig::gravity = {1.0f, 1.0f};
 
 }

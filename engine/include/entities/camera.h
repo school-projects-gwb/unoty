@@ -9,12 +9,18 @@ namespace engine::entities {
 class Camera : public GameObject {
  public:
   Camera();
-  ~Camera();
-  void UpdatePosition();
-  void SetBackgroundColor(Color color);
-  void SetSize(Point size);
+  virtual ~Camera();
+  virtual void UpdatePosition();
+
+  bool IsObjectInViewport(const std::shared_ptr<Transform> &object_transform, float offset, Point camera_position);
   void SetTrackingTransform(std::shared_ptr<Transform> transform_to_track);
   std::shared_ptr<Transform> GetTrackingTransform();
+
+  /// @brief Sets current world position of camera
+  virtual void SetPosition(Point position);
+
+  /// @brief Returns current world position of camera
+  virtual Point GetPosition(bool with_offset) const;
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

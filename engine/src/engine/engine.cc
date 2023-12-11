@@ -23,7 +23,7 @@ class Engine::Impl {
  public:
   Impl() : game_tick_() {}
 
-  static Impl& GetInstance() {
+  static Impl &GetInstance() {
     static Impl instance;
     return instance;
   }
@@ -33,11 +33,12 @@ class Engine::Impl {
                                                   EngineConfig::window_title);
     rendering::TextureRegistry::Initialize(renderer_);
 
-    audio::AudioFactoryWrapper::get_instance().SetAudioFactory(std::make_unique<audio::AudioFactory>());
+    audio::AudioFactoryWrapper::GetInstance().SetAudioFactory(std::make_unique<audio::AudioFactory>());
 
     input_ = std::make_unique<input::SdlInput>();
 
-    physics_ = std::make_unique<physics::Box2dPhysicsEngine>();
+    physics::PhysicsConfig physics_config{EngineConfig::game_tick_fps, 6, 2, EngineConfig::gravity};
+    physics_ = std::make_unique<physics::Box2dPhysicsEngine>(physics_config);
 
     game_tick_.Init(EngineConfig::game_tick_fps);
 
@@ -46,38 +47,46 @@ class Engine::Impl {
 
   void Start() {
     if (!is_config_set_) {
-      helpers::Debug::Error("No EngineConfig found. Make sure to initiate Engine with InitWithConfig.");
+      utility::Debug::Error("No EngineConfig found. Make sure to initiate Engine with InitWithConfig.");
       return;
     }
 
+    entities::DebugInfo debug_info{};
+    debug_info.font_path = EngineConfig::debug_font_path;
+
     while (entities::Input::GetLastKeyPress() != entities::Key::UnoWindowClosed && !is_quit_game_) {
+      if (EngineConfig::is_debug_mode) debug_info.debug_rectangles.clear();
+
       auto active_scene = SceneManager::GetInstance().GetActiveScene();
 
       if (active_scene == nullptr) {
-        helpers::Debug::Error("No Scene set.");
+        utility::Debug::Error("No Scene set.");
         return;
       }
-      
+
       game_tick_.StartFrame();
 
       while (game_tick_.ShouldIterate()) {
         game_tick_.UpdateCurrentFrame();
 
         if (EngineConfig::is_paused) {
-          input_->ProcessInput();
+          input_->ProcessInput(active_scene->GetCameraPosition(true));
           unpause_handling_callback_();
           continue;
         }
 
         active_scene->UpdatePhysics(physics_);
-        input_->ProcessInput();
+        input_->ProcessInput(active_scene->GetCameraPosition(true));
+
         active_scene->TriggerListeners();
 
         active_scene->StartRenderFrame(renderer_);
         active_scene->RenderObjects(renderer_);
 
-        if (EngineConfig::is_debug_mode)
-          active_scene->RenderDebug(renderer_, EngineConfig::debug_font_path, game_tick_.GetMostRecentFps());
+        if (EngineConfig::is_debug_mode) {
+          debug_info.most_recent_fps = game_tick_.GetMostRecentFps();
+          active_scene->RenderDebug(renderer_, debug_info);
+        }
 
         active_scene->EndRenderFrame(renderer_);
       }
@@ -99,11 +108,11 @@ class Engine::Impl {
     physics_->DeregisterAllBodies();
   }
 
-  void AddScene(const std::string& name, entities::SceneCallbackFunction callback_function) {
+  void AddScene(const std::string &name, entities::SceneCallbackFunction callback_function) {
     SceneManager::GetInstance().AddScene(name, std::move(callback_function));
   }
 
-  void SetActiveScene(const std::string& name) {
+  void SetActiveScene(const std::string &name) {
     physics_->DeregisterAllBodies();
     SceneManager::GetInstance().SetActiveScene(name);
   }
@@ -116,22 +125,23 @@ class Engine::Impl {
     return EngineConfig::is_debug_mode;
   }
 
-  void SetActiveScene(const std::string& name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate) {
+  void SetActiveScene(const std::string &name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate) {
     SceneManager::GetInstance().SetActiveScene(name, std::move(objects_to_migrate));
   }
 
   void CleanupEngine() {
-    audio::SdlAudioManager::Cleanup();
+    audio::SDLMixerAdapter::CleanUp();
     renderer_->Exit();
     ui::SdlFontRegistry::Cleanup();
   }
 
-  std::unique_ptr<physics::PhysicsEngine>& GetPhysicsEngine() {
+  std::unique_ptr<physics::PhysicsEngine> &GetPhysicsEngine() {
     return physics_;
   }
 
   void SetFps(int frames_per_second) {
     game_tick_.SetTargetFps(frames_per_second);
+    physics_->SetStepsPerSecond(frames_per_second);
   }
 
  private:
@@ -173,7 +183,7 @@ void Engine::Stop() {
   impl_->Stop();
 }
 
-void Engine::AddScene(const std::string& scene_name, entities::SceneCallbackFunction callback_function) {
+void Engine::AddScene(const std::string &scene_name, entities::SceneCallbackFunction callback_function) {
   impl_->AddScene(scene_name, std::move(callback_function));
 }
 
@@ -189,7 +199,8 @@ bool Engine::IsDebugModeEnabled() const {
   return impl_->IsDebugModeEnabled();
 }
 
-void Engine::SetActiveScene(const std::string &scene_name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate) {
+void Engine::SetActiveScene(const std::string &scene_name,
+                            std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate) {
   impl_->SetActiveScene(scene_name, std::move(objects_to_migrate));
 }
 
@@ -198,7 +209,7 @@ void Engine::Shutdown() {
   impl_.reset();
 }
 
-std::unique_ptr<physics::PhysicsEngine>& Engine::GetPhysicsEngine() {
+std::unique_ptr<physics::PhysicsEngine> &Engine::GetPhysicsEngine() {
   return impl_->GetPhysicsEngine();
 }
 

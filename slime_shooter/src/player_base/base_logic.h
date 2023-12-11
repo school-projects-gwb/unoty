@@ -45,7 +45,7 @@ class BaseLogic : public BehaviourScript {
  private:
   bool is_player_in_base_{};
   bool can_move_outside_base_ = false;
-  Timer timer_;
+  engine::utility::Timer timer_;
   Vector2d bounds_offset_ = {300, 150};
   std::shared_ptr<Statistics> player_statistics_;
   std::shared_ptr<Transform> player_transform_;

@@ -8,25 +8,24 @@
 
 using namespace engine::entities;
 
-namespace slime_shooter  {
+namespace slime_shooter {
 
 class FireplaceObject : public GameObject {
  public:
   FireplaceObject() {
-    auto animator = Component::Create<Animator>("resources/sprites/world/fireplace.png", 3, Point{27, 37}, Point{3,1});
+    auto animator = Component::Create<Animator>("resources/sprites/world/fireplace.png", 3, Point{27, 37}, Point{3, 1});
     animator->SetSpriteSheetAtIndex("resources/sprites/world/fireplace.png", 0);
     animator->SetCurrentAnimationSpriteSheet(0);
+    animator->SetAnimationFrameTimeSeconds(0.25);
     animator->Play(true);
-
-    auto smoke_emitter = Component::Create<SmokeEmitter>();
-
-    AddComponent(smoke_emitter);
     AddComponent(animator);
 
-    GetTransform()->Position = {1103, 505};
-    GetTransform()->SetSize({125, 175});
-
+    auto smoke_emitter = Component::Create<SmokeEmitter>();
     smoke_emitter->Start();
+    AddComponent(smoke_emitter);
+
+    GetTransform()->SetSize({125, 175});
+    GetTransform()->Position = {1103, 505};
   }
 };
 

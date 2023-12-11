@@ -23,7 +23,7 @@ void SceneManager::RemoveScene(const std::string &scene_name) {
 
 void SceneManager::SetActiveScene(const std::string& scene_name) {
   if (!TryFindAndSetNewActiveScene(scene_name)) {
-    helpers::Debug::Log("Scene with name " + scene_name + " was not found!");
+    utility::Debug::Log("Scene with name " + scene_name + " was not found!");
     return;
   }
 

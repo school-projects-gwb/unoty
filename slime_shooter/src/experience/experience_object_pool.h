@@ -6,7 +6,6 @@
 #include "utility/randomizer.h"
 using namespace engine::entities;
 
-class Experience;
 namespace slime_shooter {
 
 class ExperienceObjectPool {
@@ -25,17 +24,22 @@ class ExperienceObjectPool {
   }
 
  private:
-  ObjectPool<Experience> experience_object_pool_;
+  engine::utility::ObjectPool<Experience> experience_object_pool_;
 
-  ExperienceObjectPool() : experience_object_pool_(AcquireCallback, ReleaseCallback) {
-    experience_object_pool_.PoolObjects(100, Experience::Create, true);
+  ExperienceObjectPool() : experience_object_pool_(AcquireCallback, ReleaseCallback, [this](){PoolObjects();}) {
   }
 
-  static std::shared_ptr<Experience> AcquireCallback(std::vector<std::shared_ptr<Experience>> objects) {
-    auto object = Randomizer::GetInstance().RandomElement(objects);
-    if (object.has_value()) {
-      object.value()->SetIsActive(true);
-      return object.value();
+  void PoolObjects() {
+    experience_object_pool_.PoolObjects(100, Experience::Create);
+  }
+
+  static std::shared_ptr<Experience> AcquireCallback(std::vector<std::weak_ptr<Experience>> objects) {
+    auto weak_object = engine::utility::Randomizer::GetInstance().RandomElement(objects);
+    auto object = weak_object.value().lock();
+
+    if (object) {
+      object->SetIsActive(true);
+      return object;
     }
 
     return nullptr;

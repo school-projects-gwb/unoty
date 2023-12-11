@@ -14,6 +14,7 @@ class EnemyBase : public GameObject {
   EnemyBase() {
     enemy_logic_ = Component::Create<EnemyLogic>();
     AddComponent(enemy_logic_);
+
     SetLayer(2);
     SetTagName("enemy");
   }

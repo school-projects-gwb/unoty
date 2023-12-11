@@ -12,8 +12,8 @@ class PlayerTurret : public ArtificialIntelligence {
   void OnStart() override;
   void OnUpdate() override;
   void OnInput() override;
-  void OnTriggerEnter2d(Collider& collider) override;
-  void OnTriggerExit2d(Collider& collider) override;
+  void OnCollisionEnter(GameObject* &colliding_object) override;
+  void OnCollisionExit(GameObject* &colliding_object) override;
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

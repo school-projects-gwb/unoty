@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include "utility/debug.h"
 
 namespace engine::entities {
 
@@ -28,10 +29,39 @@ class Vector2d {
     }
   }
 
-  [[nodiscard]] float Distance(const Vector2d& other) const {
+  [[nodiscard]] float Distance(const Vector2d &other) const {
     float distance_x = x - other.x;
     float distance_y = y - other.y;
     return std::sqrt(distance_x * distance_x + distance_y * distance_y);
+  }
+
+  Vector2d operator+(const Vector2d &other) const {
+    return {x + other.x, y + other.y};
+  }
+
+  Vector2d operator-(const Vector2d &other) const {
+    return {x - other.x, y - other.y};
+  }
+
+  Vector2d operator/(const int divider) const {
+    return {x / divider, y / divider};
+  }
+
+  Vector2d &operator+=(const Vector2d &other) {
+    x += other.x;
+    y += other.y;
+    return *this;
+  }
+
+  Vector2d &operator-=(const Vector2d &other) {
+    x -= other.x;
+    y -= other.y;
+    return *this;
+  }
+
+  /// @brief Prints current x and y position of Vector for debugging purposes
+  void Print(const std::string &prefix_text = "") const {
+    utility::Debug::Log(prefix_text + " x" + std::to_string(x) + " , y" + std::to_string(y));
   }
 };
 

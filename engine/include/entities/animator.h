@@ -48,6 +48,9 @@ class Animator : public Component {
 
   /// @brief Sets color overlay for both sprites in sheet and default animation state Sprite
   void SetColor(entities::Color color);
+
+  /// @brief Sets amount of time that each animation frame will take
+  void SetAnimationFrameTimeSeconds(double frame_time_seconds);
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

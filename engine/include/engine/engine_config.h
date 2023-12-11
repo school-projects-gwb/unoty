@@ -2,6 +2,7 @@
 #define ENGINE_INCLUDE_ENGINE_CONFIG_H_
 
 #include "string"
+#include "entities/structs/vector_2d.h"
 
 namespace engine {
 
@@ -17,6 +18,9 @@ struct EngineConfig {
   static int window_height;
   static std::string window_title;
   static bool no_sound_mode;
+
+  // Physics
+  static entities::Vector2d gravity;
 };
 
 }

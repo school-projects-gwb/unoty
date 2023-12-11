@@ -28,24 +28,31 @@ class EnemyObjectPool {
   }
 
  private:
-  ObjectPool<EnemyBase> enemy_object_pool_;
+  engine::utility::ObjectPool<EnemyBase> enemy_object_pool_;
 
-  EnemyObjectPool() : enemy_object_pool_(AcquireCallback, ReleaseCallback) {
-    enemy_object_pool_.PoolObjects(50, GhostEnemy::Create, true);
-    enemy_object_pool_.PoolObjects(50, PinkSlimeEnemy::Create, true);
-    enemy_object_pool_.PoolObjects(50, OrangeSlimeEnemy::Create, true);
+  EnemyObjectPool() : enemy_object_pool_(AcquireCallback, ReleaseCallback, [this](){PoolObjects();}) {
   }
 
-  static std::shared_ptr<EnemyBase> AcquireCallback(std::vector<std::shared_ptr<EnemyBase>> objects) {
+  void PoolObjects() {
+    enemy_object_pool_.PoolObjects(50, GhostEnemy::Create);
+    enemy_object_pool_.PoolObjects(50, PinkSlimeEnemy::Create);
+    enemy_object_pool_.PoolObjects(50, OrangeSlimeEnemy::Create);
+  }
+
+  static std::shared_ptr<EnemyBase> AcquireCallback(std::vector<std::weak_ptr<EnemyBase>> objects) {
     std::vector<std::shared_ptr<EnemyBase>> available_objects;
-    for (auto object : objects) {
+
+    for (const auto &weak_object : objects) {
+      auto object = weak_object.lock();
+      if (!object) continue;
+
       if (object->GetIsActive()) continue;
       available_objects.push_back(object);
     }
 
     if (available_objects.empty()) return nullptr;
 
-    auto target_object = Randomizer::GetInstance().RandomElement(available_objects);
+    auto target_object = engine::utility::Randomizer::GetInstance().RandomElement(available_objects);
     if (!target_object.has_value()) return nullptr;
 
     target_object.value()->SetIsActive(true);

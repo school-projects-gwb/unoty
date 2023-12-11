@@ -121,6 +121,7 @@ class Input {
     mouse_pointer_position_ = position;
   }
 
+  /// @brief Gets mouse pointer position with world/camera position calculated in
   static const entities::Point& GetMousePointerPosition() {
     return mouse_pointer_position_;
   }

@@ -21,6 +21,7 @@
 #include "upgrades/base_upgrade.h"
 #include "ui/popup/popup.h"
 #include "ui/button_click_listener.h"
+#include "entities/foresight_camera.h"
 
 using namespace engine::entities;
 
@@ -31,6 +32,7 @@ class GameScene : Scene {
   static Scene* GameSceneInit() {
     engine::Engine::GetInstance().SetFps(60);
     scene_ = new GameScene();
+    scene_->SetViewportRendering(true, 0);
 
     // Create SceneBackground
     TileMapConfig tile_map_config;
@@ -51,6 +53,7 @@ class GameScene : Scene {
 
     LoadBaseObjects();
     LoadUpgrades();
+    CreateWalls();
 
     auto hud = GameObject::Create<Hud>();
 
@@ -60,7 +63,7 @@ class GameScene : Scene {
     auto debug_toggler = std::make_shared<DebugToggleScript>();
     scene_->AddListener(debug_toggler);
 
-    auto camera = std::make_unique<Camera>();
+    auto camera = std::make_unique<ForesightCamera>(10, 1.5);
     camera->SetTrackingTransform(player_object->GetTransform());
 
     auto enemy_spawner = GameObject::Create<EnemySpawner>();
@@ -69,10 +72,6 @@ class GameScene : Scene {
     scene_->AddObject(player_object);
     scene_->AddObject(hud);
     scene_->AddObject(enemy_spawner);
-
-    auto debug_enemy = EnemyObjectPool::GetInstance().Acquire();
-    debug_enemy->GetTransform()->Position = {500, 500};
-    scene_->AddObject(debug_enemy);
 
     auto popup = GameObject::Create<Popup>();
     popup->SetLayer(5);
@@ -111,6 +110,46 @@ class GameScene : Scene {
     scene_->AddObject(base_object);
     scene_->AddObject(fireplace_object);
     scene_->AddObject(bed_object);
+  }
+
+  static void CreateWalls() {
+    auto top_wall = GameObject::Create();
+    top_wall->GetTransform()->SetSize(Point{1792, 30});
+    auto top_wall_collider = Component::Create<BoxCollider>(Vector2d{1792, 64});
+    auto top_wall_body = Component::Create<RigidBody>(*top_wall, engine::physics::RigidBodyType::Static, top_wall_collider);
+    top_wall_body->SetPosition(Vector2d{0,0});
+    top_wall->AddComponent(top_wall_body);
+    top_wall->AddComponent(top_wall_collider);
+    top_wall->SetTagName("wall");
+
+    auto left_wall = GameObject::Create();
+    auto left_wall_collider = Component::Create<BoxCollider>(Vector2d{64, 1200});
+    auto left_wall_body = Component::Create<RigidBody>(*left_wall, engine::physics::RigidBodyType::Static, left_wall_collider);
+    left_wall_body->SetPosition(Vector2d{0,90});
+    left_wall->AddComponent(left_wall_body);
+    left_wall->AddComponent(left_wall_collider);
+    left_wall->SetTagName("wall");
+
+    auto bottom_wall = GameObject::Create();
+    auto bottom_wall_collider = Component::Create<BoxCollider>(Vector2d{1792, 30});
+    auto bottom_wall_body = Component::Create<RigidBody>(*bottom_wall, engine::physics::RigidBodyType::Static, bottom_wall_collider);
+    bottom_wall_body->SetPosition(Vector2d{0,1370});
+    bottom_wall->AddComponent(bottom_wall_body);
+    bottom_wall->AddComponent(bottom_wall_collider);
+    bottom_wall->SetTagName("wall");
+
+    auto right_wall = GameObject::Create();
+    auto right_wall_collider = Component::Create<BoxCollider>(Vector2d{30, 1200});
+    auto right_wall_body = Component::Create<RigidBody>(*right_wall, engine::physics::RigidBodyType::Static, right_wall_collider);
+    right_wall_body->SetPosition(Vector2d{1760,90});
+    right_wall->AddComponent(right_wall_body);
+    right_wall->AddComponent(right_wall_collider);
+    right_wall->SetTagName("wall");
+
+    scene_->AddObject(top_wall);
+    scene_->AddObject(left_wall);
+    scene_->AddObject(bottom_wall);
+    scene_->AddObject(right_wall);
   }
 
   static void LoadUpgrades() {

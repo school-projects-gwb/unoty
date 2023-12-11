@@ -7,8 +7,8 @@ namespace engine::entities {
 class AudioSource::Impl : public Component {
  public:
   explicit Impl(const std::string &track) {
-    auto p = helpers::PathHelper::GetFullPathFromRelative(track);
-    audio_ = engine::audio::AudioFactoryWrapper::get_instance().CreateAudio(p);
+    auto p = utility::PathHelper::GetFullPathFromRelative(track);
+    audio_ = engine::audio::AudioFactoryWrapper::GetInstance().CreateAudio(p);
   }
   ~Impl() override{
     delete audio_;
