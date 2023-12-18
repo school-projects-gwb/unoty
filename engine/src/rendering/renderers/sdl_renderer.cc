@@ -10,7 +10,8 @@
 
 namespace engine::ui {
 
-SdlRenderer::SdlRenderer(int window_width, int window_height, const std::string& window_title) : window_(nullptr), renderer_(nullptr) {
+SdlRenderer::SdlRenderer(int window_width, int window_height, const std::string &window_title)
+    : window_(nullptr), renderer_(nullptr) {
   window_width_ = window_width;
   window_height_ = window_height;
   window_title_ = window_title;
@@ -26,8 +27,10 @@ void SdlRenderer::InitSdl() {
                                window_width_, window_height_, 0);
     if (!window_) std::cerr << "SDL window creation failed: " << SDL_GetError() << std::endl;
 
-    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
+    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_PRESENTVSYNC);
     if (!renderer_) std::cerr << "SDL renderer creation failed: " << SDL_GetError() << std::endl;
+
+    SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND);
 
     sprite_renderer_->Init(this, window_width_, window_height_);
     text_renderer_->Init(this, window_width_, window_height_);
@@ -45,12 +48,24 @@ void SdlRenderer::SetBackgroundRenderColor(entities::Color background_color) {
 }
 
 void SdlRenderer::StartRenderFrame() {
-  SDL_RenderClear(renderer_);
   SDL_SetRenderDrawColor(renderer_, background_render_color_.r, background_render_color_.g,
                          background_render_color_.b, background_render_color_.a);
+
+  SDL_RenderClear(renderer_);
+
+  game_rect_ = {0, 0, window_width_, window_height_};
+
+  sprite_renderer_->StartRenderFrame();
 }
 
 void SdlRenderer::EndRenderFrame() {
+  SDL_SetRenderTarget(renderer_, nullptr);
+
+  SDL_SetRenderDrawColor(renderer_,
+                         background_render_color_.r,
+                         background_render_color_.g,
+                         background_render_color_.b,
+                         background_render_color_.a);
   SDL_RenderPresent(renderer_);
 }
 
@@ -70,7 +85,7 @@ std::unique_ptr<TextRenderer> &SdlRenderer::GetTextRenderer() {
   return text_renderer_;
 }
 
-void SdlRenderer::UpdateCameraPosition(engine::entities::Camera* camera) {
+void SdlRenderer::UpdateCameraPosition(engine::entities::Camera *camera) {
   // Get position camera is tracking
   auto center_target_position = camera->GetTransform()->Position;
   // TODO possibly improve this logic
@@ -93,7 +108,7 @@ void SdlRenderer::UpdateCameraPosition(engine::entities::Camera* camera) {
   camera->SetPosition({camera_x, camera_y});
 }
 
-const entities::Point& SdlRenderer::GetCameraPosition() const {
+const entities::Point &SdlRenderer::GetCameraPosition() const {
   return camera_position_;
 }
 

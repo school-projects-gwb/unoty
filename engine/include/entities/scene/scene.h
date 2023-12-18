@@ -12,6 +12,7 @@
 #include "entities/listeners/listener.h"
 #include "entities/structs/input.h"
 #include "entities/structs/debug_info.h"
+#include "scene_lighting.h"
 
 namespace engine::entities {
 
@@ -30,9 +31,6 @@ class Scene {
 
   void AddListener(std::shared_ptr<Listener> listener);
 
-  void StartRenderFrame(const std::unique_ptr<ui::Renderer> &renderer);
-  void EndRenderFrame(const std::unique_ptr<ui::Renderer> &renderer);
-
   /// @brief Handles initialisation logic such as triggering OnStart on BehaviourScript components
   void InitialiseObjects();
 
@@ -48,10 +46,13 @@ class Scene {
   void RenderDebug(const std::unique_ptr<ui::Renderer> &renderer, const entities::DebugInfo &debug_info);
 
   void SetCamera(std::unique_ptr<Camera> camera);
-  const Point GetCameraPosition(bool with_offset) const;
+  [[nodiscard]] const Point GetCameraPosition(bool with_offset) const;
 
   /// @brief Sets background containing TileMap and other background information
   void SetBackground(std::unique_ptr<SceneBackground> background);
+
+  void SetLighting(std::unique_ptr<SceneLighting> lighting);
+  [[nodiscard]] const std::unique_ptr<SceneLighting> &GetLighting() const;
 
   void SetBackgroundMusic(std::unique_ptr<AudioSource> music);
 

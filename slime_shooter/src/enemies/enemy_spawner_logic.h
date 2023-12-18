@@ -64,7 +64,10 @@ class EnemySpawnerLogic : public BehaviourScript {
     int enemy_pos_y =
         engine::utility::Randomizer::GetInstance().RandomBool() ? min_y : max_y; // Randomly spawn at top or bottom
 
-    if (enemy->GetComponentByType<EnemyAttack>()) enemy->GetComponentByType<EnemyAttack>()->StartAttack();
+    if (auto attack = enemy->GetComponentByType<EnemyAttack>()) {
+      attack->SetPlayerAsTarget();
+      attack->StartAttack();
+    }
 
     enemy->GetTransform()->Position = {enemy_pos_x, enemy_pos_y};
     enemy->GetComponentByType<RigidBody>()->SetPosition({enemy_pos_x, enemy_pos_y});

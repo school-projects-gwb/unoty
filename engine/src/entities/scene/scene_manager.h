@@ -31,6 +31,8 @@ class SceneManager {
   /// @brief Get singular object (can be nullptr) in current active Scene by name which acts as a unique identifier
   std::shared_ptr<entities::GameObject> GetObjectByName(const std::string& name, bool search_recursive = false);
 
+  const std::unique_ptr<entities::SceneLighting> &GetSceneLightingObject() const;
+
   void AddObject(std::shared_ptr<entities::GameObject> object_to_add);
 
   /// @brief If given object shared pointer exists in Scene it will be removed

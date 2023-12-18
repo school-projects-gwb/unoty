@@ -16,6 +16,7 @@ struct RenderInfo {
   entities::structs::Rectangle position_in_sheet;
   entities::structs::Rectangle target_position;
   entities::Point size = {0,0};
+  bool is_ui_object = false;
 };
 
 struct RenderOptions {
@@ -51,6 +52,15 @@ class SpriteRenderer {
   virtual void RenderSpriteFromSheetWithColorOverlay(const RenderInfo& render_info, const RenderOptions& render_optionsp) = 0;
 
   virtual void RenderDebugRectangles(const std::vector<std::pair<entities::Vector2d, entities::Vector2d>> &debug_rectangles) = 0;
+
+  /// @overload After calling, all rendered objects will be considered as lights on top of the background/game layer
+  virtual void StartLightLayer(const entities::Color &lighting_color) = 0;
+
+  virtual void StartRenderFrame() = 0;
+  virtual void EndRenderFrame() = 0;
+
+  /// @overload Resets necessary properties to default values after each render step
+  virtual void Reset() = 0;
 };
 
 }

@@ -22,10 +22,10 @@ class SDLMixerAdapter {
   SDLMixerAdapter &operator=(SDLMixerAdapter &&) = delete;
 
   /// @brief Returns the singleton instance of the SDLMixerAdapter.
-  static SDLMixerAdapter &GetInstance();
+  static SDLMixerAdapter *GetInstance();
 
   /// @brief Quits SDL_mixer
-  static void CleanUp();
+  void CleanUp();
 
   /// @brief Adds a new Mix_Music object to the playlist.
   ///
@@ -105,8 +105,6 @@ class SDLMixerAdapter {
   ///
   /// @param m The key under which the music object is stored.
   void FreeMusic(int m);
-
-  ~SDLMixerAdapter();
 
  private:
   class Impl;

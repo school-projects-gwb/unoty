@@ -38,7 +38,6 @@ class PlayerMovement : public BehaviourScript {
     walk_sound_ = Component::Create<AudioSource>("resources/audio/footstep.wav");
     walk_sound_->ToggleLooping();
     walk_sound_->SetVolume(10);
-    walk_sound_->SetSpeed(75);
     GetGameObject().AddComponent(walk_sound_);
   }
 

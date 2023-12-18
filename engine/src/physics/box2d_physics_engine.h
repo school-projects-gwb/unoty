@@ -7,18 +7,12 @@
 #include "physics/physics_engine.h"
 #include <box2d/box2d.h>
 #include "entities/game_object.h"
-#include "entities/colliders/box_collider.h"
-#include "entities/colliders/circle_collider.h"
+#include "entities/physics/box_collider.h"
+#include "entities/physics/circle_collider.h"
 #include "box2d_contact_listener.h"
+#include "entities/structs/physics_config.h"
 
 namespace engine::physics {
-
-struct PhysicsConfig {
-  int steps_per_second;
-  int velocity_iterations;
-  int position_iterations;
-  entities::Vector2d gravity;
-};
 
 /// @brief Concrete physics engine implementation of Box2D
 class Box2dPhysicsEngine : public PhysicsEngine {

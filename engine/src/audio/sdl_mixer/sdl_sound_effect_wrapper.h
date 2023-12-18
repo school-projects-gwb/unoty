@@ -24,18 +24,9 @@ class SDLSoundEffectWrapper : public Audio {
 
   void SetVolume(int volume) override;
   int GetVolume() override;
-
-  void SetPitch(int pitch) override;
-  int GetPitch() override;
-
-  void SetSpeed(int speed) override;
-  int GetSpeed() override;
-
  private:
   std::string name_;
   int channel_ = -1;
-
-  ~SDLSoundEffectWrapper() override;
 };
 } // namespace engine::audio
 

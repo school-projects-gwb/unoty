@@ -33,7 +33,7 @@ class SceneBackground {
    /// Row 1: [x0y0] Top left tile;  [x1y0] Top right tile;  [x2y0] Fill tile
    /// Row 2: [x0y1] Bottom left tile;  [x1y1] Bottom right tile;  [x2y1] Right side tile
    /// Row 3: [x0y2] Top side tile;  [x1y2] Left side tile;  [x2y2] Bottom side tile
-  SceneBackground(const TileMapConfig tile_map_config);
+  explicit SceneBackground(const TileMapConfig tile_map_config);
 
   ~SceneBackground();
 

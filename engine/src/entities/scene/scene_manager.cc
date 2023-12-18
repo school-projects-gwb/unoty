@@ -68,6 +68,13 @@ std::vector<std::shared_ptr<entities::GameObject>> SceneManager::GetObjectsByTag
   return active_scene_->GetObjectsByTagName(tag_name, search_recursive);
 }
 
+const std::unique_ptr<entities::SceneLighting> &SceneManager::GetSceneLightingObject() const {
+  static const std::unique_ptr<entities::SceneLighting> null_lighting;
+  if (active_scene_ == nullptr) return null_lighting;
+
+  return active_scene_->GetLighting();
+}
+
 void SceneManager::AddObject(std::shared_ptr<entities::GameObject> object_to_add) {
   if (active_scene_ == nullptr) return;
   active_scene_->AddObject(object_to_add);

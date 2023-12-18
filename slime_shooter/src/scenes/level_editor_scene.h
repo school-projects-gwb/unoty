@@ -57,6 +57,9 @@ class LevelEditorScene : engine::entities::Scene {
                          "resources/sprites/world/tilemap.png" : LevelLoaderConfig::GetPropertyValue("tile_map_path");
     scene_->SetBackground(CreateSceneBackground(tile_map_path));
 
+    auto lighting = std::make_unique<SceneLighting>(Color{255, 255, 255, 255});
+    scene_->SetLighting(std::move(lighting));
+
     auto drag_handler = std::make_shared<DragHandler>();
     scene_->AddListener(drag_handler);
 

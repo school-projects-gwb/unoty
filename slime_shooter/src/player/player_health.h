@@ -44,12 +44,11 @@ class PlayerHealth : public BehaviourScript {
 
     damage_taken_sound_ = Component::Create<AudioSource>("resources/audio/damage_taken.wav");
     damage_taken_sound_->SetVolume(10);
-    damage_taken_sound_->SetSpeed(75);
     GetGameObject().AddComponent(damage_taken_sound_);
   }
 
   void OnCollisionEnter(engine::entities::GameObject *&colliding_object) override {
-    if (colliding_object->GetTagName() != "enemy") return;
+    if (colliding_object->GetTagName() != "Enemy") return;
 
     if (damage_cooldown_timer_.HasElapsed(damage_cooldown_seconds_))
       TakeDamage(1);

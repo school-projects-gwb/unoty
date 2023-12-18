@@ -72,6 +72,11 @@ class Engine::Impl {
         if (EngineConfig::is_paused) {
           input_->ProcessInput(active_scene->GetCameraPosition(true));
           unpause_handling_callback_();
+
+          renderer_->StartRenderFrame();
+          active_scene->RenderObjects(renderer_);
+          renderer_->EndRenderFrame();
+          
           continue;
         }
 
@@ -80,7 +85,7 @@ class Engine::Impl {
 
         active_scene->TriggerListeners();
 
-        active_scene->StartRenderFrame(renderer_);
+        renderer_->StartRenderFrame();
         active_scene->RenderObjects(renderer_);
 
         if (EngineConfig::is_debug_mode) {
@@ -88,7 +93,7 @@ class Engine::Impl {
           active_scene->RenderDebug(renderer_, debug_info);
         }
 
-        active_scene->EndRenderFrame(renderer_);
+        renderer_->EndRenderFrame();
       }
 
       if (EngineConfig::is_debug_mode)
@@ -126,11 +131,12 @@ class Engine::Impl {
   }
 
   void SetActiveScene(const std::string &name, std::vector<std::shared_ptr<entities::GameObject>> objects_to_migrate) {
+    audio::SDLMixerAdapter::GetInstance()->CleanUp();
     SceneManager::GetInstance().SetActiveScene(name, std::move(objects_to_migrate));
   }
 
   void CleanupEngine() {
-    audio::SDLMixerAdapter::CleanUp();
+    audio::SDLMixerAdapter::GetInstance()->CleanUp();
     renderer_->Exit();
     ui::SdlFontRegistry::Cleanup();
   }

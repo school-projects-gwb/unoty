@@ -32,7 +32,7 @@ class OrangeSlimeEnemy : public EnemyBase {
     AddComponent(collider);
 
     GetTransform()->SetSize({60, 60});
-    SetTagName("enemy");
+    SetTagName("Enemy");
   }
 
   static std::shared_ptr<EnemyBase> Create() {

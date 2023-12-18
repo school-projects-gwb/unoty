@@ -66,6 +66,10 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
     return SceneManager::GetInstance().GetObjectsByTagName(tag_name, search_recursive);
   }
 
+  static const std::unique_ptr<SceneLighting> &GetSceneLightingObject() {
+    return SceneManager::GetInstance().GetSceneLightingObject();
+  }
+
   static void AddSceneObject(std::shared_ptr<GameObject> object_to_add) {
     SceneManager::GetInstance().AddObject(object_to_add);
   }
@@ -136,6 +140,10 @@ std::shared_ptr<GameObject> GameObject::GetSceneObjectByName(const std::string &
 
 std::vector<std::shared_ptr<GameObject>> GameObject::GetSceneObjectsByTagName(const std::string &tag_name, bool search_recursive) {
   return Impl::GetSceneObjectsByTagName(tag_name, search_recursive);
+}
+
+const std::unique_ptr<SceneLighting> &GameObject::GetSceneLightingObject() {
+  return Impl::GetSceneLightingObject();
 }
 
 void GameObject::RemoveSceneObject(std::shared_ptr<GameObject> object_to_remove) {

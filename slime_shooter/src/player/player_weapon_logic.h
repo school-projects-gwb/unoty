@@ -6,7 +6,7 @@
 #include "entities/structs/input.h"
 #include "entities/structs/vector_2d.h"
 #include "utility/timer.h"
-#include "player/projectile/projectile_object_pool.h"
+#include "projectiles/player_projectile_object_pool.h"
 #include <math.h>
 
 using namespace engine::entities;
@@ -22,8 +22,8 @@ class PlayerWeaponLogic : public BehaviourScript {
 
  private:
   bool can_shoot_ = true;
-  Point position_offset_ = {12, 65};
-  const float max_fire_rate_ = 0.075f;
+  Vector2d position_offset_ = {12, 65};
+  const float min_fire_rate_ = 0.075f;
   std::shared_ptr<Transform> transform_;
   std::shared_ptr<Transform> parent_transform_;
   std::shared_ptr<Sprite> weapon_sprite_;
@@ -40,7 +40,6 @@ class PlayerWeaponLogic : public BehaviourScript {
 
     shooting_sound_ = Component::Create<AudioSource>("resources/audio/player_shoot.wav");
     shooting_sound_->SetVolume(10);
-    shooting_sound_->SetSpeed(75);
     GetGameObject().AddComponent(shooting_sound_);
 
     timer_.Start();
@@ -83,7 +82,7 @@ class PlayerWeaponLogic : public BehaviourScript {
         (parent_transform_->Position.y + parent_transform_->GetSize().y/2) + direction.y * player_position_center_offset
     };
 
-    auto bullet = ProjectileObjectPool::GetInstance().Acquire();
+    auto bullet = PlayerProjectileObjectPool::GetInstance().Acquire();
     bullet->GetTransform()->Position = target_position;
     bullet->GetComponentByType<RigidBody>()->SetPosition(target_position);
 
@@ -97,14 +96,16 @@ class PlayerWeaponLogic : public BehaviourScript {
     bullet->GetTransform()->SetRotation(rotation_degrees);
     transform_->SetRotation(rotation_degrees);
 
-    bullet->GetComponentByType<ProjectileLogic>()->SetDirection(direction);
+    auto projectile_logic = bullet->GetComponentByType<ProjectileLogic>();
+    projectile_logic->SetDirection(direction);
+    projectile_logic->SetSourceTag("Player");
 
     shooting_sound_->Play();
   }
 
   double GetFireRate() {
     float fire_rate = player_statistics_->Get(StatisticType::FireRate);
-    return fire_rate >= max_fire_rate_ ? fire_rate : max_fire_rate_;
+    return fire_rate < min_fire_rate_ ? min_fire_rate_ : fire_rate;
   }
 };
 

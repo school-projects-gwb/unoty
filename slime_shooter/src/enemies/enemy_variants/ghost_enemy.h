@@ -16,11 +16,10 @@ namespace slime_shooter {
 class GhostEnemy : public EnemyBase {
  public:
   GhostEnemy() : EnemyBase() {
-    auto animator = Component::Create<Animator>("resources/sprites/enemies/ghost.png",
-                                                4, Point{16, 16}, Point{2, 2});
+    auto animator = Component::Create<Animator>("resources/sprites/enemies/ghost.png", 4, Point{16, 16}, Point{2, 2});
     AddComponent(animator);
 
-    auto attack = Component::Create<EnemyAttack>();
+    auto attack = Component::Create<EnemyAttack>(*this);
     AddComponent(attack);
 
     auto logic = GetComponentByType<EnemyLogic>();

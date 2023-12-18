@@ -5,6 +5,7 @@
 #include "entities/game_object.h"
 #include "entities/sprite.h"
 #include "player_base/particle/smoke_emitter.h"
+#include "fireplace_light.h"
 
 using namespace engine::entities;
 
@@ -20,12 +21,16 @@ class FireplaceObject : public GameObject {
     animator->Play(true);
     AddComponent(animator);
 
+    auto light = GameObject::Create<FireplaceLight>();
+    AddChildObject(light);
+
     auto smoke_emitter = Component::Create<SmokeEmitter>();
     smoke_emitter->Start();
     AddComponent(smoke_emitter);
 
     GetTransform()->SetSize({125, 175});
     GetTransform()->Position = {1103, 505};
+    light->GetTransform()->Position = {GetTransform()->Position.x-575, GetTransform()->Position.y-525};
   }
 };
 

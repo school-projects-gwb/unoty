@@ -72,7 +72,7 @@ class Input {
   }
 
   static void ClearReleasedKeys() {
-    pressed_keys_.clear();
+    released_keys_.clear();
   }
 
   // Mouse pressed

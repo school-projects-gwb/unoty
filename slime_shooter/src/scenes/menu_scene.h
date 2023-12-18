@@ -31,13 +31,13 @@ class MenuScene : engine::entities::Scene {
  public:
   static Scene *MenuSceneInit() {
     engine::Engine::GetInstance().SetFps(30);
-    auto *scene = new MenuScene();
+    scene_ = new MenuScene();
 
     auto music = std::make_unique<AudioSource>("resources/audio/menu.ogg");
     music->play_on_wake_ = true;
     music->ToggleLooping();
     music->SetVolume(20);
-    scene->SetBackgroundMusic(std::move(music));
+    scene_->SetBackgroundMusic(std::move(music));
 
     auto scene_background = std::make_unique<SceneBackground>(GameColor::Ui::BackgroundDark);
     auto camera = std::make_unique<Camera>();
@@ -54,11 +54,11 @@ class MenuScene : engine::entities::Scene {
     or_text->SetFont(GameFont::Default, 20);
     or_text->SetColor(GameColor::Ui::TextGray);
 
-    scene->AddObject(logo_text);
-    scene->AddObject(or_text);
+    scene_->AddObject(logo_text);
+    scene_->AddObject(or_text);
 
     auto highscore = GameObject::Create<Highscore>();
-    scene->AddObject(highscore);
+    scene_->AddObject(highscore);
 
     auto play_game_button = GameObject::Create<PlayGameButton>();
     auto load_level_button = GameObject::Create<EditLevelButton>();
@@ -66,25 +66,59 @@ class MenuScene : engine::entities::Scene {
     auto delete_level_button = GameObject::Create<DeleteLevelButton>();
     auto quit_game_button = GameObject::Create<QuitGameButton>();
 
-    scene->AddObject(play_game_button);
-    scene->AddObject(load_level_button);
-    scene->AddObject(level_editor_button);
-    scene->AddObject(delete_level_button);
-    scene->AddObject(quit_game_button);
+    scene_->AddObject(play_game_button);
+    scene_->AddObject(load_level_button);
+    scene_->AddObject(level_editor_button);
+    scene_->AddObject(delete_level_button);
+    scene_->AddObject(quit_game_button);
 
     auto button_click_listener = GameObject::Create<ButtonMouseClickListener>();
-    scene->AddListener(button_click_listener);
+    scene_->AddListener(button_click_listener);
 
     auto debug_toggler = std::make_shared<DebugToggleScript>();
-    scene->AddListener(debug_toggler);
+    scene_->AddListener(debug_toggler);
 
     auto level_selector = GameObject::Create<LevelSelector>(SwitchLevel);
-    scene->AddObject(level_selector);
+    scene_->AddObject(level_selector);
 
-    scene->SetCamera(std::move(camera));
-    scene->SetBackground(std::move(scene_background));
+    CreateScenery();
 
-    return scene;
+    scene_->SetCamera(std::move(camera));
+    scene_->SetBackground(std::move(scene_background));
+
+    return scene_;
+  }
+
+ private:
+  static inline Scene* scene_;
+
+  static void CreateScenery() {
+    auto fireplace_object = GameObject::Create<FireplaceObject>();
+    fireplace_object->GetTransform()->Position = {850, 390};
+    for (const auto& child : fireplace_object->GetChildObjects())
+      child->GetTransform()->Position -= {250,100};
+
+    auto player_object = GameObject::Create<>();
+    auto player_sprite = Component::Create<Sprite>("resources/sprites/player/sleeping.png");
+    player_object->AddComponent(player_sprite);
+    player_object->GetTransform()->SetSize({185, 185});
+    player_object->GetTransform()->Position = {920, 370};
+    scene_->AddObject(player_object);
+
+    auto sleeping_animation = GameObject::Create<>();
+    sleeping_animation->GetTransform()->SetScale(0.6);
+    auto animator = Component::Create<Animator>("resources/sprites/player/sleeping_animation.png", 3, Point{32, 32}, Point{2, 2});
+    animator->SetSpriteSheetAtIndex("resources/sprites/player/sleeping_animation.png", 0);
+    animator->SetCurrentAnimationSpriteSheet(0);
+    animator->SetAnimationFrameTimeSeconds(0.6);
+    animator->Play(true);
+    sleeping_animation->GetTransform()->Position = {1035, 380};
+    sleeping_animation->AddComponent(animator);
+
+    auto scene_lighting = std::make_unique<SceneLighting>(Color{128, 0, 128, 255});
+    scene_->SetLighting(std::move(scene_lighting));
+    scene_->AddObject(fireplace_object);
+    scene_->AddObject(sleeping_animation);
   }
 
   static void SwitchLevel(const std::pair<std::string, std::string> &new_level) {

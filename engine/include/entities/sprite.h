@@ -13,10 +13,11 @@ class Sprite : public Component {
   explicit Sprite(std::string sprite_path);
   ~Sprite();
 
-  void Render(const std::unique_ptr<ui::SpriteRenderer>&, std::shared_ptr<entities::Transform> transform) const;
+  virtual void Render(const std::unique_ptr<ui::SpriteRenderer> &renderer, const std::shared_ptr<entities::Transform> &transform) const;
 
   void SetColor(entities::Color color);
   [[nodiscard]] entities::Color GetColor() const;
+  [[nodiscard]] bool HasColorOverlay() const;
 
   void SetFlip(entities::SpriteFlip flip);
   [[nodiscard]] entities::SpriteFlip GetFlip() const;

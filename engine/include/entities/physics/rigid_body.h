@@ -1,10 +1,10 @@
-#ifndef ENGINE_INCLUDE_ENTITIES_RIGID_BODY_H_
-#define ENGINE_INCLUDE_ENTITIES_RIGID_BODY_H_
+#ifndef ENGINE_INCLUDE_ENTITIES_PHYSICS_RIGID_BODY_H_
+#define ENGINE_INCLUDE_ENTITIES_PHYSICS_RIGID_BODY_H_
 
 #include "entities/component.h"
 #include "entities/structs/rigid_body_type.h"
 #include "entities/structs/vector_2d.h"
-#include "entities/colliders/collider.h"
+#include "entities/physics/collider.h"
 #include <memory>
 
 namespace engine::entities {
@@ -46,4 +46,4 @@ class RigidBody : public Component {
 
 }
 
-#endif //ENGINE_INCLUDE_ENTITIES_RIGID_BODY_H_
+#endif //ENGINE_INCLUDE_ENTITIES_PHYSICS_RIGID_BODY_H_

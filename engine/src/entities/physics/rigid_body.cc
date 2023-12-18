@@ -1,4 +1,4 @@
-#include "entities/rigid_body.h"
+#include "entities/physics/rigid_body.h"
 #include "engine/engine.h"
 
 namespace engine::entities {

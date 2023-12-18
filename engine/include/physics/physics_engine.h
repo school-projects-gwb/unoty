@@ -1,8 +1,8 @@
 #ifndef ENGINE_SRC_PHYSICS_PHYSICS_H_
 #define ENGINE_SRC_PHYSICS_PHYSICS_H_
 
-#include "entities/rigid_body.h"
-#include "entities/colliders/collider.h"
+#include "entities/physics/rigid_body.h"
+#include "entities/physics/collider.h"
 #include <vector>
 
 namespace engine::physics {

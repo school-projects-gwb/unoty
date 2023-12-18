@@ -5,6 +5,7 @@
 #include "config/level_loader_config.h"
 #include "config/level_editor_config.h"
 #include "config/game_config.h"
+#include "scenes/showcase/light_scene.h"
 
 using namespace engine::entities;
 
@@ -24,6 +25,7 @@ int main() {
   engine::Engine::GetInstance().AddScene("game_scene", slime_shooter::GameScene::GameSceneInit);
   engine::Engine::GetInstance().AddScene("menu_scene", slime_shooter::MenuScene::MenuSceneInit);
   engine::Engine::GetInstance().AddScene("level_editor_scene", slime_shooter::LevelEditorScene::LevelEditorSceneInit);
+  engine::Engine::GetInstance().AddScene("light_scene", slime_shooter::showcase::LightScene::LightSceneInit);
 
   engine::Engine::GetInstance().SetActiveScene("menu_scene");
 

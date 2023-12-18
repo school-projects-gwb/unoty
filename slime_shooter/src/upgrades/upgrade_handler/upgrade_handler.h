@@ -38,7 +38,6 @@ class UpgradeHandler : public GameObject {
 
     upgrade_applied_sound_ = Component::Create<AudioSource>("resources/audio/upgrade.wav");
     upgrade_applied_sound_->SetVolume(10);
-    upgrade_applied_sound_->SetSpeed(75);
     AddComponent(upgrade_applied_sound_);
 
     AddChildObject(background);

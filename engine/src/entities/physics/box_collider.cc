@@ -1,7 +1,5 @@
 #include <memory>
-#include <iostream>
-#include "entities/colliders/box_collider.h"
-#include <box2d/box2d.h>
+#include "entities/physics/box_collider.h"
 
 namespace engine::entities {
 
@@ -21,30 +19,35 @@ class BoxCollider::Impl : public Collider {
     return ColliderType::Box;
   }
 
-  float GetFriction() const
-  {
+  float GetFriction() const {
     return friction_;
   }
 
-  void SetFriction(float amount)
-  {
+  void SetFriction(float amount) {
     friction_ = amount;
   }
 
-  float GetDensity() const
-  {
+  float GetDensity() const {
     return density_;
   }
 
-  void SetDensity(float amount)
-  {
+  void SetDensity(float amount) {
     density_ = amount;
+  }
+
+  void SetIsSensor(bool value) {
+    is_sensor_ = value;
+  }
+
+  [[nodiscard]] bool GetIsSensor() const {
+    return is_sensor_;
   }
 
  private:
   Vector2d size_;
   float friction_ = 0.3f;
   float density_ = 1.0f;
+  bool is_sensor_ = false;
 };
 
 BoxCollider::BoxCollider(Vector2d size) : impl_(new Impl(size)) {}
@@ -62,24 +65,28 @@ ColliderType BoxCollider::GetType() const {
   return impl_->GetType();
 }
 
-float BoxCollider::GetFriction() const
-{
+float BoxCollider::GetFriction() const {
   return impl_->GetFriction();
 }
 
-void BoxCollider::SetFriction(float amount)
-{
+void BoxCollider::SetFriction(float amount) {
   impl_->SetFriction(amount);
 }
 
-float BoxCollider::GetDensity() const
-{
+float BoxCollider::GetDensity() const {
   return impl_->GetDensity();
 }
 
-void BoxCollider::SetDensity(float amount)
-{
+void BoxCollider::SetDensity(float amount) {
   impl_->SetDensity(amount);
+}
+
+bool BoxCollider::GetIsSensor() const {
+  return impl_->GetIsSensor();
+}
+
+void BoxCollider::SetIsSensor(bool value) {
+  impl_->SetIsSensor(value);
 }
 
 }

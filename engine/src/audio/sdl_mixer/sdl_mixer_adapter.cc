@@ -106,15 +106,35 @@ class SDLMixerAdapter::Impl {
   }
 
   void FreeChunk(const std::string &s) {
-    auto c = sounds_[s].first;
-    if (c == nullptr) return;
-    Mix_FreeChunk(c);
+    if (!sounds_.count(s)) return;
+    sounds_[s].second--;
+
+    if (sounds_[s].second <= 0) {
+      Mix_FreeChunk(sounds_[s].first);
+      sounds_[s].first = nullptr;
+      sounds_.erase(s);
+    }
   }
 
   void FreeMusic(int m) {
     auto c = music_[m];
     if (c == nullptr) return;
     Mix_FreeMusic(c);
+    music_[m] = nullptr;
+  }
+
+  void CleanUp() {
+    for (const auto &sound : sounds_)
+      Mix_FreeChunk(sound.second.first);
+
+    sounds_.clear();
+
+    for (const auto &music : music_)
+      Mix_FreeMusic(music);
+
+    music_.clear();
+
+    Mix_Quit();
   }
 
  private:
@@ -133,13 +153,13 @@ SDLMixerAdapter::SDLMixerAdapter() : impl_(std::make_unique<Impl>()) {
   }
 }
 
-SDLMixerAdapter::~SDLMixerAdapter() { CleanUp(); }
+void SDLMixerAdapter::CleanUp() {
+  impl_->CleanUp();
+}
 
-void SDLMixerAdapter::CleanUp() { Mix_Quit(); }
-
-SDLMixerAdapter &SDLMixerAdapter::GetInstance() {
+SDLMixerAdapter *SDLMixerAdapter::GetInstance() {
   static SDLMixerAdapter instance;
-  return instance;
+  return &instance;
 }
 
 int SDLMixerAdapter::EnqueueMusic(const std::string &file_path) {

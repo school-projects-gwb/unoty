@@ -9,6 +9,15 @@ void SdlSpriteRenderer::Init(void* renderer, int window_width, int window_height
   renderer_ = static_cast<SDL_Renderer*>(sdl_renderer_->GetRenderer());
   window_width_ = window_width;
   window_height_ = window_height;
+  background_layer_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width, window_height);
+  light_layer_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width, window_height);
+  result_layer_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width, window_height);
+}
+
+SdlSpriteRenderer::~SdlSpriteRenderer() {
+  SDL_DestroyTexture(background_layer_);
+  SDL_DestroyTexture(light_layer_);
+  SDL_DestroyTexture(result_layer_);
 }
 
 void SdlSpriteRenderer::RenderRectangle(const RenderInfo &render_info, const RenderOptions &render_options) {
@@ -43,7 +52,7 @@ void SdlSpriteRenderer::RenderSprite(const RenderInfo& render_info, const Render
 
   auto scaled_size = GetScaledSize(render_info.transform->GetScale(), render_info.size);
   RenderTexture(texture, nullptr, render_info.transform->Position, scaled_size.x,
-                scaled_size.y, render_options.flip, render_info.transform->GetRotation(), render_options.is_position_fixed);
+                scaled_size.y, render_options.flip, render_info.transform->GetRotation(), render_options.is_position_fixed, render_info.is_ui_object);
 }
 
 void SdlSpriteRenderer::RenderSpriteFromSheet(const RenderInfo& render_info, const RenderOptions& render_options) {
@@ -52,7 +61,7 @@ void SdlSpriteRenderer::RenderSpriteFromSheet(const RenderInfo& render_info, con
   SDL_Rect sheet_rectangle = GetSheetRectangle(render_info.position_in_sheet);
   auto scaled_size = GetScaledSize(render_info.transform->GetScale(), render_info.size);
   RenderTexture(texture, &sheet_rectangle, render_info.transform->Position, scaled_size.x,
-                scaled_size.y, render_options.flip, render_info.transform->GetRotation());
+                scaled_size.y, render_options.flip, render_info.transform->GetRotation(), false, render_info.is_ui_object);
 }
 
 void SdlSpriteRenderer::RenderSpriteFromSheetWithColorOverlay(const RenderInfo& render_info, const RenderOptions& render_options) {
@@ -63,7 +72,7 @@ void SdlSpriteRenderer::RenderSpriteFromSheetWithColorOverlay(const RenderInfo& 
   SDL_Rect sheet_rectangle = GetSheetRectangle(render_info.position_in_sheet);
   auto scaled_size = GetScaledSize(render_info.transform->GetScale(), render_info.size);
   RenderTexture(texture, &sheet_rectangle, render_info.transform->Position, scaled_size.x,
-                scaled_size.y, render_options.flip, render_info.transform->GetRotation());
+                scaled_size.y, render_options.flip, render_info.transform->GetRotation(), render_info.is_ui_object);
 
   SDL_SetTextureColorMod(texture, 255, 255, 255);
 }
@@ -74,7 +83,7 @@ void SdlSpriteRenderer::RenderStaticSpriteFromSheet(const RenderInfo& render_inf
   SDL_Rect sheet_rectangle = GetSheetRectangle(render_info.position_in_sheet);
 
   RenderTexture(texture, &sheet_rectangle, {render_info.target_position.x, render_info.target_position.y},
-                render_info.target_position.w, render_info.target_position.h, entities::FlipNone);
+                render_info.target_position.w, render_info.target_position.h, entities::FlipNone, 0, render_info.is_ui_object);
 }
 
 SDL_Rect SdlSpriteRenderer::GetSheetRectangle(const entities::structs::Rectangle& position_in_sheet) {
@@ -89,7 +98,10 @@ SDL_Rect SdlSpriteRenderer::GetSheetRectangle(const entities::structs::Rectangle
 
 void SdlSpriteRenderer::RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rect,
                                 const entities::Vector2d& destination_position, int width, int height,
-                                entities::SpriteFlip flip, double rotation, bool is_position_fixed) const {
+                                entities::SpriteFlip flip, double rotation, bool is_position_fixed, bool is_ui_object) const {
+  if (!is_ui_object)
+    SDL_SetRenderTarget(renderer_, background_layer_);
+
   SDL_Rect destination_rectangle;
 
   auto camera_position = sdl_renderer_->GetCameraPosition();
@@ -138,7 +150,7 @@ void SdlSpriteRenderer::RenderDebugRectangles(const std::vector<std::pair<entiti
     // Draw border
     SDL_Rect borderRect;
     auto camera_position = sdl_renderer_->GetCameraPosition();
-    std::cout << rect.first.x << " " << rect.first.y << "\n";
+
     borderRect.x = rect.first.x - (camera_position.x - (rect.second.x/2));
     borderRect.y = rect.first.y - (camera_position.y - (rect.second.y/2));
     borderRect.w = rect.second.x;
@@ -149,5 +161,56 @@ void SdlSpriteRenderer::RenderDebugRectangles(const std::vector<std::pair<entiti
   SDL_SetRenderDrawColor(renderer_, r, g, b, a);
   SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_NONE);
 }
+
+void SdlSpriteRenderer::StartRenderFrame() {
+  SDL_SetRenderTarget(renderer_, background_layer_);
+  SDL_RenderClear(renderer_);
+
+  SDL_SetRenderTarget(renderer_, light_layer_);
+  SDL_RenderClear(renderer_);
+
+  SDL_SetRenderTarget(renderer_, result_layer_);
+  SDL_RenderClear(renderer_);
+
+  SDL_SetRenderTarget(renderer_, nullptr);
+}
+
+void SdlSpriteRenderer::EndRenderFrame() {
+  SDL_SetRenderTarget(renderer_, result_layer_);
+  SDL_RenderClear(renderer_);
+
+  SDL_SetTextureBlendMode(result_layer_, SDL_BLENDMODE_BLEND);
+  SDL_RenderCopy(renderer_, background_layer_, NULL, &sdl_renderer_->GetGameRect());
+
+  SDL_RenderCopy(renderer_, light_layer_, NULL, &sdl_renderer_->GetGameRect());
+  SDL_SetRenderTarget(renderer_, NULL);
+
+  SDL_RenderCopy(renderer_, result_layer_, NULL, &sdl_renderer_->GetGameRect());
+}
+
+void SdlSpriteRenderer::StartLightLayer(const entities::Color &lighting_color) {
+  SDL_SetRenderTarget(renderer_, light_layer_);
+  SDL_SetTextureBlendMode(light_layer_, SDL_BLENDMODE_MUL);
+  SDL_SetRenderDrawColor(renderer_, lighting_color.r, lighting_color.g, lighting_color.b, lighting_color.a);
+  SDL_RenderClear(renderer_);
+}
+
+void SdlSpriteRenderer::Reset() {
+  // Clear background_layer_
+  SDL_SetRenderTarget(renderer_, background_layer_);
+  SDL_RenderClear(renderer_);
+
+  // Clear light_layer_
+  SDL_SetRenderTarget(renderer_, light_layer_);
+  SDL_RenderClear(renderer_);
+
+  // Clear result_layer_
+  SDL_SetRenderTarget(renderer_, result_layer_);
+  SDL_RenderClear(renderer_);
+
+  // Reset render target to default
+  SDL_SetRenderTarget(renderer_, nullptr);
+}
+
 
 }

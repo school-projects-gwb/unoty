@@ -7,8 +7,8 @@
 #include "statistics/statistics.h"
 #include "enemies/enemy_logic.h"
 #include "enemy_base.h"
-#include "entities/rigid_body.h"
-#include "entities/colliders/box_collider.h"
+#include "entities/physics/rigid_body.h"
+#include "entities/physics/box_collider.h"
 
 using namespace engine::entities;
 

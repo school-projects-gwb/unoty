@@ -20,10 +20,6 @@ class AudioSource : public Component {
 
   void SetVolume(int volume);
   int GetVolume();
-  void SetPitch(int pitch);
-  int GetPitch();
-  void SetSpeed(int speed);
-  int GetSpeed();
 
   bool play_on_wake_ = false;
  private:

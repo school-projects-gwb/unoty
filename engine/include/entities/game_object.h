@@ -8,6 +8,8 @@
 
 namespace engine::entities {
 
+class SceneLighting;
+
 /// @brief Base for GameObjects, contains various helper methods for handling game objects
 class GameObject : public std::enable_shared_from_this<GameObject> {
  public:
@@ -51,6 +53,9 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   ///
   /// @param search_recursive Whether to search recursively through child GameObjects
   static std::shared_ptr<GameObject> GetSceneObjectByName(const std::string &name, bool search_recursive = false);
+
+  /// @brief Returns the SceneLighting object for easy access and modification from within Scene objects/components during runtime
+  static const std::unique_ptr<SceneLighting> &GetSceneLightingObject();
 
   /// @brief Used when adding new GameObject to Scene from i.e. a BehaviourScript script
   ///

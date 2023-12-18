@@ -24,9 +24,6 @@ class DebugToggleScript : public KeyListener {
 
     if (Input::HasPressedKey(Key::UnoP))
       engine::Engine::GetInstance().SetActiveScene("menu_scene");
-    
-    if (Input::HasPressedKey(Key::UnoL))
-      engine::EngineConfig::is_paused = !engine::EngineConfig::is_paused;
 
     // Player Level
     if (Input::HasPressedKey(Key::Uno1)) {

@@ -1,5 +1,5 @@
-#include "entities/colliders/collider.h"
-#include "entities/colliders/circle_collider.h"
+#include "entities/physics/collider.h"
+#include "entities/physics/circle_collider.h"
 
 namespace engine::entities {
 
@@ -17,34 +17,39 @@ class CircleCollider::Impl : public Collider {
     return radius_;
   }
 
-  [[nodiscard]] ColliderType GetType() const override {
+  [[nodiscard]] ColliderType GetType() const {
     return ColliderType::Circle;
   }
 
-  float GetFriction() const
-  {
+  float GetFriction() const {
     return friction_;
   }
 
-  void SetFriction(float amount)
-  {
+  void SetFriction(float amount) {
     friction_ = amount;
   }
 
-  float GetDensity() const
-  {
+  float GetDensity() const {
     return density_;
   }
 
-  void SetDensity(float amount)
-  {
+  void SetDensity(float amount) {
     density_ = amount;
+  }
+
+  void SetIsSensor(bool value) {
+    is_sensor_ = value;
+  }
+
+  [[nodiscard]] bool GetIsSensor() const {
+    return is_sensor_;
   }
 
  private:
   float radius_;
   float friction_ = 0.3f;
   float density_ = 1.0f;
+  bool is_sensor_ = false;
 };
 
 CircleCollider::~CircleCollider() = default;
@@ -63,24 +68,28 @@ ColliderType CircleCollider::GetType() const {
   return impl_->GetType();
 }
 
-float CircleCollider::GetFriction() const
-{
+float CircleCollider::GetFriction() const {
   return impl_->GetFriction();
 }
 
-void CircleCollider::SetFriction(float amount)
-{
+void CircleCollider::SetFriction(float amount) {
   impl_->SetFriction(amount);
 }
 
-float CircleCollider::GetDensity() const
-{
+float CircleCollider::GetDensity() const {
   return impl_->GetDensity();
 }
 
-void CircleCollider::SetDensity(float amount)
-{
+void CircleCollider::SetDensity(float amount) {
   impl_->SetDensity(amount);
+}
+
+bool CircleCollider::GetIsSensor() const {
+  return impl_->GetIsSensor();
+}
+
+void CircleCollider::SetIsSensor(bool value) {
+  impl_->SetIsSensor(value);
 }
 
 }

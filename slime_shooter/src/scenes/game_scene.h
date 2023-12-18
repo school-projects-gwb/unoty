@@ -42,6 +42,7 @@ class GameScene : Scene {
     tile_map_config.background_color = GameColor::Ui::BackgroundDark;
 
     auto scene_background = std::make_unique<SceneBackground>(tile_map_config);
+    auto scene_lighting = std::make_unique<SceneLighting>(Color{60, 0, 100, 150});
 
     // Create GameObjects
     auto music = std::make_unique<AudioSource>(
@@ -91,6 +92,7 @@ class GameScene : Scene {
     // Add Camera and Background to Scene
     scene_->SetCamera(std::move(camera));
     scene_->SetBackground(std::move(scene_background));
+    scene_->SetLighting(std::move(scene_lighting));
 
     return scene_;
   }
@@ -120,7 +122,7 @@ class GameScene : Scene {
     top_wall_body->SetPosition(Vector2d{0,0});
     top_wall->AddComponent(top_wall_body);
     top_wall->AddComponent(top_wall_collider);
-    top_wall->SetTagName("wall");
+    top_wall->SetTagName("Wall");
 
     auto left_wall = GameObject::Create();
     auto left_wall_collider = Component::Create<BoxCollider>(Vector2d{64, 1200});
@@ -128,7 +130,7 @@ class GameScene : Scene {
     left_wall_body->SetPosition(Vector2d{0,90});
     left_wall->AddComponent(left_wall_body);
     left_wall->AddComponent(left_wall_collider);
-    left_wall->SetTagName("wall");
+    left_wall->SetTagName("Wall");
 
     auto bottom_wall = GameObject::Create();
     auto bottom_wall_collider = Component::Create<BoxCollider>(Vector2d{1792, 30});
@@ -136,7 +138,7 @@ class GameScene : Scene {
     bottom_wall_body->SetPosition(Vector2d{0,1370});
     bottom_wall->AddComponent(bottom_wall_body);
     bottom_wall->AddComponent(bottom_wall_collider);
-    bottom_wall->SetTagName("wall");
+    bottom_wall->SetTagName("Wall");
 
     auto right_wall = GameObject::Create();
     auto right_wall_collider = Component::Create<BoxCollider>(Vector2d{30, 1200});
@@ -144,7 +146,7 @@ class GameScene : Scene {
     right_wall_body->SetPosition(Vector2d{1760,90});
     right_wall->AddComponent(right_wall_body);
     right_wall->AddComponent(right_wall_collider);
-    right_wall->SetTagName("wall");
+    right_wall->SetTagName("Wall");
 
     scene_->AddObject(top_wall);
     scene_->AddObject(left_wall);

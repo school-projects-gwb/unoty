@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
+cmake_policy(SET CMP0135 NEW)
+
 project(engine_tests)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -16,21 +18,7 @@ add_executable(engine_tests
         src/entities/structs/vector_test.cc
         src/utility/object_pool_test.cc)
 
-# Windows: Fetch GTest from repo
-if (WIN32)
-    include(FetchContent)
-    FetchContent_Declare(
-            googletest
-            URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
-    )
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-    set(GTest_FOUND true)
-else ()
-    # UNIX: Look for package locally
-    find_package(GTest)
-endif (WIN32)
+find_package(GTest)
 
 if (GTest_FOUND)
     enable_testing()

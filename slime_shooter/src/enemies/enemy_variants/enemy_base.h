@@ -16,7 +16,7 @@ class EnemyBase : public GameObject {
     AddComponent(enemy_logic_);
 
     SetLayer(2);
-    SetTagName("enemy");
+    SetTagName("Enemy");
   }
 
   void TakeDamage(bool is_from_turret) {

@@ -17,6 +17,7 @@ class UiObject::Impl : public GameObject {
     render_info.target_position.w = transform_->GetSize().x;
     render_info.target_position.h = transform_->GetSize().y;
     render_info.size = transform_->GetSize();
+    render_info.is_ui_object = true;
 
     if (sprite_path_.empty()) {
       sprite_renderer->RenderRectangle(render_info, {FlipNone, background_color_});

@@ -6,7 +6,6 @@
 #include "entities/structs/input.h"
 #include "statistics/statistics.h"
 #include "experience/experience_object_pool.h"
-#include "enemy_object_pool.h"
 
 using namespace engine::entities;
 
@@ -94,7 +93,6 @@ class EnemyLogic : public BehaviourScript {
 
     death_sound_ = Component::Create<AudioSource>("resources/audio/enemy_death.wav");
     death_sound_->SetVolume(10);
-    death_sound_->SetSpeed(75);
     GetGameObject().AddComponent(death_sound_);
 
     ResetStatistics();

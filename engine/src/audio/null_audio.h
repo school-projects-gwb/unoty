@@ -21,10 +21,6 @@ class NullAudio : public Audio {
 
   void SetVolume(int volume) override { volume_ = volume; };
   int GetVolume() override { return volume_; };
-  void SetPitch(int pitch) override { pitch_ = pitch; };
-  int GetPitch() override { return pitch_; };
-  void SetSpeed(int speed) override { speed_ = speed; };
-  int GetSpeed() override { return speed_; };
 };
 } // namespace engine::audio
 

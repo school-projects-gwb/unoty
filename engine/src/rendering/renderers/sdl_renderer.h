@@ -19,6 +19,7 @@ class SdlRenderer : public Renderer {
   ~SdlRenderer() override;
 
   void SetBackgroundRenderColor(entities::Color background_color) override;
+
   void StartRenderFrame() override;
   void EndRenderFrame() override;
 
@@ -30,6 +31,10 @@ class SdlRenderer : public Renderer {
   void UpdateCameraPosition(engine::entities::Camera* camera) override;
 
   [[nodiscard]] const entities::Point& GetCameraPosition() const;
+
+  SDL_Rect &GetGameRect() {
+    return game_rect_;
+  }
  private:
   SDL_Window* window_;
   SDL_Renderer* renderer_;
@@ -41,6 +46,8 @@ class SdlRenderer : public Renderer {
 
   entities::Point camera_position_ = {0, 0};
   entities::Color background_render_color_ = {0, 0, 0};
+
+  SDL_Rect game_rect_;
 
   void InitSdl();
 };

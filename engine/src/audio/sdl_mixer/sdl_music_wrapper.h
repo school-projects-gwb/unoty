@@ -25,15 +25,8 @@ class SDLMusicWrapper : public Audio {
   void SetVolume(int volume) override;
   int GetVolume() override;
 
-  void SetPitch(int pitch) override;
-  int GetPitch() override;
-
-  void SetSpeed(int speed) override;
-  int GetSpeed() override;
-
  private:
   int track_number_ = -1;
-  ~SDLMusicWrapper() override;
 };
 } // namespace engine::audio
 

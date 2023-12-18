@@ -9,7 +9,7 @@ class Sprite::Impl : public Component {
     sprite_path_ = sprite_path;
   }
 
-  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<Transform> transform) const {
+  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, const std::shared_ptr<Transform> &transform) const {
     ui::RenderInfo render_info;
     render_info.sprite_path = sprite_path_;
     render_info.transform = transform;
@@ -34,6 +34,10 @@ class Sprite::Impl : public Component {
     return color_;
   }
 
+  [[nodiscard]] bool HasColorOverlay() const {
+    return has_color_overlay_;
+  }
+
   void SetFlip(entities::SpriteFlip flip) {
     flip_ = flip;
   }
@@ -41,7 +45,6 @@ class Sprite::Impl : public Component {
   [[nodiscard]] entities::SpriteFlip GetFlip() const {
     return flip_;
   }
-
  private:
   std::string sprite_path_;
   bool has_color_overlay_ = false;
@@ -52,7 +55,7 @@ class Sprite::Impl : public Component {
 Sprite::~Sprite() = default;
 Sprite::Sprite(std::string sprite_path) : impl_(new Impl(std::move(sprite_path))) {}
 
-void Sprite::Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, std::shared_ptr<Transform> transform) const {
+void Sprite::Render(const std::unique_ptr<ui::SpriteRenderer> &renderer, const std::shared_ptr<Transform> &transform) const {
   impl_->Render(renderer, transform);
 }
 
@@ -62,6 +65,10 @@ void Sprite::SetColor(entities::Color color) {
 
 entities::Color Sprite::GetColor() const {
   return impl_->GetColor();
+}
+
+bool Sprite::HasColorOverlay() const {
+  return impl_->HasColorOverlay();
 }
 
 void Sprite::SetFlip(entities::SpriteFlip flip) {

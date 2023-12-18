@@ -16,17 +16,11 @@ class Audio {
 
   virtual void SetVolume(int volume) = 0;
   virtual int GetVolume() = 0;
-  virtual void SetPitch(int pitch) = 0;
-  virtual int GetPitch() = 0;
-  virtual void SetSpeed(int speed) = 0;
-  virtual int GetSpeed() = 0;
 
   virtual ~Audio() = default;
 
  protected:
   int volume_ = 100;
-  int pitch_ = 100;
-  int speed_ = 100;
   bool paused_ = false;
 };
 

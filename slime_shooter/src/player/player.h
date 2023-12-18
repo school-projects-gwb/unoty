@@ -10,8 +10,8 @@
 #include "player_turret.h"
 #include "player_experience.h"
 #include "player_health.h"
-#include "entities/colliders/box_collider.h"
-#include "entities/colliders/circle_collider.h"
+#include "entities/physics/box_collider.h"
+#include "player_light.h"
 
 using namespace engine::entities;
 
@@ -21,6 +21,7 @@ class Player : public GameObject {
  public:
   Player() {
     SetName("Player");
+    SetTagName("Player");
 
     auto animator = Component::Create<Animator>("resources/sprites/player/player_default_state.png", 4, Point{32, 32});
     animator->SetSpriteSheetAtIndex("resources/sprites/player/player_animation_up.png", SpriteAnimationState::North);
@@ -49,6 +50,9 @@ class Player : public GameObject {
 
     auto weapon = GameObject::Create<PlayerWeapon>();
     AddChildObject(weapon);
+
+    auto light = GameObject::Create<PlayerLight>();
+    AddChildObject(light);
 
     auto turret = GameObject::Create<PlayerTurret>();
     turret->GetTransform()->Position = {800, 650}; // TODO update when turret has AI logic

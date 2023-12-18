@@ -68,7 +68,7 @@ struct GameFont {
   static std::string Default;
 };
 
-std::string GameFont::Default = "/resources/fonts/PressStart2P-Regular.ttf";
+std::string GameFont::Default = "resources/fonts/PressStart2P-Regular.ttf";
 
 }
 

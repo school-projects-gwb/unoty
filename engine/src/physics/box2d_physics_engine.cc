@@ -1,8 +1,8 @@
 #include "box2d_physics_engine.h"
 #include "entities/scene/scene_manager.h"
 #include "box2d_contact_listener.h"
-#include "entities/colliders/box_collider.h"
-#include "entities/colliders/circle_collider.h"
+#include "entities/physics/box_collider.h"
+#include "entities/physics/circle_collider.h"
 #include "engine/engine_config.h"
 #include "utility/debug.h"
 
@@ -12,7 +12,6 @@ Box2dPhysicsEngine::Box2dPhysicsEngine(PhysicsConfig config)
 : velocity_iterations_(config.velocity_iterations), position_iterations_(config.position_iterations),
   contact_listener_(new Box2dContactListener()) {
   SetStepsPerSecond(config.steps_per_second);
-  //Default world initialization without gravity
   world = new b2World(b2Vec2{config.gravity.x, config.gravity.y});
   world->SetContactListener(contact_listener_);
 }
@@ -134,9 +133,9 @@ void Box2dPhysicsEngine::RegisterBoxCollider(b2Body *body, const entities::BoxCo
   fixture.filter.categoryBits = 1;
   fixture.filter.maskBits = 1;
   fixture.shape = &shape;
+  fixture.isSensor = collider.GetIsSensor();
   fixture.density = collider.GetDensity();
   fixture.friction = collider.GetFriction();
-  fixture.isSensor = false;
 
   body->CreateFixture(&fixture);
 }
@@ -150,10 +149,10 @@ void Box2dPhysicsEngine::RegisterCircleCollider(b2Body *body, const entities::Ci
   fixture.filter.categoryBits = 1;
   fixture.filter.maskBits = 1;
   fixture.shape = &shape;
+  fixture.isSensor = collider.GetIsSensor();
   fixture.density = collider.GetDensity();
   fixture.friction = collider.GetFriction();
   fixture.restitution = 0.0f;
-  fixture.isSensor = false;
 
   body->CreateFixture(&fixture);
 }
@@ -216,10 +215,10 @@ entities::Vector2d Box2dPhysicsEngine::GetGameObjectOffsetPosition(entities::Gam
   if (!collider) return {0,0};
 
   if (collider->GetType() == entities::ColliderType::Box) {
-    const auto& box_collider = static_cast<const entities::BoxCollider&>(*collider);
+    const auto& box_collider = dynamic_cast<const entities::BoxCollider&>(*collider);
     return box_collider.GetSize() / 2;
   } else if (collider->GetType() == entities::ColliderType::Circle) {
-    const auto& circle_collider = static_cast<const entities::CircleCollider&>(*collider);
+    const auto& circle_collider = dynamic_cast<const entities::CircleCollider&>(*collider);
     return {circle_collider.GetRadius() / 2, circle_collider.GetRadius() / 2};
   }
 }

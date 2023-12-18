@@ -23,7 +23,6 @@ class BaseUpgrade : public GameObject {
 
     auto upgrade_pickup_sound = Component::Create<AudioSource>("resources/audio/base_upgrade.wav");
     upgrade_pickup_sound->SetVolume(10);
-    upgrade_pickup_sound->SetSpeed(75);
     AddComponent(upgrade_pickup_sound);
 
     auto base_upgrade_logic = GameObject::Create<BaseUpgradeLogic>(upgrade, frame_sprite,

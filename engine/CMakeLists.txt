@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.22)
+cmake_policy(SET CMP0135 NEW)
 project(engine)
+
 set(CMAKE_CXX_STANDARD 17)
 
 if (UNIX AND NOT APPLE)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
-elseif (WIN32)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 endif ()
 
 add_compile_options(-Wall -Wpedantic)
@@ -23,9 +23,10 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/artificial_intelligence/artificial_intelligence.h
         include/entities/artificial_intelligence/player_turret.h
 
-        include/entities/colliders/box_collider.h
-        include/entities/colliders/circle_collider.h
-        include/entities/colliders/collider.h
+        include/entities/physics/box_collider.h
+        include/entities/physics/circle_collider.h
+        include/entities/physics/collider.h
+        include/entities/physics/rigid_body.h
 
         include/entities/listeners/key_listener.h
         include/entities/listeners/listener.h
@@ -47,6 +48,7 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/structs/input.h
         include/entities/structs/vector_2d.h
         include/entities/structs/rigid_body_type.h
+        include/entities/structs/physics_config.h
 
         include/entities/ui/ui_button.h
         include/entities/ui/ui_object.h
@@ -58,7 +60,6 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/camera.h
         include/entities/component.h
         include/entities/game_object.h
-        include/entities/rigid_body.h
         include/entities/sprite.h
         include/entities/transform.h
         include/entities/particle.h
@@ -101,8 +102,12 @@ add_library(${PROJECT_NAME} SHARED
 
         src/entities/artificial_intelligence/player_turret.cc
 
-        src/entities/colliders/box_collider.cc
-        src/entities/colliders/circle_collider.cc
+        src/entities/physics/box_collider.cc
+        src/entities/physics/circle_collider.cc
+        src/physics/box2d_physics_engine.h
+        src/physics/box2d_physics_engine.cc
+        src/entities/physics/rigid_body.cc
+        src/physics/box2d_contact_listener.h
 
         src/entities/listeners/key_listener.cc
         src/entities/listeners/mouse_listener.cc
@@ -130,11 +135,6 @@ add_library(${PROJECT_NAME} SHARED
         src/input/input.cc
         src/input/sdl_input.cc
 
-        src/physics/box2d_physics_engine.h
-        src/physics/box2d_physics_engine.cc
-        src/physics/rigid_body.cc
-        src/physics/box2d_contact_listener.h
-
         src/rendering/textures/sdl_texture_registry.cc
         src/rendering/renderers/sdl_renderer.cc
         src/rendering/renderers/sdl_sprite_renderer.cc
@@ -148,6 +148,10 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/structs/debug_info.h
         include/entities/foresight_camera.h
         src/entities/foresight_camera.cc
+        include/entities/light_source.h
+        src/entities/light_source.cc
+        include/entities/scene/scene_lighting.h
+        src/entities/scene/scene_lighting.cc
 
 )
 

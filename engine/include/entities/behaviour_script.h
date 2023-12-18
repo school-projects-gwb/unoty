@@ -2,7 +2,7 @@
 #define ENGINE_INCLUDE_ENTITIES_BEHAVIOUR_SCRIPT_H_
 
 #include <memory>
-#include "entities/colliders/collider.h"
+#include "entities/physics/collider.h"
 #include "entities/structs/key.h"
 namespace engine::entities {
 

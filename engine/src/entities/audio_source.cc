@@ -24,10 +24,6 @@ class AudioSource::Impl : public Component {
 
   void SetVolume(int volume) { audio_->SetVolume(volume); }
   int GetVolume() { return audio_->GetVolume(); }
-  void SetPitch(int pitch) { audio_->SetPitch(pitch); }
-  int GetPitch() { return audio_->GetPitch(); }
-  void SetSpeed(int speed) { audio_->SetSpeed(speed); }
-  int GetSpeed() { return audio_->GetSpeed(); }
 
  private:
   Audio* audio_;
@@ -50,8 +46,4 @@ bool AudioSource::IsLooping() { return impl_->IsLooping(); }
 /// @param x Parameter description
 void AudioSource::SetVolume(int volume) { impl_->SetVolume(volume); }
 int AudioSource::GetVolume() { return impl_->GetVolume(); }
-void AudioSource::SetPitch(int pitch) { impl_->SetPitch(pitch); }
-int AudioSource::GetPitch() { return impl_->GetPitch(); }
-void AudioSource::SetSpeed(int speed) { impl_->SetSpeed(speed); }
-int AudioSource::GetSpeed() { return impl_->GetSpeed(); }
 }
