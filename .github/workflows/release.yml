@@ -58,7 +58,7 @@ jobs:
       - name: "Build"
         run: |
           cd build
-          cmake --build . --target engine 
+          cmake --build . --target engine dependencies
           cmake --build . --target slime_shooter game_resources
       - name: "Create zip"
         run: |
