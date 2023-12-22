@@ -1,17 +1,22 @@
-#include "entities/particle.h"
+#include "entities/particle_emitters/particle.h"
 #include "utility/timer.h"
 
 namespace engine::entities {
 
 class Particle::Impl {
  public:
-  Impl(const Vector2d& velocity, float lifespan, std::shared_ptr<Sprite> sprite, std::shared_ptr<Transform> transform)
-      : velocity_(velocity), lifespan_(lifespan), sprite_(std::move(sprite)), transform_(std::move(transform)) {
+  Impl(Particle* parent, const Vector2d& velocity, float lifespan, std::shared_ptr<Sprite> sprite, std::shared_ptr<Transform> transform)
+      : parent_(parent), velocity_(velocity), lifespan_(lifespan), sprite_(std::move(sprite)), transform_(std::move(transform)) {
     starting_position_ = transform_->Position;
   }
 
   void Update(float delta_time) {
     if (!IsAlive()) return;
+
+    //execute callback
+    if(callback_ != nullptr && parent_ != nullptr){
+      callback_(*parent_, delta_time);
+    }
 
     // Update position
     transform_->Position.x += velocity_.x * delta_time;
@@ -21,8 +26,9 @@ class Particle::Impl {
     lifespan_ -= delta_time;
   }
 
-  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer) {
+  void Render(const std::unique_ptr<ui::SpriteRenderer>& renderer, float delta_time) {
     sprite_->Render(renderer,transform_);
+    Update(delta_time);
   }
 
   [[nodiscard]] bool IsAlive() const{
@@ -49,22 +55,27 @@ class Particle::Impl {
     velocity_ = velocity;
   }
 
+  void SetUpdateCallback(const Particle::ParticleUpdateCallback &callback) {
+    callback_ = callback;
+  }
+
  private:
+  Particle* parent_;
   Vector2d starting_position_;
   Vector2d velocity_;
   float lifespan_;
   std::shared_ptr<Sprite> sprite_;
   std::shared_ptr<Transform> transform_;
+  ParticleUpdateCallback callback_;
 };
 
 Particle::Particle(const Vector2d& velocity, float lifespan, std::shared_ptr<Sprite> sprite, std::shared_ptr<Transform> transform)
-    : impl_(std::make_unique<Impl>(velocity, lifespan, std::move(sprite), std::move(transform))) {}
+    : impl_(std::make_unique<Impl>(this, velocity, lifespan, std::move(sprite), std::move(transform))) {}
 
 Particle::~Particle() = default;
 
 void Particle::Render(const std::unique_ptr<ui::SpriteRenderer> &renderer, float delta_time) {
-  impl_->Render(renderer);
-  impl_->Update(delta_time);
+  impl_->Render(renderer, delta_time);
 }
 
 bool Particle::IsAlive() const {
@@ -84,6 +95,9 @@ Vector2d Particle::GetVelocity() const {
 }
 Vector2d Particle::GetStartingPosition() const {
   return impl_->GetStartingPosition();
+}
+void Particle::SetUpdateCallback(const Particle::ParticleUpdateCallback &callback) {
+  return impl_->SetUpdateCallback(callback);
 }
 
 }

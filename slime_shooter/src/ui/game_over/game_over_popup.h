@@ -81,7 +81,7 @@ class GameOverPopup : public GameObject {
     SetIsActive(false);
     GameConfig::SetPropertyValue("high_score", std::to_string(player_statistics_->GetInt(StatisticType::Score)));
     engine::EngineConfig::is_paused = false;
-    engine::Engine::GetInstance().SetActiveScene(play_again ? "game_scene" : "menu_scene");
+    engine::Engine::GetInstance().SetActiveScene(play_again ?  engine::Engine::GetInstance().GetActiveScene()->GetSceneName() : "menu_scene");
   }
 
  private:

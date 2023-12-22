@@ -12,6 +12,7 @@
 #include "player_health.h"
 #include "entities/physics/box_collider.h"
 #include "player_light.h"
+#include "player_leveling_effect.h"
 
 using namespace engine::entities;
 
@@ -19,7 +20,9 @@ namespace slime_shooter {
 
 class Player : public GameObject {
  public:
-  Player() {
+  Player(engine::physics::RigidBodyType body_type = engine::physics::RigidBodyType::Dynamic) {
+    auto player_size = Point{100, 100};
+
     SetName("Player");
     SetTagName("Player");
 
@@ -31,12 +34,17 @@ class Player : public GameObject {
 
     auto script = Component::Create<PlayerMovement>();
     auto statistics = Component::Create<Statistics>();
+    auto leveling_effect = GameObject::Create<PlayerLevelingEffect>(10, Vector2d{50,50}, player_size);
     auto experience = Component::Create<PlayerExperience>();
 
-    GetTransform()->SetSize({100, 100});
+    experience->SetLevelUpCallback([leveling_effect]() {
+      leveling_effect->Start();
+    });
+
+    GetTransform()->SetSize(player_size);
 
     auto collider = Component::Create<BoxCollider>(Vector2d{100, 100});
-    auto rigid_body = Component::Create<RigidBody>(*this, engine::physics::RigidBodyType::Dynamic, collider);
+    auto rigid_body = Component::Create<RigidBody>(*this, body_type, collider);
 
     auto health = GameObject::Create<PlayerHealth>();
 
@@ -47,6 +55,7 @@ class Player : public GameObject {
     AddComponent(rigid_body);
     AddComponent(collider);
     AddComponent(health);
+    AddComponent(leveling_effect);
 
     auto weapon = GameObject::Create<PlayerWeapon>();
     AddChildObject(weapon);
@@ -55,8 +64,8 @@ class Player : public GameObject {
     AddChildObject(light);
 
     auto turret = GameObject::Create<PlayerTurret>();
-    turret->GetTransform()->Position = {800, 650}; // TODO update when turret has AI logic
     AddChildObject(turret);
+    turret->Init();
 
     rigid_body->SetPosition({875, 650});
 

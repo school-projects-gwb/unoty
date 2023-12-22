@@ -51,8 +51,8 @@ void SdlSpriteRenderer::RenderSprite(const RenderInfo& render_info, const Render
   auto* texture = static_cast<SDL_Texture *>(rendering::TextureRegistry::GetInstance().GetTexture(render_info.sprite_path));
 
   auto scaled_size = GetScaledSize(render_info.transform->GetScale(), render_info.size);
-  RenderTexture(texture, nullptr, render_info.transform->Position, scaled_size.x,
-                scaled_size.y, render_options.flip, render_info.transform->GetRotation(), render_options.is_position_fixed, render_info.is_ui_object);
+  RenderTexture(texture, nullptr, render_info.transform->Position, scaled_size,
+                render_info.offset, render_options.flip, render_info.transform->GetRotation(), render_options.is_position_fixed, render_info.is_ui_object);
 }
 
 void SdlSpriteRenderer::RenderSpriteFromSheet(const RenderInfo& render_info, const RenderOptions& render_options) {
@@ -60,8 +60,8 @@ void SdlSpriteRenderer::RenderSpriteFromSheet(const RenderInfo& render_info, con
 
   SDL_Rect sheet_rectangle = GetSheetRectangle(render_info.position_in_sheet);
   auto scaled_size = GetScaledSize(render_info.transform->GetScale(), render_info.size);
-  RenderTexture(texture, &sheet_rectangle, render_info.transform->Position, scaled_size.x,
-                scaled_size.y, render_options.flip, render_info.transform->GetRotation(), false, render_info.is_ui_object);
+  RenderTexture(texture, &sheet_rectangle, render_info.transform->Position, scaled_size,
+                render_info.offset, render_options.flip, render_info.transform->GetRotation(), render_options.is_position_fixed, render_info.is_ui_object);
 }
 
 void SdlSpriteRenderer::RenderSpriteFromSheetWithColorOverlay(const RenderInfo& render_info, const RenderOptions& render_options) {
@@ -71,8 +71,8 @@ void SdlSpriteRenderer::RenderSpriteFromSheetWithColorOverlay(const RenderInfo& 
 
   SDL_Rect sheet_rectangle = GetSheetRectangle(render_info.position_in_sheet);
   auto scaled_size = GetScaledSize(render_info.transform->GetScale(), render_info.size);
-  RenderTexture(texture, &sheet_rectangle, render_info.transform->Position, scaled_size.x,
-                scaled_size.y, render_options.flip, render_info.transform->GetRotation(), render_info.is_ui_object);
+  RenderTexture(texture, &sheet_rectangle, render_info.transform->Position, scaled_size,
+                render_info.offset, render_options.flip, render_info.transform->GetRotation(), render_options.is_position_fixed, render_info.is_ui_object);
 
   SDL_SetTextureColorMod(texture, 255, 255, 255);
 }
@@ -83,7 +83,7 @@ void SdlSpriteRenderer::RenderStaticSpriteFromSheet(const RenderInfo& render_inf
   SDL_Rect sheet_rectangle = GetSheetRectangle(render_info.position_in_sheet);
 
   RenderTexture(texture, &sheet_rectangle, {render_info.target_position.x, render_info.target_position.y},
-                render_info.target_position.w, render_info.target_position.h, entities::FlipNone, 0, render_info.is_ui_object);
+                {render_info.target_position.w, render_info.target_position.h}, render_info.offset, entities::FlipNone, 0, render_options.is_position_fixed, render_info.is_ui_object);
 }
 
 SDL_Rect SdlSpriteRenderer::GetSheetRectangle(const entities::structs::Rectangle& position_in_sheet) {
@@ -97,7 +97,7 @@ SDL_Rect SdlSpriteRenderer::GetSheetRectangle(const entities::structs::Rectangle
 }
 
 void SdlSpriteRenderer::RenderTexture(SDL_Texture* texture, const SDL_Rect* source_rect,
-                                const entities::Vector2d& destination_position, int width, int height,
+                                const entities::Vector2d& destination_position, entities::Point size, entities::Point offset,
                                 entities::SpriteFlip flip, double rotation, bool is_position_fixed, bool is_ui_object) const {
   if (!is_ui_object)
     SDL_SetRenderTarget(renderer_, background_layer_);
@@ -105,10 +105,10 @@ void SdlSpriteRenderer::RenderTexture(SDL_Texture* texture, const SDL_Rect* sour
   SDL_Rect destination_rectangle;
 
   auto camera_position = sdl_renderer_->GetCameraPosition();
-  destination_rectangle.x = destination_position.x - (is_position_fixed ? 0 : camera_position.x - (width/2));
-  destination_rectangle.y = destination_position.y - (is_position_fixed ? 0 : camera_position.y - (height/2));
-  destination_rectangle.w = width;
-  destination_rectangle.h = height;
+  destination_rectangle.x = destination_position.x - (is_position_fixed ? 0 : camera_position.x - (size.x/2)) + offset.x;
+  destination_rectangle.y = destination_position.y - (is_position_fixed ? 0 : camera_position.y - (size.y/2)) + offset.y;
+  destination_rectangle.w = size.x;
+  destination_rectangle.h = size.y;
 
   auto sdl_flip = GetSdlRendererFlipFromSpriteFlip(flip);
 

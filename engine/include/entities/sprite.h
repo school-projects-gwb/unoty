@@ -21,6 +21,9 @@ class Sprite : public Component {
 
   void SetFlip(entities::SpriteFlip flip);
   [[nodiscard]] entities::SpriteFlip GetFlip() const;
+
+  void SetOffset(Point offset);
+  [[nodiscard]] Point GetOffset() const;
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

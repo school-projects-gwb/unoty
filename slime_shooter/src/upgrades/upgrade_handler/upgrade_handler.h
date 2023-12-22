@@ -46,8 +46,13 @@ class UpgradeHandler : public GameObject {
 
     int option_padding = 30;
     auto option1 = GameObject::Create<UpgradeOption>(option_size, Vector2d{option_padding, option_y_position}, "1");
-    auto option2 = GameObject::Create<UpgradeOption>(option_size, Vector2d{2*option_padding + option_size.x, option_y_position}, "2");
-    auto option3 = GameObject::Create<UpgradeOption>(option_size, Vector2d{3*option_padding + option_size.x*2, option_y_position}, "3");
+    auto option2 = GameObject::Create<UpgradeOption>(option_size,
+                                                     Vector2d{2 * option_padding + option_size.x, option_y_position},
+                                                     "2");
+    auto option3 = GameObject::Create<UpgradeOption>(option_size,
+                                                     Vector2d{3 * option_padding + option_size.x * 2,
+                                                              option_y_position},
+                                                     "3");
 
     options_.push_back(option1);
     options_.push_back(option2);
@@ -62,7 +67,7 @@ class UpgradeHandler : public GameObject {
   }
 
   void Show() {
-    if (GetIsActive()) return;
+    if (GetIsReady()) return;
     SetIsActive(true);
 
     if (!is_player_set_) SetPlayer();
@@ -70,25 +75,33 @@ class UpgradeHandler : public GameObject {
     auto current_upgrade_type = player_statistics_->GetCurrentUpgradeType();
     auto applicable_upgrades = statistic_upgrades::GetStatisticUpgradesByType(current_upgrade_type);
 
-    for (const auto& option : options_)
+    for (const auto &option : options_)
       option->SetContent(engine::utility::Randomizer::GetInstance().RandomElement(applicable_upgrades).value());
 
     engine::Engine::GetInstance().Pause([this]() { ProcessUpgrade(); });
   }
 
   void ProcessUpgrade() {
-    switch (Input::GetLastKeyPress()) {
-      case engine::entities::Key::Uno1:
-        player_statistics_->ApplyUpgrade(options_.at(0)->GetUpgrade());
-        break;
-      case engine::entities::Key::Uno2:
-        player_statistics_->ApplyUpgrade(options_.at(1)->GetUpgrade());
-        break;
-      case engine::entities::Key::Uno3:
-        player_statistics_->ApplyUpgrade(options_.at(2)->GetUpgrade());
-        break;
-      default:
-        return;
+    if (!Input::IsGamepadPluggedIn()) {
+      switch (Input::GetLastKeyPress()) {
+        case engine::entities::Key::Uno1:player_statistics_->ApplyUpgrade(options_.at(0)->GetUpgrade());
+          break;
+        case engine::entities::Key::Uno2:player_statistics_->ApplyUpgrade(options_.at(1)->GetUpgrade());
+          break;
+        case engine::entities::Key::Uno3:player_statistics_->ApplyUpgrade(options_.at(2)->GetUpgrade());
+          break;
+        default:return;
+      }
+    } else {
+      switch (Input::GetLastButtonPress()) {
+        case engine::entities::GamepadButton::Left:player_statistics_->ApplyUpgrade(options_.at(0)->GetUpgrade());
+          break;
+        case engine::entities::GamepadButton::Up:player_statistics_->ApplyUpgrade(options_.at(1)->GetUpgrade());
+          break;
+        case engine::entities::GamepadButton::Right:player_statistics_->ApplyUpgrade(options_.at(2)->GetUpgrade());
+          break;
+        default:return;
+      }
     }
 
     SetIsActive(false);

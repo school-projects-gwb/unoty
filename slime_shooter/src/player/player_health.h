@@ -23,7 +23,7 @@ class PlayerHealth : public BehaviourScript {
       GetGameObject().GetComponentByType<PlayerMovement>()->StopWalkSound(); // Stop walking sound in case player was walking while dying
       game_over_popup_->Show();
     } else {
-      player_statistics_->Append(StatisticType::Health, -damage_amount);
+      player_statistics_->Append(StatisticType::Health, static_cast<float>(-damage_amount));
     }
 
     damage_cooldown_timer_.Start();
@@ -51,7 +51,7 @@ class PlayerHealth : public BehaviourScript {
     if (colliding_object->GetTagName() != "Enemy") return;
 
     if (damage_cooldown_timer_.HasElapsed(damage_cooldown_seconds_))
-      TakeDamage(1);
+      TakeDamage(engine::EngineConfig::player_god_mode ? 0 : 1);
   }
 };
 

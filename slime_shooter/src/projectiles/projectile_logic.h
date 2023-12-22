@@ -53,7 +53,7 @@ class ProjectileLogic : public BehaviourScript {
     if (source_tag_ == "Enemy" && colliding_object_tag == "Player") {
       auto player_health = colliding_object->GetComponentByType<PlayerHealth>();
       if (player_health)
-        player_health->TakeDamage(1);
+        player_health->TakeDamage(engine::EngineConfig::player_god_mode ? 0 : 1);
 
       GetGameObject().SetIsActive(false);
       return;

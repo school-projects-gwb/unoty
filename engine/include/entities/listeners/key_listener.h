@@ -10,7 +10,7 @@ namespace engine::entities {
 /// @brief Triggers functions on key interaction
 class KeyListener : public Listener {
  public:
-  ~KeyListener();
+  ~KeyListener() override;
   KeyListener();
   virtual void OnKeyPressed();
   virtual void OnKeyReleased();

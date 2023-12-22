@@ -15,8 +15,7 @@ libs/
 
 **/doxygen_output/
 **/.idea/
-**/cmake-build-debug/
-**/cmake-build-debug-mingw/
+**/cmake-build-*
 
 # Prerequisites
 *.d
@@ -54,7 +53,3 @@ libs/
 !/dependencies/
 !/dependencies/**
 engine/dependencies
-
-
-# Ik heb deze map nodig als ik valgrind wil gebruiken -D
-cmake-build-debug-wsl/**

@@ -1,8 +1,6 @@
-#include <filesystem>
-#include <memory>
-#include <utility>
 #include "engine/engine.h"
 #include "engine_tick.h"
+
 #include "entities/scene/scene_manager.h"
 #include "rendering/renderers/sdl_renderer.h"
 #include "../input/input.h"
@@ -76,7 +74,7 @@ class Engine::Impl {
           renderer_->StartRenderFrame();
           active_scene->RenderObjects(renderer_);
           renderer_->EndRenderFrame();
-          
+
           continue;
         }
 
@@ -84,6 +82,7 @@ class Engine::Impl {
         input_->ProcessInput(active_scene->GetCameraPosition(true));
 
         active_scene->TriggerListeners();
+        active_scene->DequeueObjects();
 
         renderer_->StartRenderFrame();
         active_scene->RenderObjects(renderer_);
@@ -113,11 +112,12 @@ class Engine::Impl {
     physics_->DeregisterAllBodies();
   }
 
-  void AddScene(const std::string &name, entities::SceneCallbackFunction callback_function) {
+  static void AddScene(const std::string &name, entities::SceneCallbackFunction callback_function) {
     SceneManager::GetInstance().AddScene(name, std::move(callback_function));
   }
 
   void SetActiveScene(const std::string &name) {
+    audio::SDLMixerAdapter::GetInstance()->CleanUp();
     physics_->DeregisterAllBodies();
     SceneManager::GetInstance().SetActiveScene(name);
   }
@@ -126,7 +126,15 @@ class Engine::Impl {
     EngineConfig::is_debug_mode = !EngineConfig::is_debug_mode;
   }
 
-  bool IsDebugModeEnabled() const {
+  static void ToggleGodMode() {
+    EngineConfig::player_god_mode = !EngineConfig::player_god_mode;
+  }
+
+  static void SetGodMode(bool value) {
+    EngineConfig::player_god_mode = value;
+  }
+
+  static bool IsDebugModeEnabled() {
     return EngineConfig::is_debug_mode;
   }
 
@@ -150,6 +158,30 @@ class Engine::Impl {
     physics_->SetStepsPerSecond(frames_per_second);
   }
 
+  void IncrementFps() {
+    if (target_fps_ + 20 <= 120) target_fps_ += 20;
+    else target_fps_ = 120;
+
+    game_tick_.SetTargetFps(target_fps_);
+  }
+
+  void DecrementFps() {
+    if (target_fps_ - 10 >= 10) target_fps_ -= 10;
+    else target_fps_ = 10;
+
+    game_tick_.SetTargetFps(target_fps_);
+  }
+
+  void ResetFps() {
+    if (target_fps_ != 60) target_fps_ = 60;
+
+    game_tick_.SetTargetFps(target_fps_);
+  }
+
+  static std::shared_ptr<entities::Scene> GetActiveScene() {
+    return SceneManager::GetInstance().GetActiveScene();
+  }
+
  private:
   std::unique_ptr<ui::Renderer> renderer_;
   std::unique_ptr<input::Input> input_;
@@ -158,13 +190,12 @@ class Engine::Impl {
   EngineTick game_tick_;
   bool is_config_set_ = false;
   bool is_quit_game_ = false;
+  int target_fps_ = 60;
 
   std::function<void()> unpause_handling_callback_;
 };
 
-Engine::Engine() : impl_(std::make_unique<Impl>()) {
-
-}
+Engine::Engine() : impl_(std::make_unique<Impl>()) {}
 
 Engine &Engine::GetInstance() {
   static Engine instance;
@@ -201,6 +232,14 @@ void Engine::ToggleDebugMode() const {
   impl_->ToggleDebugMode();
 }
 
+void Engine::ToggleGodMode() const {
+  impl_->ToggleGodMode();
+}
+
+void Engine::SetGodMode(bool value) {
+  impl_->SetGodMode(value);
+}
+
 bool Engine::IsDebugModeEnabled() const {
   return impl_->IsDebugModeEnabled();
 }
@@ -221,6 +260,22 @@ std::unique_ptr<physics::PhysicsEngine> &Engine::GetPhysicsEngine() {
 
 void Engine::SetFps(int frames_per_second) {
   impl_->SetFps(frames_per_second);
+}
+
+void Engine::IncrementFps() {
+  impl_->IncrementFps();
+}
+
+void Engine::DecrementFps() {
+  impl_->DecrementFps();
+}
+
+void Engine::ResetFps() {
+  impl_->ResetFps();
+}
+
+std::shared_ptr<entities::Scene> Engine::GetActiveScene() {
+  return impl_->GetActiveScene();
 }
 
 }

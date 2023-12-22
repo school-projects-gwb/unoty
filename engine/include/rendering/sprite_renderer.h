@@ -15,7 +15,8 @@ struct RenderInfo {
   std::shared_ptr<entities::Transform> transform;
   entities::structs::Rectangle position_in_sheet;
   entities::structs::Rectangle target_position;
-  entities::Point size = {0,0};
+  entities::Point offset {0,0};
+  entities::Point size {0,0};
   bool is_ui_object = false;
 };
 

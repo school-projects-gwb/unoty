@@ -4,7 +4,7 @@ namespace engine::entities {
 
 class MouseListener::Impl : public Listener {
  public:
-  Impl() {}
+  Impl() = default;
 };
 
 MouseListener::MouseListener() : impl_(std::make_unique<Impl>()) {}

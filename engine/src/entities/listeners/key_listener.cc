@@ -4,7 +4,7 @@ namespace engine::entities {
 
 class KeyListener::Impl : public Listener {
  public:
-  Impl() {}
+  Impl() = default;
 };
 
 KeyListener::KeyListener() : impl_(std::make_unique<Impl>()) {}

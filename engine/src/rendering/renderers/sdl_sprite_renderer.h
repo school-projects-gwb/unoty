@@ -44,16 +44,17 @@ class SdlSpriteRenderer : public ui::SpriteRenderer {
   const int kDefaultSpriteHeight = 100;
   int window_width_;
   int window_height_;
-
+  
   void RenderTexture(SDL_Texture *texture,
                      const SDL_Rect *source_rect,
                      const entities::Vector2d &destination_position,
-                     int width,
-                     int height,
+                     entities::Point size,
+                     entities::Point offset,
                      entities::SpriteFlip flip,
-                     double rotation = 0,
-                     bool is_position_fixed = false,
-                     bool is_ui_object = false) const;
+                     double rotation,
+                     bool is_position_fixed,
+                     bool is_ui_object) const;
+
   static SDL_RendererFlip GetSdlRendererFlipFromSpriteFlip(entities::SpriteFlip sprite_flip);
 
   static SDL_Rect GetSheetRectangle(const entities::structs::Rectangle &position_in_sheet);

@@ -4,6 +4,7 @@
 #include "entities/game_object.h"
 #include "string"
 #include "enemies/enemy_logic.h"
+#include "enemies/enemy_object_pool.h"
 
 using namespace engine::entities;
 

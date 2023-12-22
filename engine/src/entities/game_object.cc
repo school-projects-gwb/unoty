@@ -1,6 +1,6 @@
 #include <iostream>
+#include <utility>
 #include "entities/game_object.h"
-#include "entities/component.h"
 #include "entities/scene/scene_manager.h"
 #include "utility/debug.h"
 
@@ -42,12 +42,29 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
     return layer_;
   }
 
-  void SetIsActive(bool is_active) {
-    is_active_ = is_active;
-  }
-
   [[nodiscard]] bool GetIsActive() const {
     return is_active_;
+  }
+
+  void SetIsActive(bool is_active, std::shared_ptr<GameObject>& ptr) {
+    if (is_active_ == is_active){
+      return;
+    }
+
+    is_active_ = is_active;
+    is_ready_ = (is_active && ptr == nullptr);
+
+    if(is_active && ptr != nullptr) {
+      SceneManager::GetInstance().QueueObject(ptr);
+    }
+  }
+
+  void SetReadyTrue() {
+    is_ready_ = true;
+  }
+
+  [[nodiscard]] bool GetIsReady() const {
+    return is_ready_;
   }
 
   std::shared_ptr<Transform> GetTransform() {
@@ -66,21 +83,18 @@ class GameObject::Impl : public std::enable_shared_from_this<GameObject> {
     return SceneManager::GetInstance().GetObjectsByTagName(tag_name, search_recursive);
   }
 
-  static const std::unique_ptr<SceneLighting> &GetSceneLightingObject() {
-    return SceneManager::GetInstance().GetSceneLightingObject();
-  }
-
   static void AddSceneObject(std::shared_ptr<GameObject> object_to_add) {
-    SceneManager::GetInstance().AddObject(object_to_add);
+    SceneManager::GetInstance().AddObject(std::move(object_to_add));
   }
 
   static void RemoveSceneObject(std::shared_ptr<GameObject> object_to_remove) {
-    SceneManager::GetInstance().RemoveObject(object_to_remove);
+    SceneManager::GetInstance().RemoveObject(std::move(object_to_remove));
   }
  private:
   std::string name_;
   std::string tag_name_;
   bool is_active_ = true;
+  bool is_ready_ = true;
   int layer_ = 0;
   std::shared_ptr<GameObject> parent_;
   GameObject* owner_;
@@ -114,12 +128,28 @@ int GameObject::GetLayer() const {
   return impl_->GetLayer();
 }
 
-void GameObject::SetIsActive(bool is_active) {
-  impl_->SetIsActive(is_active);
-}
-
 bool GameObject::GetIsActive() const {
   return impl_->GetIsActive();
+}
+
+void GameObject::SetIsActive(bool is_active) {
+  std::shared_ptr<GameObject> ptr = nullptr;
+  try {
+    // try to get the shared pointer of the object
+    ptr = GetPtr();
+  } catch (std::bad_weak_ptr const&) {
+    // method was not called from a shared pointer.
+  }
+
+  impl_->SetIsActive(is_active, ptr);
+}
+
+void GameObject::SetReadyTrue() const {
+  impl_->SetReadyTrue();
+}
+
+bool GameObject::GetIsReady() const {
+  return impl_->GetIsReady();
 }
 
 std::shared_ptr<Transform> GameObject::GetTransform() {
@@ -142,16 +172,12 @@ std::vector<std::shared_ptr<GameObject>> GameObject::GetSceneObjectsByTagName(co
   return Impl::GetSceneObjectsByTagName(tag_name, search_recursive);
 }
 
-const std::unique_ptr<SceneLighting> &GameObject::GetSceneLightingObject() {
-  return Impl::GetSceneLightingObject();
-}
-
 void GameObject::RemoveSceneObject(std::shared_ptr<GameObject> object_to_remove) {
-  Impl::RemoveSceneObject(object_to_remove);
+  Impl::RemoveSceneObject(std::move(object_to_remove));
 }
 
 void GameObject::AddSceneObject(std::shared_ptr<GameObject> object_to_add) {
-  Impl::AddSceneObject(object_to_add);
+  Impl::AddSceneObject(std::move(object_to_add));
 }
 
 }

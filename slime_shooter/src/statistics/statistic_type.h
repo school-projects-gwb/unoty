@@ -4,7 +4,7 @@
 namespace slime_shooter {
 
 enum class StatisticType {
-  Health, MaxHealth, MovementSpeed, FireRate, Damage, TurretSpeed, ProjectileSpeed, ProjectileSize, Experience, MaxExperience, Score, Level
+  Health, MaxHealth, MovementSpeed, FireRate, Damage, TurretSpeed, ProjectileSpeed, ProjectileSize, Experience, MaxExperience, Score, Level, TurretFireRate, TurretRange
 };
 
 }

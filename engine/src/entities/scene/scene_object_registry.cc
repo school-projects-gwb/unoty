@@ -6,6 +6,9 @@ namespace engine::entities {
 std::vector<std::shared_ptr<GameObject>> SceneObjectRegistry::GetObjects() {
   return game_objects_;
 }
+std::vector<std::shared_ptr<GameObject>> SceneObjectRegistry::GetQueuedObjects() {
+  return game_object_queue_;
+}
 
 void SceneObjectRegistry::AddObject(std::shared_ptr<GameObject> object) {
   auto it = std::find(game_objects_.begin(), game_objects_.end(), object);
@@ -20,6 +23,17 @@ void SceneObjectRegistry::AddObject(std::shared_ptr<GameObject> object) {
 
   game_objects_.insert(insert_position, std::move(object));
 
+}
+
+void SceneObjectRegistry::QueueObject(std::shared_ptr<GameObject> object) {
+  game_object_queue_.push_back(std::move(object));
+}
+
+void SceneObjectRegistry::DequeueObject(std::shared_ptr<GameObject> object) {
+  game_object_queue_.erase(std::remove_if(game_object_queue_.begin(), game_object_queue_.end(),
+                                     [&object](const std::shared_ptr<GameObject>& obj) {
+                                       return obj == object;
+                                     }), game_object_queue_.end());
 }
 
 void SceneObjectRegistry::RemoveObject(std::shared_ptr<GameObject> object) {
@@ -46,16 +60,19 @@ std::vector<std::shared_ptr<GameObject>> SceneObjectRegistry::GetObjectsByTagNam
 }
 
 std::shared_ptr<GameObject> SceneObjectRegistry::GetObjectByName(const std::string &name, bool search_recursive) {
-  for (const auto &game_object : game_objects_) {
-    if (!search_recursive) {
+  if (!search_recursive) {
+    for (const auto& game_object : game_objects_) {
       if (game_object->GetName() == name)
         return game_object;
-    } else {
-      auto result = RecursiveNameSearch(game_object, name);
+    }
+  } else {
+    for (const auto& game_object : game_objects_) {
+    auto result = RecursiveNameSearch(game_object, name);
       if (result)
         return result;
     }
   }
+
 
   return nullptr;
 }

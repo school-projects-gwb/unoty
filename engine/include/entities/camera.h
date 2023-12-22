@@ -21,6 +21,8 @@ class Camera : public GameObject {
 
   /// @brief Returns current world position of camera
   virtual Point GetPosition(bool with_offset) const;
+
+  virtual bool HasTrackingTransform() const;
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "entities/camera.h"
 #include "utility/debug.h"
 #include "engine/engine_config.h"
@@ -23,11 +25,16 @@ class Camera::Impl : public GameObject {
   }
 
   void SetTrackingTransform(std::shared_ptr<Transform> transform_to_track) {
-    tracking_transform_ = transform_to_track;
+    has_tracking_transform_ = true;
+    tracking_transform_ = std::move(transform_to_track);
   }
 
   std::shared_ptr<Transform> GetTrackingTransform() {
     return tracking_transform_;
+  }
+
+  [[nodiscard]] bool HasTrackingTransform() const {
+    return has_tracking_transform_;
   }
 
   bool IsObjectInViewport(const std::shared_ptr<Transform>& object_transform, float offset, entities::Point camera_position) const {
@@ -47,6 +54,7 @@ class Camera::Impl : public GameObject {
   Point position_;
   GameObject* owner_;
   std::shared_ptr<Transform> tracking_transform_;
+  bool has_tracking_transform_ = false;
 };
 
 Camera::Camera() : impl_(std::make_unique<Impl>(this)) {}
@@ -74,6 +82,10 @@ void Camera::SetPosition(Point position) {
 
 Point Camera::GetPosition(bool with_offset) const {
   return impl_->GetPosition(with_offset);
+}
+
+bool Camera::HasTrackingTransform() const {
+  return impl_->HasTrackingTransform();
 }
 
 }

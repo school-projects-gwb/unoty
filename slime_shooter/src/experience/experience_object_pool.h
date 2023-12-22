@@ -38,6 +38,7 @@ class ExperienceObjectPool {
     auto object = weak_object.value().lock();
 
     if (object) {
+      object->ShowParticleEffect();
       object->SetIsActive(true);
       return object;
     }

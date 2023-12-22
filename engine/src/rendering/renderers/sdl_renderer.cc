@@ -22,7 +22,7 @@ SdlRenderer::SdlRenderer(int window_width, int window_height, const std::string 
 }
 
 void SdlRenderer::InitSdl() {
-  if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) == 0) {
     window_ = SDL_CreateWindow(window_title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                window_width_, window_height_, 0);
     if (!window_) std::cerr << "SDL window creation failed: " << SDL_GetError() << std::endl;
@@ -99,8 +99,13 @@ void SdlRenderer::UpdateCameraPosition(engine::entities::Camera *camera) {
   auto target_transform = camera->GetTrackingTransform();
 
   // Calculate and set camera position; center it around target position
-  int camera_x = (center_target_position.x + (target_transform->GetSize().x)) - (window_width_ / 2);
-  int camera_y = (center_target_position.y + (target_transform->GetSize().y)) - (window_height_ / 2);
+  int camera_x = center_target_position.x;
+  int camera_y = center_target_position.y;
+
+  if (camera->HasTrackingTransform()) {
+    camera_x = (center_target_position.x + (target_transform->GetSize().x)) - (window_width_ / 2);
+    camera_y = (center_target_position.y + (target_transform->GetSize().y)) - (window_height_ / 2);
+  }
 
   camera_position_.x = camera_x;
   camera_position_.y = camera_y;

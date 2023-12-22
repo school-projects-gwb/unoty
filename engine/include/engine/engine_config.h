@@ -12,6 +12,7 @@ struct EngineConfig {
   static bool is_debug_mode;
   static bool is_paused;
   static std::string debug_font_path;
+  static bool player_god_mode;
 
   // Rendering
   static int window_width;

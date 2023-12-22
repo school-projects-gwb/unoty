@@ -8,15 +8,10 @@ using namespace engine::entities;
 namespace slime_shooter::showcase {
 
 class PlayerMovement : public BehaviourScript {
- public:
-  void StopWalkSound() {
-    walk_sound_->Stop();
-  }
  private:
   std::shared_ptr<Transform> transform_;
   std::shared_ptr<Animator> animator_;
   std::shared_ptr<RigidBody> rigid_body_;
-  std::shared_ptr<AudioSource> walk_sound_;
 
   engine::utility::Timer jump_timer_;
 
@@ -26,14 +21,14 @@ class PlayerMovement : public BehaviourScript {
 
   bool is_jumping_ = false;
   bool is_touching_floor_ = false;
-  bool is_spacebar_pressed_ = false;
+  bool is_space_bar_pressed_ = false;
+  int jump_counter_ = 0;
 
   bool is_moving_ = false;
   SpriteAnimationState previous_animation_state_;
   SpriteAnimationState current_animation_state_;
 
   Vector2d last_position_ = {10000,10000};
-  Vector2d last_velocity_ = {0,0};
 
   bool is_slowing_down_ = false;
 
@@ -41,11 +36,6 @@ class PlayerMovement : public BehaviourScript {
     transform_ = GetGameObject().GetTransform();
     animator_ = GetGameObject().GetComponentByType<Animator>();
     rigid_body_ = GetGameObject().GetComponentByType<RigidBody>();
-
-    walk_sound_ = Component::Create<AudioSource>("resources/audio/footstep.wav");
-    walk_sound_->ToggleLooping();
-    walk_sound_->SetVolume(10);
-    GetGameObject().AddComponent(walk_sound_);
   }
 
   void OnUpdate() override {
@@ -57,7 +47,7 @@ class PlayerMovement : public BehaviourScript {
       is_jumping_ = false;
     }
 
-    if (!Input::HasActiveKey(Key::UnoSpace) && is_touching_floor_) is_spacebar_pressed_ = false;
+    if (!Input::HasActiveKey(Key::UnoSpace) && is_touching_floor_) is_space_bar_pressed_ = false;
 
     auto current_position = GetGameObject().GetTransform()->Position;
     auto current_velocity = last_position_ - current_position;
@@ -80,10 +70,12 @@ class PlayerMovement : public BehaviourScript {
       }
     }
 
-    last_velocity_ = current_velocity;
     last_position_ = current_position;
 
-    if (last_position_.y == current_position.y && !is_jumping_) is_touching_floor_ = true;
+    if (last_position_.y == current_position.y && !is_jumping_)
+      is_touching_floor_ = true;
+
+    if (current_position.x >= 1280) engine::Engine::GetInstance().SetActiveScene("menu_scene");
   }
 
   void OnInput() override {
@@ -93,11 +85,13 @@ class PlayerMovement : public BehaviourScript {
       if (key == Key::UnoLeftArrow) vector.x--;
       if (key == Key::UnoRightArrow) vector.x++;
 
-      if (key == Key::UnoSpace && !is_jumping_ && is_touching_floor_ && !is_spacebar_pressed_) {
-        is_spacebar_pressed_ = true;
+      if (key == Key::UnoSpace && !is_jumping_ && is_touching_floor_ && !is_space_bar_pressed_) {
+        is_space_bar_pressed_ = true;
         StartJump();
       }
     }
+
+
 
     auto animation_state = DetermineAnimationState(vector.x, vector.y);
     ProcessAnimation(animation_state);
@@ -126,8 +120,12 @@ class PlayerMovement : public BehaviourScript {
   }
 
   void StartJump() {
+    if (jump_counter_ == 1) return;
+
     is_jumping_ = true;
     jump_timer_.Start();
+
+    jump_counter_++;
   }
 
   void ContinueJump() {
@@ -149,6 +147,7 @@ class PlayerMovement : public BehaviourScript {
     is_touching_floor_ = true;
     is_slowing_down_ = false;
     is_jumping_ = false;
+    jump_counter_ = 0;
   }
 
   void OnCollisionExit(engine::entities::GameObject *&colliding_object) override {
@@ -161,10 +160,6 @@ class PlayerMovement : public BehaviourScript {
       current_animation_state_ = SpriteAnimationState::Reset;
       is_moving_ = false;
       return SpriteAnimationState::Default;
-    } else if (y_axis < 0) {
-      return SpriteAnimationState::North;
-    } else if (y_axis > 0) {
-      return SpriteAnimationState::South;
     } else if (x_axis < 0) {
       return SpriteAnimationState::West;
     } else {
@@ -174,7 +169,6 @@ class PlayerMovement : public BehaviourScript {
 
   void ProcessAnimation(SpriteAnimationState animation_state) {
     if (animation_state == SpriteAnimationState::Default) {
-      walk_sound_->Stop();
       return;
     }
 
@@ -185,7 +179,6 @@ class PlayerMovement : public BehaviourScript {
     is_moving_ = true;
     animator_->SetCurrentAnimationSpriteSheet(animation_state);
     animator_->Play(true);
-    walk_sound_->Play();
   }
 };
 

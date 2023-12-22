@@ -1,11 +1,25 @@
-#include <SDL_events.h>
-#include <iostream>
 #include "sdl_input.h"
 
 namespace engine::input {
 
 SdlInput::SdlInput() {
   InitKeyMappings();
+  if (SDL_Init(SDL_INIT_GAMECONTROLLER) == 0) {
+    for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+      if (SDL_IsGameController(i)) game_pad_ = SDL_GameControllerOpen(i);
+      entities::Input::SetIsGamepadPluggedIn(true);
+    }
+    SDL_GameControllerAddMappingsFromFile("resources/gamecontrollerdb.txt");
+    InitializeGamepadMappings();
+  } else
+    std::cerr << "Failed to initialize SDL_GameController: " << SDL_GetError() << std::endl;
+}
+
+SdlInput::~SdlInput() {
+  if (game_pad_ != nullptr) {
+    SDL_GameControllerClose(game_pad_);
+    game_pad_ = nullptr;
+  }
 }
 
 void SdlInput::ProcessInput(const entities::Point &camera_position) {
@@ -17,10 +31,12 @@ void SdlInput::ProcessInput(const entities::Point &camera_position) {
   entities::Input::SetIsMouseClicked(false);
   entities::Input::SetIsMouseMoved(false);
 
+  entities::Input::ClearPressedGamepadButtons();
+  entities::Input::ClearReleasedGamepadButtons();
+
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
-      case SDL_QUIT:
-        entities::Input::SetLastKeyPress(entities::Key::UnoWindowClosed);
+      case SDL_QUIT:entities::Input::SetLastKeyPress(entities::Key::UnoWindowClosed);
         entities::Input::AddActiveKey(entities::Input::GetLastKeyPress());
         break;
       case SDL_KEYDOWN:
@@ -48,7 +64,8 @@ void SdlInput::ProcessInput(const entities::Point &camera_position) {
           entities::Input::SetLastKeyPress(key_mappings_[event.button.button]);
           entities::Input::SetIsMousePressed(true);
           entities::Input::SetIsMouseReleased(false);
-          entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y}, camera_position));
+          entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y},
+                                                                                    camera_position));
         }
         break;
       case SDL_MOUSEBUTTONUP:
@@ -59,13 +76,48 @@ void SdlInput::ProcessInput(const entities::Point &camera_position) {
           entities::Input::SetLastKeyPress(entities::Key::UnoNone);
           entities::Input::SetIsMousePressed(false);
           entities::Input::SetIsMouseReleased(true);
-          entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y}, camera_position));
+          entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y},
+                                                                                    camera_position));
         }
         break;
-      case SDL_MOUSEMOTION:
-        entities::Input::SetIsMouseMoved(true);
-        entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y}, camera_position));
+      case SDL_MOUSEMOTION:entities::Input::SetIsMouseMoved(true);
+        entities::Input::SetMousePointerPosition(GetMousePositionRelativeToCamera({event.button.x, event.button.y},
+                                                                                  camera_position));
         break;
+      case SDL_CONTROLLERDEVICEADDED:if (!game_pad_) game_pad_ = SDL_GameControllerOpen(event.cdevice.which);
+        entities::Input::SetIsGamepadPluggedIn(true);
+        break;
+      case SDL_CONTROLLERDEVICEREMOVED:
+        if (game_pad_ && event.cdevice.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(game_pad_))) {
+          SDL_GameControllerClose(game_pad_);
+          game_pad_ = nullptr;
+          entities::Input::SetIsGamepadPluggedIn(false);
+        }
+        break;
+      case SDL_CONTROLLERBUTTONDOWN:
+        if (event.cbutton.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(game_pad_))) {
+          if (gamepad_mappings_.find(static_cast<SDL_GameControllerButton>(event.cbutton.button))
+              != gamepad_mappings_.end()) {
+            entities::Input::SetLastButtonPress(gamepad_mappings_[static_cast<SDL_GameControllerButton>(event.cbutton.button)]);
+
+            if (!entities::Input::HasActiveGamepadButton(entities::Input::GetLastButtonPress()))
+              entities::Input::AddPressedGamepadButton(entities::Input::GetLastButtonPress());
+
+            entities::Input::AddActiveGamepadButton(entities::Input::GetLastButtonPress());
+          }
+        }
+        break;
+      case SDL_CONTROLLERBUTTONUP:
+        if (event.cbutton.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(game_pad_))) {
+          if (gamepad_mappings_.find(static_cast<SDL_GameControllerButton>(event.cbutton.button))
+              != gamepad_mappings_.end()) {
+            entities::Input::SetLastButtonPress(entities::GamepadButton::None);
+            auto btn = gamepad_mappings_[static_cast<SDL_GameControllerButton >(event.cbutton.button)];
+
+            entities::Input::RemoveActiveGamepadButton(btn);
+            entities::Input::AddReleasedGamepadButton(btn);
+          }
+        }
     }
   }
 
@@ -126,6 +178,9 @@ void SdlInput::InitKeyMappings() {
   key_mappings_[SDLK_LSHIFT] = entities::Key::UnoLeftShift;
   key_mappings_[SDLK_RCTRL] = entities::Key::UnoRightControl;
   key_mappings_[SDLK_RSHIFT] = entities::Key::UnoRightShift;
+  key_mappings_[SDLK_PAGEDOWN] = entities::Key::UnoPageDown;
+  key_mappings_[SDLK_PAGEUP] = entities::Key::UnoPageUp;
+  key_mappings_[SDLK_HOME] = entities::Key::UnoHome;
   // F-keys
   key_mappings_[SDLK_F1] = entities::Key::UnoF1;
   key_mappings_[SDLK_F2] = entities::Key::UnoF2;
@@ -144,7 +199,35 @@ void SdlInput::InitKeyMappings() {
   key_mappings_[SDL_BUTTON_RIGHT] = entities::Key::UnoRightMouseButton;
 }
 
-entities::Point SdlInput::GetMousePositionRelativeToCamera(const entities::Point &mouse_position, const entities::Point &camera_position) {
+void SdlInput::InitializeGamepadMappings() {
+  // Letter buttons
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_Y] = entities::GamepadButton::Y;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_B] = entities::GamepadButton::B;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_A] = entities::GamepadButton::A;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_X] = entities::GamepadButton::X;
+
+  // DPad
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_DPAD_UP] = entities::GamepadButton::Up;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = entities::GamepadButton::Right;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = entities::GamepadButton::Down;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = entities::GamepadButton::Left;
+
+  // Middle buttons
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_START] = entities::GamepadButton::Start;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_GUIDE] = entities::GamepadButton::Guide;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_BACK] = entities::GamepadButton::Back;
+
+  // Shoulder buttons
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = entities::GamepadButton::LeftShoulder;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = entities::GamepadButton::RightShoulder;
+
+  // Joysticks
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_LEFTSTICK] = entities::GamepadButton::LeftJoystick;
+  gamepad_mappings_[SDL_CONTROLLER_BUTTON_RIGHTSTICK] = entities::GamepadButton::RightJoystick;
+}
+
+entities::Point SdlInput::GetMousePositionRelativeToCamera(const entities::Point &mouse_position,
+                                                           const entities::Point &camera_position) {
   return {mouse_position.x + camera_position.x, mouse_position.y + camera_position.y};
 }
 

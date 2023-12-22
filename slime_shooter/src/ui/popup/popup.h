@@ -11,8 +11,8 @@
 using namespace engine::entities;
 
 struct PopupConfig {
-  Vector2d title_position_ = {engine::EngineConfig::window_width/2 - 195, 215};
-  Vector2d content_position_ = {engine::EngineConfig::window_width/2 - 195, 250};
+  Vector2d title_position_ = {engine::EngineConfig::window_width / 2 - 195, 215};
+  Vector2d content_position_ = {engine::EngineConfig::window_width / 2 - 195, 250};
 };
 
 namespace slime_shooter {
@@ -32,7 +32,8 @@ class Popup : public GameObject {
     auto foreground = GameObject::Create<UiObject>();
     foreground->SetBackgroundColor(GameColor::Ui::BackgroundDark);
     foreground->GetTransform()->SetSize({popup_width, popup_height});
-    foreground->GetTransform()->Position = Vector2d{(window_width - popup_width) / 2, (window_height - popup_height) / 2};
+    foreground->GetTransform()->Position =
+        Vector2d{(window_width - popup_width) / 2, (window_height - popup_height) / 2};
 
     popup_title_ = GameObject::Create<PopupTitle>();
     popup_content_ = GameObject::Create<PopupContent>();
@@ -41,7 +42,7 @@ class Popup : public GameObject {
     popup_continue_text->SetColor(GameColor::Ui::TextRed);
     popup_continue_text->SetContent("PRESS <SPACE> TO CONTINUE");
     popup_continue_text->SetFont(GameFont::Default, 24);
-    popup_continue_text->GetTransform()->Position = {engine::EngineConfig::window_width/2 - 295, 450};
+    popup_continue_text->GetTransform()->Position = {engine::EngineConfig::window_width / 2 - 295, 450};
 
     AddChildObject(background);
     AddChildObject(foreground);
@@ -54,7 +55,7 @@ class Popup : public GameObject {
   }
 
   void Show(const std::string &title, const std::string &content, PopupConfig popup_config) {
-    if (GetIsActive()) return; // Check whether popup is already active
+    if (GetIsReady()) return; // Check whether popup is already active
 
     SetIsActive(true);
 
@@ -65,7 +66,7 @@ class Popup : public GameObject {
   }
 
   void Hide() {
-    if (!GetIsActive() || !Input::HasPressedKey(Key::UnoSpace)) return;
+    if (!GetIsReady() || !Input::HasPressedKey(Key::UnoSpace)) return;
 
     SetIsActive(false);
     engine::EngineConfig::is_paused = false;

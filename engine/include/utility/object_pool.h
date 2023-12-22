@@ -27,6 +27,17 @@ class ObjectPool {
     pool_callback_();
   }
 
+  ~ObjectPool() {
+    for (auto& wp : pooled_objects_) {
+      if (auto locked = wp.lock()) {
+        //release_callback_(locked);
+        engine::entities::GameObject::RemoveSceneObject(locked);
+      }
+    }
+
+    pooled_objects_.clear();
+  }
+
   /// @brief Pools objects and optionally adds them to current active Scene
   void PoolObjects(int amount, CreateCallback create_callback) {
     for (auto i = 0; i < amount; i++) {

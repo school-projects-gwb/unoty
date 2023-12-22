@@ -10,7 +10,7 @@ struct Statistic {
   float value;
 };
 
-const int kMaxStatistics = 11;
+const int kMaxStatistics = 13;
 
 const Statistic DefaultStatisticValues[kMaxStatistics] = {
     {StatisticType::Damage, 1},
@@ -23,7 +23,9 @@ const Statistic DefaultStatisticValues[kMaxStatistics] = {
     {StatisticType::ProjectileSize, 1},
     {StatisticType::Score, 0},
     {StatisticType::MovementSpeed, 3},
-    {StatisticType::TurretSpeed, 3}
+    {StatisticType::TurretSpeed, 3},
+    {StatisticType::TurretFireRate, 0.3},
+    {StatisticType::TurretRange, 400}
 };
 
 }

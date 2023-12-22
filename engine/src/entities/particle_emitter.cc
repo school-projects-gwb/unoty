@@ -1,4 +1,4 @@
-#include "entities/particle_emitter.h"
+#include "entities/particle_emitters/particle_emitter.h"
 #include "utility/timer.h"
 #include <algorithm>
 #include <utility>
@@ -7,9 +7,8 @@ namespace engine::entities {
 
 class ParticleEmitter::Impl {
  public:
-  Impl() : timer_(), delta_time_(0.0), emitting_(false), duration_(0.0),
-        emission_accumulator_(0.0), looping_(false), emission_interval_(0.0), elapsed_time_(0.0) {}
-
+  Impl() : timer_(), delta_time_(0.0), emitting_(false), duration_(5.0), emission_accumulator_(0.0),
+        looping_(false), emission_interval_(1.0), elapsed_time_(0.0) {}
 
   void Update(const std::shared_ptr<Transform>& transform, ParticleEmitter& emitter) {
     delta_time_ = GetDeltaTime();
@@ -33,7 +32,7 @@ class ParticleEmitter::Impl {
     emitting_ = true;
     timer_.Start();
     elapsed_time_ = 0;
-    emission_accumulator_ = 0;
+    emission_accumulator_ = emission_interval_;
   }
 
   void Stop() {
@@ -44,7 +43,7 @@ class ParticleEmitter::Impl {
     duration_ = duration;
   }
 
-  float GetDuration() const {
+  [[nodiscard]] float GetDuration() const {
     return duration_;
   }
 
@@ -55,7 +54,7 @@ class ParticleEmitter::Impl {
     }
   }
 
-  bool IsLooping() const {
+  [[nodiscard]] bool IsLooping() const {
     return looping_;
   }
 
@@ -63,8 +62,16 @@ class ParticleEmitter::Impl {
     emission_interval_ = interval;
   }
 
-  float GetEmissionInterval() const {
+  [[nodiscard]] float GetEmissionInterval() const {
     return emission_interval_;
+  }
+
+  void AddParticle(std::shared_ptr<Particle> particle) {
+    particles_.push_back(std::move(particle));
+  }
+
+  void AddParticles(std::vector<std::shared_ptr<Particle>> particles) {
+    particles_.insert(particles_.end(), particles.begin(), particles.end());
   }
 
  private:
@@ -91,34 +98,41 @@ class ParticleEmitter::Impl {
 
       while (emission_accumulator_ >= emission_interval_) {
         emission_accumulator_ -= emission_interval_;
-        EmitParticles(transform, emitter);
+        emitter.OnEmit(emission_interval_, transform->Position);
       }
     }
   }
 
-  void EmitParticles(const std::shared_ptr<Transform>& transform, ParticleEmitter& emitter) {
-    auto new_particles = emitter.CreateParticles(emission_interval_, transform->Position);
-    particles_.insert(particles_.end(), new_particles.begin(), new_particles.end());
-  }
-
   void UpdateDuration() {
-    if (emitting_ && !looping_ && duration_ > 0) {
-      elapsed_time_ += delta_time_;
-      if (elapsed_time_ >= duration_) {
+    if (emitting_ && !looping_) {
+      if (duration_ > 0) {
+        elapsed_time_ += delta_time_;
+        if (elapsed_time_ >= duration_) {
+          Stop();
+        }
+      } else if (duration_ == 0) {
         Stop();
       }
     }
   }
 
   void RemoveInactiveParticles(ParticleEmitter& emitter) {
-    particles_.erase(std::remove_if(particles_.begin(), particles_.end(),[&emitter](const auto& particle) {
-        if (!particle->IsAlive()) {
-          emitter.OnParticleDeletion(particle);
-          return true;
-        }
-        return false;
-      }),
-particles_.end());
+    std::vector<std::shared_ptr<Particle>> particles_to_delete;
+
+    for (const auto& particle : particles_) {
+      if (!particle->IsAlive()) {
+        particles_to_delete.push_back(particle);
+      }
+    }
+
+    particles_.erase(std::remove_if(particles_.begin(), particles_.end(),
+                                    [&](const auto& particle) {
+                                      return std::find(particles_to_delete.begin(), particles_to_delete.end(), particle) != particles_to_delete.end();
+                                    }), particles_.end());
+
+    for (const auto& particle : particles_to_delete) {
+      emitter.OnParticleDeletion(particle);
+    }
   }
 
 };
@@ -144,7 +158,7 @@ void ParticleEmitter::SetDuration(float duration) {
   impl_->SetDuration(duration);
 }
 
-float ParticleEmitter::GetDuration() {
+float ParticleEmitter::GetDuration() const{
   return impl_->GetDuration();
 }
 
@@ -152,7 +166,7 @@ void ParticleEmitter::SetLooping(bool looping) {
   impl_->SetLooping(looping);
 }
 
-bool ParticleEmitter::IsLooping() {
+bool ParticleEmitter::IsLooping() const {
   return impl_->IsLooping();
 }
 
@@ -162,9 +176,14 @@ std::vector<std::shared_ptr<Particle>> ParticleEmitter::GetParticles() {
 void ParticleEmitter::SetEmissionInterval(float interval) {
   impl_->SetEmissionInterval(interval);
 }
-float ParticleEmitter::GetEmissionInterval() {
+float ParticleEmitter::GetEmissionInterval() const {
   return impl_->GetEmissionInterval();
 }
-
+void ParticleEmitter::AddParticle(std::shared_ptr<Particle> particle) {
+  impl_->AddParticle(std::move(particle));
+}
+void ParticleEmitter::AddParticles(std::vector<std::shared_ptr<Particle>> particles) {
+  impl_->AddParticles(std::move(particles));
+}
 
 }

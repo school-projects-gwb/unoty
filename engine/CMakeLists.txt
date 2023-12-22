@@ -20,8 +20,12 @@ add_library(${PROJECT_NAME} SHARED
         include/engine/engine_config.h
         include/physics/physics_engine.h
 
-        include/entities/artificial_intelligence/artificial_intelligence.h
-        include/entities/artificial_intelligence/player_turret.h
+        src/entities/artificial_intelligence/ai_base.h
+        src/entities/artificial_intelligence/a_star_path_node.h
+        include/entities/artificial_intelligence/circle_path_around_object_ai.h
+        src/entities/artificial_intelligence/circle_path_around_object_ai.cc
+        include/entities/artificial_intelligence/find_path_to_object_ai.h
+        src/entities/artificial_intelligence/find_path_to_object_ai.cc
 
         include/entities/physics/box_collider.h
         include/entities/physics/circle_collider.h
@@ -62,8 +66,8 @@ add_library(${PROJECT_NAME} SHARED
         include/entities/game_object.h
         include/entities/sprite.h
         include/entities/transform.h
-        include/entities/particle.h
-        include/entities/particle_emitter.h
+        include/entities/particle_emitters/particle.h
+        include/entities/particle_emitters/particle_emitter.h
 
         include/entities/ui/ui_object.h
         include/entities/ui/ui_text.h
@@ -99,8 +103,6 @@ add_library(${PROJECT_NAME} SHARED
         src/engine/engine.cc
         src/engine/engine_config.cc
         src/engine/engine_tick.cc
-
-        src/entities/artificial_intelligence/player_turret.cc
 
         src/entities/physics/box_collider.cc
         src/entities/physics/circle_collider.cc
@@ -152,6 +154,13 @@ add_library(${PROJECT_NAME} SHARED
         src/entities/light_source.cc
         include/entities/scene/scene_lighting.h
         src/entities/scene/scene_lighting.cc
+        include/entities/structs/gamepad_button.h
+        include/entities/listeners/gamepad_listener.h
+        src/entities/listeners/gamepad_listener.cc
+        include/entities/particle_emitters/explosion_emitter.h
+        include/entities/particle_emitters/spiral_emitter.h
+        include/entities/particle_emitters/firework_emitter.h
+        include/entities/particle_emitters/firework_particle.h
 
 )
 

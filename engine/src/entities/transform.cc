@@ -8,9 +8,9 @@ class Transform::Impl {
 
   Impl(float rotation, float scale) : rotation_(rotation), scale_(scale) {}
 
-  void SetRotation(double rotation) {
-    double min_rotation = 0.0;
-    double max_rotation = 360.0;
+  void SetRotation(float rotation) {
+    float min_rotation = 0.0;
+    float max_rotation = 360.0;
 
     // Rotation is in bounds of allowed rotation values
     if (rotation >= min_rotation && rotation <= max_rotation) {
@@ -27,7 +27,7 @@ class Transform::Impl {
             static_cast<int>(static_cast<float>(size_.y) * scale_)};
   }
 
-  [[nodiscard]] double GetRotation() const {
+  [[nodiscard]] float GetRotation() const {
     return rotation_;
   }
 
@@ -48,7 +48,7 @@ class Transform::Impl {
   }
 
  private:
-  double rotation_ = 0.0;
+  float rotation_ = 0.0;
   float scale_ = 1;
   entities::Point size_{0, 0};
 };
@@ -61,11 +61,11 @@ Transform::Transform(engine::entities::Vector2d position, float rotation, float 
 
 Transform::~Transform() = default;
 
-void Transform::SetRotation(double rotation) {
+void Transform::SetRotation(float rotation) {
   impl_->SetRotation(rotation);
 }
 
-double Transform::GetRotation() const {
+float Transform::GetRotation() const {
   return impl_->GetRotation();
 }
 
@@ -87,6 +87,5 @@ entities::Point Transform::GetSize() const {
 entities::Point Transform::GetScaledSize() const {
   return impl_->GetScaledSize();
 }
-
 
 }

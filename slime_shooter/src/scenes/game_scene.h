@@ -12,9 +12,9 @@
 #include "player/player.h"
 #include "ui/hud/hud.h"
 #include "entities/ui/ui_button.h"
-#include "player_base/base_object.h"
-#include "player_base/fireplace_object.h"
-#include "player_base/bed_object.h"
+#include "structures/base_object.h"
+#include "structures/fireplace_object.h"
+#include "structures/bed_object.h"
 #include "enemies/enemy_spawner_logic.h"
 #include "enemies/enemy_spawner.h"
 #include "config/level_loader_config.h"
@@ -31,6 +31,7 @@ class GameScene : Scene {
  public:
   static Scene* GameSceneInit() {
     engine::Engine::GetInstance().SetFps(60);
+    engine::Engine::GetInstance().GetPhysicsEngine()->SetGravity({0, 0});
     scene_ = new GameScene();
     scene_->SetViewportRendering(true, 0);
 

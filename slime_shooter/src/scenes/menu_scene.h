@@ -2,25 +2,32 @@
 #define SLIME_SHOOTER_SLIME_SHOOTER_MENU_SCENE_H_
 
 #include <iostream>
+#include "entities/scene/scene_background.h"
 #include "entities/scene/scene.h"
 #include "entities/game_object.h"
 #include "entities/sprite.h"
 #include "entities/behaviour_script.h"
-#include "player/player_movement.h"
-#include "entities/scene/scene_background.h"
 #include "entities/animator.h"
+
 #include "ui/menu/buttons/play_game_button.h"
 #include "ui/menu/buttons/edit_level_button.h"
 #include "ui/menu/buttons/create_level_button.h"
+#include "ui/menu/buttons/quit_game_button.h"
+#include "ui/menu/buttons/delete_level_button.h"
+#include "ui/menu/buttons/play_stress_test_button.h"
+#include "ui/menu/buttons/play_platformer_button.h"
+#include "ui/menu/buttons/play_particles_button.h"
+#include "ui/menu/buttons/play_ai_button.h"
+#include "ui/menu/level_selector/level_selector.h"
 #include "ui/menu/highscore.h"
 #include "ui/button_click_listener.h"
+
+#include "player/player_movement.h"
 #include "data_handler/data_object.h"
 #include "data_handler/serializer.h"
 #include "data_handler/file_handler/file_handler.h"
 #include "config/level_loader_config.h"
-#include "ui/menu/level_selector/level_selector.h"
-#include "ui/menu/buttons/quit_game_button.h"
-#include "ui/menu/buttons/delete_level_button.h"
+#include "particle/firework.h"
 
 using namespace engine::entities;
 using namespace engine::data_handler;
@@ -54,6 +61,9 @@ class MenuScene : engine::entities::Scene {
     or_text->SetFont(GameFont::Default, 20);
     or_text->SetColor(GameColor::Ui::TextGray);
 
+    auto firework = GameObject::Create<Firework>();
+
+    scene_->AddObject(firework);
     scene_->AddObject(logo_text);
     scene_->AddObject(or_text);
 
@@ -65,12 +75,20 @@ class MenuScene : engine::entities::Scene {
     auto level_editor_button = GameObject::Create<CreateLevelButton>();
     auto delete_level_button = GameObject::Create<DeleteLevelButton>();
     auto quit_game_button = GameObject::Create<QuitGameButton>();
+    auto stress_test_button = GameObject::Create<PlayStressTestButton>();
+    auto platformer_button = GameObject::Create<PlayPlatformerButton>();
+    auto particles_button = GameObject::Create<PlayParticlesButton>();
+    auto ai_button = GameObject::Create<PlayAiButton>();
 
     scene_->AddObject(play_game_button);
     scene_->AddObject(load_level_button);
     scene_->AddObject(level_editor_button);
     scene_->AddObject(delete_level_button);
     scene_->AddObject(quit_game_button);
+    scene_->AddObject(stress_test_button);
+    scene_->AddObject(platformer_button);
+    scene_->AddObject(particles_button);
+    scene_->AddObject(ai_button);
 
     auto button_click_listener = GameObject::Create<ButtonMouseClickListener>();
     scene_->AddListener(button_click_listener);
@@ -96,7 +114,7 @@ class MenuScene : engine::entities::Scene {
     auto fireplace_object = GameObject::Create<FireplaceObject>();
     fireplace_object->GetTransform()->Position = {850, 390};
     for (const auto& child : fireplace_object->GetChildObjects())
-      child->GetTransform()->Position -= {250,100};
+      child->GetTransform()->Position -= Vector2d{250,100};
 
     auto player_object = GameObject::Create<>();
     auto player_sprite = Component::Create<Sprite>("resources/sprites/player/sleeping.png");

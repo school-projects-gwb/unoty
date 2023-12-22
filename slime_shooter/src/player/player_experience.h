@@ -12,19 +12,29 @@ namespace slime_shooter {
 
 class PlayerExperience : public BehaviourScript {
  public:
+  using LevelUpCallback = std::function<void()>;
+
+  void SetLevelUpCallback(const LevelUpCallback &callback) {
+    level_up_callback_ = callback;
+  }
+
   void GainExperience(int amount_to_gain) {
     int current_xp = player_statistics_->GetInt(StatisticType::Experience);
     int max_xp = player_statistics_->GetInt(StatisticType::MaxExperience);
 
+    if (level_up_callback_) {
+      level_up_callback_();
+    }
+
     if (current_xp + amount_to_gain >= max_xp) { // Level up
       player_statistics_->Append(StatisticType::Level, 1);
-      auto leftover_xp = max_xp - (current_xp+amount_to_gain);
-      player_statistics_->Set(StatisticType::Experience, leftover_xp);
-      player_statistics_->Set(StatisticType::MaxExperience, max_xp * 1.05f);
 
+      auto leftover_xp = max_xp - (current_xp + amount_to_gain);
+      player_statistics_->Set(StatisticType::Experience, static_cast<float>(leftover_xp));
+      player_statistics_->Set(StatisticType::MaxExperience, static_cast<float>(max_xp) * 1.05f);
       upgrade_handler_->Show();
     } else {
-      player_statistics_->Set(StatisticType::Experience, current_xp + amount_to_gain);
+      player_statistics_->Set(StatisticType::Experience, static_cast<float>(current_xp + amount_to_gain));
     }
   }
 
@@ -32,6 +42,7 @@ class PlayerExperience : public BehaviourScript {
   std::shared_ptr<Statistics> player_statistics_;
   std::shared_ptr<UpgradeHandler> upgrade_handler_;
   bool is_turret_unlocked_ = false;
+  LevelUpCallback level_up_callback_;
 
   void OnStart() override {
     auto player = GameObject::GetSceneObjectByName("Player");
@@ -42,10 +53,11 @@ class PlayerExperience : public BehaviourScript {
   void OnUpdate() override {
     if (!is_turret_unlocked_ && player_statistics_->GetInt(StatisticType::Level) == 2) {
       PopupConfig popup_config;
-      popup_config.content_position_ = {engine::EngineConfig::window_width/2 - 235, 335};
+      popup_config.content_position_ = {engine::EngineConfig::window_width / 2 - 235, 335};
 
       auto popup = GameObject::Cast<Popup>(GameObject::GetSceneObjectByName("popup"));
       popup->Show("NEW UNLOCK!", "Turret that shoots at enemies.", popup_config);
+
       GameObject::GetSceneObjectByName("player_turret", true)->SetIsActive(true);
       is_turret_unlocked_ = true;
     }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include "utility/debug.h"
+#include "point.h"
 
 namespace engine::entities {
 
@@ -43,8 +44,23 @@ class Vector2d {
     return {x - other.x, y - other.y};
   }
 
+  Vector2d operator+(const Point &other) const {
+    return {x + (float)other.x, y + (float)other.y};
+  }
+
+  Vector2d operator-(const Point &other) const {
+    return {x - (float)other.x, y - (float)other.y};
+  }
+
   Vector2d operator/(const int divider) const {
     return {x / divider, y / divider};
+  }
+
+  bool operator==(const Vector2d &other) const {
+    return (x == other.x) && (y == other.y);
+  }
+  bool operator!=(const Vector2d &other) const {
+    return (x != other.x) || (y != other.y);
   }
 
   Vector2d &operator+=(const Vector2d &other) {
@@ -56,6 +72,18 @@ class Vector2d {
   Vector2d &operator-=(const Vector2d &other) {
     x -= other.x;
     y -= other.y;
+    return *this;
+  }
+
+  Vector2d &operator+=(const Point &other) {
+    x += (float)other.x;
+    y += (float)other.y;
+    return *this;
+  }
+
+  Vector2d &operator-=(const Point &other) {
+    x -= (float)other.x;
+    y -= (float)other.y;
     return *this;
   }
 

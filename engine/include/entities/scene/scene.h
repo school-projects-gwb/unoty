@@ -27,6 +27,7 @@ class Scene {
   const std::string& GetSceneName();
 
   void AddObject(std::shared_ptr<GameObject> object);
+  void QueueObject(std::shared_ptr<GameObject> object);
   void RemoveObject(std::shared_ptr<GameObject> object_to_remove);
 
   void AddListener(std::shared_ptr<Listener> listener);
@@ -36,6 +37,9 @@ class Scene {
 
   /// @brief Triggers all Components in Scene's GameObjects that have input handling functionality
   void TriggerListeners();
+
+  /// @brief Removes all Objects from Scene and adds them to the Scene's GameObjects
+  void DequeueObjects();
 
   /// @brief Updates physics Components in Scene's GameObjects
   void UpdatePhysics(const std::unique_ptr<physics::PhysicsEngine> &physics);

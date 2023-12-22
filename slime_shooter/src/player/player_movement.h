@@ -18,6 +18,7 @@ class PlayerMovement : public BehaviourScript {
   void StopWalkSound() {
     walk_sound_->Stop();
   }
+
  private:
   std::shared_ptr<Transform> transform_;
   std::shared_ptr<Animator> animator_;
@@ -42,20 +43,39 @@ class PlayerMovement : public BehaviourScript {
   }
 
   void OnInput() override {
-    Vector2d vector {0, 0};
+    Vector2d vector{0, 0};
 
     for (auto key : Input::GetActiveKeys()) {
-      if (key == Key::UnoW) vector.y--;
-      if (key == Key::UnoS) vector.y++;
-      if (key == Key::UnoA) vector.x--;
-      if (key == Key::UnoD) vector.x++;
+      switch (key) {
+        case Key::UnoW:
+          vector.y--;
+        break;
+        case Key::UnoS:
+          vector.y++;
+        break;
+        case Key::UnoA:
+          vector.x--;
+        break;
+        case Key::UnoD:
+          vector.x++;
+        break;
+        default:break;
+      }
     }
 
-    auto animation_state = DetermineAnimationState(vector.x, vector.y);
+    if (Input::IsGamepadPluggedIn() && vector.x == 0 && vector.y == 0) {
+      for (auto btn : Input::GetActiveGamepadButtons()) {
+        if (btn == GamepadButton::Up) vector.y--;
+        if (btn == GamepadButton::Down) vector.y++;
+        if (btn == GamepadButton::Left) vector.x--;
+        if (btn == GamepadButton::Right) vector.x++;
+      }
+    }
+
+    auto animation_state = DetermineAnimationState(static_cast<int>(vector.x), static_cast<int>(vector.y));
     ProcessAnimation(animation_state);
 
-    if (vector.x == 0 && vector.y == 0)
-    {
+    if (vector.x == 0 && vector.y == 0) {
       rigid_body_->SetLinearVelocity(vector);
       return;
     }
@@ -94,7 +114,6 @@ class PlayerMovement : public BehaviourScript {
 
     previous_animation_state_ = current_animation_state_;
     current_animation_state_ = animation_state;
-    if (current_animation_state_ == previous_animation_state_) return;
 
     is_moving_ = true;
     animator_->SetCurrentAnimationSpriteSheet(animation_state);

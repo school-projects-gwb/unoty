@@ -49,7 +49,7 @@ class LevelLoaderConfig {
   }
 
   static std::string StringifyPosition(engine::entities::Vector2d target_position) {
-    return std::to_string(target_position.x) + "," + std::to_string(target_position.y);
+    return std::to_string((int)round(target_position.x)) + "," + std::to_string((int)round(target_position.y));
   }
 
   static const std::map<std::string, std::string> &GetAvailableLevels() {

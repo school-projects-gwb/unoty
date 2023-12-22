@@ -37,8 +37,10 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   void SetLayer(int layer);
   int GetLayer() const;
 
-  void SetIsActive(bool is_active);
   bool GetIsActive() const;
+  void SetIsActive(bool is_active);
+  void SetReadyTrue() const;
+  bool GetIsReady() const;
 
   /// @brief Returns every single object from the current active Scene
   static std::vector<std::shared_ptr<GameObject>> GetAllSceneObjects();
@@ -54,9 +56,6 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   /// @param search_recursive Whether to search recursively through child GameObjects
   static std::shared_ptr<GameObject> GetSceneObjectByName(const std::string &name, bool search_recursive = false);
 
-  /// @brief Returns the SceneLighting object for easy access and modification from within Scene objects/components during runtime
-  static const std::unique_ptr<SceneLighting> &GetSceneLightingObject();
-
   /// @brief Used when adding new GameObject to Scene from i.e. a BehaviourScript script
   ///
   /// @note When in a Scene initialisation script, it makes more sense to call the AddObject on the Scene directly.
@@ -69,10 +68,19 @@ class GameObject : public std::enable_shared_from_this<GameObject> {
   static std::shared_ptr<GameObject> Create(Args &&... args) {
     return std::make_shared<GameObject>(std::forward<Args>(args)...);
   }
+  std::shared_ptr<GameObject> GetPtr()
+  {
+    return shared_from_this();
+  }
 
   template<typename T, typename... Args>
   static std::shared_ptr<T> Create(Args &&... args) {
     return std::make_shared<T>(std::forward<Args>(args)...);
+  }
+  template <typename T>
+  std::shared_ptr<T> GetPtr()
+  {
+    return shared_from_this();
   }
 
   template<class T>

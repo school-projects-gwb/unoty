@@ -16,6 +16,7 @@ class EngineTick {
   void UpdateFps();
 
   void SetTargetFps(int new_frames_per_second);
+  [[nodiscard]] double GetDeltaTime() const;
 
   [[nodiscard]] int GetMostRecentFps() const;
  private:

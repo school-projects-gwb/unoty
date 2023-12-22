@@ -69,6 +69,13 @@ class PlayerWeaponLogic : public BehaviourScript {
       if (key == Key::UnoRightArrow) direction.x++;
     }
 
+    for (auto btn : Input::GetActiveGamepadButtons()) {
+      if (btn == GamepadButton::Y) direction.y--;
+      if (btn == GamepadButton::A) direction.y++;
+      if (btn == GamepadButton::X) direction.x--;
+      if (btn == GamepadButton::B) direction.x++;
+    }
+
     if (direction.x == 0 && direction.y == 0) return;
 
     timer_.Start();

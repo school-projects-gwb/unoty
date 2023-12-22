@@ -11,5 +11,6 @@ int engine::EngineConfig::window_width = 1280;
 int engine::EngineConfig::window_height = 700;
 std::string engine::EngineConfig::window_title = "Slime Shooter";
 entities::Vector2d engine::EngineConfig::gravity = {1.0f, 1.0f};
+bool engine::EngineConfig::player_god_mode = false;
 
 }

@@ -3,6 +3,7 @@
 
 #include "entities/game_object.h"
 #include "experience_logic.h"
+#include "entities/particle_emitters/explosion_emitter.h"
 
 using namespace engine::entities;
 
@@ -23,6 +24,16 @@ class Experience : public GameObject {
     AddComponent(experience_logic_);
     GetTransform()->SetSize({32,32});
     SetLayer(4);
+
+    auto particle = Component::Create<Sprite>("resources/sprites/world/particle.png");
+    emitter_ = Component::Create<ExplosionEmitter>(particle, 15, 450, 0.33);
+    emitter_->SetEmissionInterval(2);
+
+    this->AddComponent(emitter_);
+  }
+
+  void ShowParticleEffect() {
+    emitter_->Start();
   }
 
   void SetAmount(int amount) {
@@ -38,6 +49,7 @@ class Experience : public GameObject {
 
  private:
   std::shared_ptr<ExperienceLogic> experience_logic_;
+  std::shared_ptr<ExplosionEmitter> emitter_;
 };
 
 }

@@ -19,8 +19,8 @@ class Transform {
   Transform(Vector2d position, float rotation, float scale);
 
   /// @brief Sets rotation (minimum and default of 0.0, maximum of 360.0)
-  void SetRotation(double rotation);
-  [[nodiscard]] double GetRotation() const;
+  void SetRotation(float rotation);
+  [[nodiscard]] float GetRotation() const;
 
   void SetScale(float scale);
   [[nodiscard]] float GetScale() const;
@@ -35,7 +35,7 @@ class Transform {
   /// @brief Sets Position of object; public property for easy access
   /// If the gameobject has a rigidbody, assigning a new position should be done via the rigidbody.
   /// Otherwise the next physics step will overwrite it with calculations based on the rigidbodies position.
-  Vector2d Position={0, 0};
+  Vector2d Position = {0, 0};
 
   /// @brief calculate the center position point (positions - (size/2))
   [[nodiscard]] entities::Point GetCenterPosition() const {
@@ -53,6 +53,26 @@ class Transform {
     return in_bounds_x && in_bounds_y;
   }
 
+  /// @brief Checks whether given position is "inside" Transform by comparing Transform's width, height, x- and y positions.
+  [[nodiscard]]  bool IsOverlapping(const std::shared_ptr<Transform> other) const {
+    auto size = GetSize();
+    auto other_size = other->GetSize();
+
+    if (Position.x + (float) size.x < other->Position.x || other->Position.x + (float) other_size.x < Position.x
+        || Position.y + (float) size.y < other->Position.y || other->Position.y + (float) other_size.y < Position.y) {
+      return false; // No overlap on either axis
+    }
+
+    return true; // Overlapping on both axes
+  }
+
+  Transform& operator=(Transform const &obj) {
+    Position = obj.Position;
+    SetSize(obj.GetSize());
+    SetScale(obj.GetScale());
+    SetRotation(obj.GetRotation());
+    return *this;
+  }
  private:
   class Impl;
   const std::unique_ptr<Impl> impl_;

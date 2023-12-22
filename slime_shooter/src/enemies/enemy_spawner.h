@@ -12,9 +12,17 @@ namespace slime_shooter {
 class EnemySpawner : public GameObject {
  public:
   EnemySpawner() {
-    auto spawner_logic = Component::Create<EnemySpawnerLogic>();
+    spawner_logic = Component::Create<EnemySpawnerLogic>();
     AddComponent(spawner_logic);
   }
+
+  void SetSpawnRate(float time) {
+    if (spawner_logic)
+      spawner_logic->SetSpawnRate(time);
+  }
+
+ private:
+  std::shared_ptr<EnemySpawnerLogic> spawner_logic;
 };
 
 }

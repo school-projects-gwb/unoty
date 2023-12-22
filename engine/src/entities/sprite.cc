@@ -14,6 +14,7 @@ class Sprite::Impl : public Component {
     render_info.sprite_path = sprite_path_;
     render_info.transform = transform;
     render_info.size = transform->GetSize();
+    render_info.offset = offset_;
 
     if (!has_color_overlay_) {
       renderer->RenderSprite(render_info, {flip_});
@@ -45,10 +46,18 @@ class Sprite::Impl : public Component {
   [[nodiscard]] entities::SpriteFlip GetFlip() const {
     return flip_;
   }
+
+  void SetOffset(Point offset) {
+    offset_ = offset;
+  }
+  [[nodiscard]] Point GetOffset() const {
+    return offset_;
+  }
  private:
   std::string sprite_path_;
+  Point offset_ {0,0};
   bool has_color_overlay_ = false;
-  entities::Color color_ = {255, 255, 255};
+  entities::Color color_ {255, 255, 255};
   entities::SpriteFlip flip_ = entities::SpriteFlip::FlipNone;
 };
 
@@ -77,6 +86,12 @@ void Sprite::SetFlip(entities::SpriteFlip flip) {
 
 entities::SpriteFlip Sprite::GetFlip() const {
   return impl_->GetFlip();
+}
+void Sprite::SetOffset(Point offset) {
+  impl_->SetOffset(offset);
+}
+Point Sprite::GetOffset() const {
+  return impl_->GetOffset();
 }
 
 }

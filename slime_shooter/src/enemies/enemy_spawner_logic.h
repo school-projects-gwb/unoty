@@ -33,6 +33,13 @@ class EnemySpawnerLogic : public BehaviourScript {
     timer_.Start();
   }
 
+  void SetSpawnRate(float time) {
+    if (time <= 0.0f)
+      return;
+
+    spawn_rate_seconds_ = time;
+  }
+
  private:
   bool can_spawn_ = true;
   std::shared_ptr<Statistics> player_statistics_;

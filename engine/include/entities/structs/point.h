@@ -7,6 +7,13 @@ namespace engine::entities {
 struct Point {
   int x;
   int y;
+
+  Point operator /(int v) const {
+    return {x/v, y/v};
+  }
+  Point operator *(int v) const {
+    return {x*v, y*v};
+  }
 };
 
 }

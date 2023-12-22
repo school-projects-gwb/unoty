@@ -1,5 +1,6 @@
 #include "scene_manager.h"
 #include "utility/debug.h"
+#include "engine/engine.h"
 #include <utility>
 
 namespace engine {
@@ -68,16 +69,14 @@ std::vector<std::shared_ptr<entities::GameObject>> SceneManager::GetObjectsByTag
   return active_scene_->GetObjectsByTagName(tag_name, search_recursive);
 }
 
-const std::unique_ptr<entities::SceneLighting> &SceneManager::GetSceneLightingObject() const {
-  static const std::unique_ptr<entities::SceneLighting> null_lighting;
-  if (active_scene_ == nullptr) return null_lighting;
-
-  return active_scene_->GetLighting();
-}
-
 void SceneManager::AddObject(std::shared_ptr<entities::GameObject> object_to_add) {
   if (active_scene_ == nullptr) return;
-  active_scene_->AddObject(object_to_add);
+  active_scene_->AddObject(std::move(object_to_add));
+}
+
+void SceneManager::QueueObject(std::shared_ptr<entities::GameObject> object_to_queue) {
+  if (active_scene_ == nullptr) return;
+  active_scene_->QueueObject(std::move(object_to_queue));
 }
 
 void SceneManager::RemoveObject(std::shared_ptr<entities::GameObject> object_to_remove) {

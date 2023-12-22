@@ -11,8 +11,11 @@ namespace engine::entities {
 class SceneObjectRegistry {
  public:
   std::vector<std::shared_ptr<GameObject>> GetObjects();
+  std::vector<std::shared_ptr<GameObject>> GetQueuedObjects();
 
   void AddObject(std::shared_ptr<GameObject> object);
+  void QueueObject(std::shared_ptr<GameObject> object);
+  void DequeueObject(std::shared_ptr<GameObject> object);
   void RemoveObject(std::shared_ptr<GameObject> object);
 
   std::vector<std::shared_ptr<GameObject>> GetObjectsByTagName(const std::string &tag_name, bool search_recursive = false);
@@ -26,6 +29,7 @@ class SceneObjectRegistry {
   void Reset();
  private:
   std::vector<std::shared_ptr<GameObject>> game_objects_;
+  std::vector<std::shared_ptr<GameObject>> game_object_queue_;
   std::vector<std::shared_ptr<KeyListener>> key_listeners_;
   std::vector<std::shared_ptr<MouseListener>> mouse_listeners_;
 

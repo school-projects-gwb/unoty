@@ -6,6 +6,7 @@
 #include "entities/structs/input.h"
 #include "statistics/statistics.h"
 #include "experience/experience_object_pool.h"
+#include "config/stress_test_config.h"
 
 using namespace engine::entities;
 
@@ -26,8 +27,10 @@ class EnemyLogic : public BehaviourScript {
     experience->SetAmount(experience_);
     experience->GetTransform()->Position = {transform_->Position.x + 36, transform_->Position.y + 36};
 
+
     ResetStatistics();
     GetGameObject().SetIsActive(false);
+    StressTestConfig::alive_enemies -= 1;
 
     death_sound_->Play();
 

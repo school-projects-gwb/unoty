@@ -9,7 +9,7 @@ namespace engine::entities {
 /// @brief Triggers functions on mouse interaction
 class MouseListener : public Listener {
  public:
-  ~MouseListener();
+  ~MouseListener() override;
   MouseListener();
   virtual void OnMouseMoved();
   virtual void OnMouseClicked();

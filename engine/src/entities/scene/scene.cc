@@ -2,24 +2,25 @@
 #include <utility>
 #include <unordered_set>
 #include <functional>
+
 #include "entities/scene/scene.h"
-#include "entities/game_object.h"
-#include "rendering/renderer.h"
 #include "entities/sprite.h"
 #include "entities/behaviour_script.h"
 #include "physics/physics_engine.h"
 #include "entities/animator.h"
 #include "scene_object_registry.h"
 #include "entities/ui/ui_object.h"
-#include "entities/particle_emitter.h"
+#include "entities/particle_emitters/particle_emitter.h"
 #include "engine/engine_config.h"
 #include "entities/light_source.h"
+#include "entities/listeners/gamepad_listener.h"
 
 namespace engine::entities {
 
 class Scene::Impl {
  public:
-  using RenderCallback = std::function<void(const std::unique_ptr<ui::Renderer> &renderer, const std::shared_ptr<GameObject> &game_object)>;
+  using RenderCallback = std::function<void(const std::unique_ptr<ui::Renderer> &renderer,
+                                            const std::shared_ptr<GameObject> &game_object)>;
 
   Impl() {
     viewport_rendering_ = false;
@@ -41,6 +42,10 @@ class Scene::Impl {
     object_registry_->AddObject(std::move(object));
   }
 
+  void QueueObject(std::shared_ptr<GameObject> object) {
+    object_registry_->QueueObject(std::move(object));
+  }
+
   void RemoveObject(std::shared_ptr<GameObject> object) {
     object_registry_->RemoveObject(std::move(object));
   }
@@ -53,11 +58,11 @@ class Scene::Impl {
     for (const auto &game_object : object_registry_->GetObjects())
       TriggerBehaviourScriptOnStartRecursive(game_object);
 
-    for (const auto& game_object : object_registry_->GetObjects())
+    for (const auto &game_object : object_registry_->GetObjects())
       for (auto rigid_body : game_object->GetComponentsByType<RigidBody>())
         rigid_body->Register();
 
-    if(background_music_ != nullptr && background_music_->play_on_wake_) background_music_->Play();
+    if (background_music_ != nullptr && background_music_->play_on_wake_) background_music_->Play();
   }
 
   void UpdatePhysics(const std::unique_ptr<physics::PhysicsEngine> &physics) {
@@ -85,7 +90,7 @@ class Scene::Impl {
 
   void TriggerListeners() {
     for (const auto &game_object : object_registry_->GetObjects())
-      if (game_object->GetIsActive())
+      if (game_object->GetIsReady())
         TriggerBehaviourScriptsRecursive(game_object);
 
     for (const auto &key_listener : object_registry_->GetListenersByType<KeyListener>()) {
@@ -99,6 +104,23 @@ class Scene::Impl {
       if (Input::IsMouseReleased()) mouse_listener->OnMouseReleased();
       if (Input::IsMouseClicked()) mouse_listener->OnMouseClicked();
     }
+
+    for (const auto &gamepad_listener : object_registry_->GetListenersByType<GamepadListener>()) {
+      if (Input::IsLeftStickMoved()) gamepad_listener->OnLeftStickMoved();
+      if (Input::IsRightStickMoved()) gamepad_listener->OnRightStickMoved();
+      if (!Input::GetPressedGamepadButtons().empty()) gamepad_listener->OnButtonPressed();
+      if (!Input::GetReleasedGamepadButtons().empty()) gamepad_listener->OnButtonPressed();
+    }
+  }
+
+  void DequeueObjects() {
+    for (const auto &game_object : object_registry_->GetQueuedObjects()) {
+      if (game_object->GetIsActive()) {
+        TriggerBehaviourScriptOnWakeRecursive(game_object);
+        game_object->SetReadyTrue();
+      }
+      object_registry_->DequeueObject(game_object);
+    }
   }
 
   void RenderObjects(const std::unique_ptr<ui::Renderer> &renderer) {
@@ -109,7 +131,7 @@ class Scene::Impl {
 
     // Process rendering for all objects and their child objects recursively
     for (const auto &game_object : viewport_rendering_ ? FilterObjectsInView(game_objects) : game_objects)
-      if (game_object->GetIsActive())
+      if (game_object->GetIsReady())
         RenderObjectsRecursive(renderer,
                                game_object,
                                [this](const std::unique_ptr<ui::Renderer> &renderer,
@@ -121,7 +143,7 @@ class Scene::Impl {
     lighting_->StartRenderLighting(renderer->GetSpriteRenderer());
 
     for (const auto &game_object : game_objects)
-      if (game_object->GetIsActive())
+      if (game_object->GetIsReady())
         RenderObjectsRecursive(renderer,
                                game_object,
                                [this](const std::unique_ptr<ui::Renderer> &renderer,
@@ -133,7 +155,7 @@ class Scene::Impl {
     renderer->GetSpriteRenderer()->EndRenderFrame();
 
     for (const auto &game_object : game_objects)
-      if (game_object->GetIsActive())
+      if (game_object->GetIsReady())
         RenderObjectsRecursive(renderer,
                                game_object,
                                [this](const std::unique_ptr<ui::Renderer> &renderer,
@@ -215,7 +237,7 @@ class Scene::Impl {
     std::vector<std::shared_ptr<GameObject>> objects_in_view;
 
     for (const auto &object : game_objects)
-      if(ProcessInViewCheck(object))
+      if (ProcessInViewCheck(object))
         objects_in_view.push_back(object);
 
     return objects_in_view;
@@ -223,7 +245,7 @@ class Scene::Impl {
 
   bool ProcessInViewCheck(const std::shared_ptr<GameObject> &object) {
     for (const auto &child : object->GetChildObjects())
-      if(ProcessInViewCheck(child))
+      if (ProcessInViewCheck(child))
         return true;
 
     return CheckIfObjectInView(object);
@@ -236,27 +258,61 @@ class Scene::Impl {
     if (dynamic_cast<UiObject *>(object.get())) return true;
     if (object_size.x <= 0 || object_size.y <= 0) return true;
     if (camera_->IsObjectInViewport(object_transform, viewport_offset_, camera_->GetPosition(true))) return true;
-    if(CheckEmitterInView(object)) return true;
+    if (CheckEmitterInView(object)) return true;
 
     return false;
   }
 
-  bool CheckEmitterInView(const std::shared_ptr<GameObject> &object){
+  bool CheckEmitterInView(const std::shared_ptr<GameObject> &object) {
     auto emitter = object->GetComponentByType<ParticleEmitter>();
-    if(emitter == nullptr) return false;
+    if (emitter == nullptr) return false;
 
-    for(const auto &particle: emitter->GetParticles())
+    for (const auto &particle : emitter->GetParticles())
       if (camera_->IsObjectInViewport(particle->GetTransform(), viewport_offset_, camera_->GetPosition(true)))
         return true;
 
     return false;
   }
 
-  void RenderObjectsRecursive(const std::unique_ptr<ui::Renderer> &renderer, const std::shared_ptr<GameObject> &game_object, RenderCallback render_callback) {
+  void RenderObjectsRecursive(const std::unique_ptr<ui::Renderer> &renderer,
+                              const std::shared_ptr<GameObject> &game_object,
+                              RenderCallback render_callback) {
     render_callback(renderer, game_object);
 
     for (const auto &child_object : game_object->GetChildObjects())
-      if (child_object->GetIsActive()) RenderObjectsRecursive(renderer, child_object, render_callback);
+      if (child_object->GetIsReady()) RenderObjectsRecursive(renderer, child_object, render_callback);
+  }
+
+  void TriggerBehaviourScriptsRecursive(const std::shared_ptr<GameObject> &game_object) {
+    for (const auto &script : game_object->GetComponentsByType<entities::BehaviourScript>()) {
+      script->OnInput();
+      script->OnUpdate();
+    }
+
+    for (const auto &child_object : game_object->GetChildObjects()) {
+      if (child_object->GetIsReady())
+        TriggerBehaviourScriptsRecursive(child_object);
+    }
+  }
+
+  void TriggerBehaviourScriptOnWakeRecursive(const std::shared_ptr<GameObject> &game_object) {
+    for (const auto &script : game_object->GetComponentsByType<entities::BehaviourScript>())
+      script->OnWake();
+
+    for (const auto &child_object : game_object->GetChildObjects()) {
+      if (child_object->GetIsReady())
+        TriggerBehaviourScriptOnWakeRecursive(child_object);
+    }
+  }
+
+  void TriggerBehaviourScriptOnStartRecursive(const std::shared_ptr<GameObject> &game_object) {
+    for (const auto &script : game_object->GetComponentsByType<entities::BehaviourScript>())
+      script->OnStart();
+
+    for (const auto &child_object : game_object->GetChildObjects()) {
+      if (child_object->GetIsReady())
+        TriggerBehaviourScriptOnStartRecursive(child_object);
+    }
   }
 
   void RenderGameObject(const std::unique_ptr<ui::Renderer> &renderer, std::shared_ptr<GameObject> game_object) {
@@ -279,26 +335,6 @@ class Scene::Impl {
     for (const auto &light_source : game_object->GetComponentsByType<LightSource>())
       light_source->Render(renderer->GetSpriteRenderer(), game_object->GetTransform());
   }
-
-  void TriggerBehaviourScriptsRecursive(const std::shared_ptr<GameObject> &game_object) {
-    for (const auto &script : game_object->GetComponentsByType<entities::BehaviourScript>()) {
-      script->OnInput();
-      script->OnUpdate();
-    }
-
-    for (const auto &child_object : game_object->GetChildObjects())
-      if (child_object->GetIsActive())
-        TriggerBehaviourScriptsRecursive(child_object);
-  }
-
-  void TriggerBehaviourScriptOnStartRecursive(const std::shared_ptr<GameObject> &game_object) {
-    for (const auto &script : game_object->GetComponentsByType<entities::BehaviourScript>())
-      script->OnStart();
-
-    for (const auto &child_object : game_object->GetChildObjects())
-      if (child_object->GetIsActive())
-        TriggerBehaviourScriptOnStartRecursive(child_object);
-  }
 };
 
 Scene::Scene() : impl_(new Impl()) {}
@@ -316,6 +352,10 @@ void Scene::AddObject(std::shared_ptr<GameObject> object) {
   impl_->AddObject(std::move(object));
 }
 
+void Scene::QueueObject(std::shared_ptr<GameObject> object) {
+  impl_->QueueObject(std::move(object));
+}
+
 void Scene::AddListener(std::shared_ptr<Listener> listener) {
   impl_->AddListener(std::move(listener));
 }
@@ -330,6 +370,10 @@ void Scene::InitialiseObjects() {
 
 void Scene::TriggerListeners() {
   impl_->TriggerListeners();
+}
+
+void Scene::DequeueObjects() {
+  impl_->DequeueObjects();
 }
 
 void Scene::UpdatePhysics(const std::unique_ptr<physics::PhysicsEngine> &physics) {

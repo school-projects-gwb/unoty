@@ -9,9 +9,10 @@ namespace engine::entities {
 /// @brief Use for completely custom behavior; has access to various listeners
 class BehaviourScript : public Component {
  public:
-  ~BehaviourScript();
+  ~BehaviourScript() override;
   BehaviourScript();
   virtual void OnStart();
+  virtual void OnWake();
   virtual void OnUpdate();
   virtual void OnInput();
   virtual void OnCollisionEnter(GameObject* &colliding_object);

@@ -5,8 +5,8 @@
 #include "entities/animator.h"
 #include "entities/physics/box_collider.h"
 #include "entities/physics/rigid_body.h"
-#include "player/player_light.h"
 #include "player_movement.h"
+#include "player_light.h"
 
 using namespace engine::entities;
 
@@ -33,7 +33,7 @@ class Player : public GameObject {
     AddComponent(rigid_body);
     AddComponent(collider);
 
-    auto light = GameObject::Create<PlayerLight>();
+    auto light = GameObject::Create<showcase::PlayerLight>();
     AddChildObject(light);
 
     SetLayer(5);
