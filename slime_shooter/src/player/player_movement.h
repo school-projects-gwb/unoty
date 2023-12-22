@@ -111,7 +111,8 @@ class PlayerMovement : public BehaviourScript {
       walk_sound_->Stop();
       return;
     }
-
+   
+    if(previous_animation_state_ == animation_state) return;
     previous_animation_state_ = current_animation_state_;
     current_animation_state_ = animation_state;
 
