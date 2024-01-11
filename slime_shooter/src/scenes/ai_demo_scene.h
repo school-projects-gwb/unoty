@@ -38,6 +38,10 @@ class AiDemoScene : Scene {
     scene_ = new AiDemoScene();
     scene_->SetViewportRendering(true, 0);
 
+    // debug script
+    auto debug_toggler = std::make_shared<DebugToggleScript>();
+    scene_->AddListener(debug_toggler);
+
     // Create SceneBackground
     TileMapConfig tile_map_config;
     tile_map_config.tile_map_image_path = LevelLoaderConfig::GetPropertyValue("tile_map_path");
