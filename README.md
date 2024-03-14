@@ -11,7 +11,7 @@
 ## Project Collaborators
 | **Naam**                  | **GitHub id**     | **E-mail address**              | **Studentennummer** |
 |---------------------------|-------------------|---------------------------------|---------------------|
-| Josh van Houts            | gunwunbun         | jpt.vanhouts@student.avans.nl   | 2182446             |
+| Jess van Houts            | gunwunbun         | jpt.vanhouts@student.avans.nl   | 2182446             |
 | Wessel van Dorsten        | raintje           | w.vandorsten@student.avans.nl   | 2153442             |
 | Sjoerd van der Bok        | DoCNL             | sa.vanderbok@student.avans.nl   | 2113474             |
 | Jacky Zheng               | GXZheng312        | gx.zheng@student.avans.nl       | 2164239             |
