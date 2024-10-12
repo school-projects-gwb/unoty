@@ -36,10 +36,6 @@ class DebugToggleScript : public KeyListener {
     if (Input::HasPressedKey(Key::UnoHome))
       engine::Engine::GetInstance().ResetFps();
 
-    // Toggle god mode
-    if (Input::HasPressedKey(Key::UnoX))
-      engine::Engine::GetInstance().ToggleGodMode();
-
     // Toggle debug mode & FPS counter
     if (Input::HasPressedKey(Key::UnoZ))
       engine::Engine::GetInstance().ToggleDebugMode();

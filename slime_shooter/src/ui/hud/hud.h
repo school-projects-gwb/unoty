@@ -7,8 +7,6 @@
 #include "ui/hud/score/score_text.h"
 #include "ui/hud/score/score_logic.h"
 #include "ui/hud/enemy_counter/enemy_counter_logic.h"
-#include "ui/hud/god_mode_indicator/god_mode_indicator.h"
-#include "ui/hud/god_mode_indicator/god_mode_indicator_logic.h"
 
 using namespace engine::entities;
 
@@ -33,12 +31,6 @@ class Hud : public UiObject {
 
     auto score_logic = GameObject::Create<ScoreLogic>();
     AddComponent(score_logic);
-
-    auto god_mode_text = GameObject::Create<GodModeIndicator>();
-    AddChildObject(god_mode_text);
-
-    auto god_mode_indicator = GameObject::Create<GodModeIndicatorLogic>();
-    AddComponent(god_mode_indicator);
 
     if (show_enemy_count) {
       auto stress_test_debug_text = GameObject::Create<UiText>();

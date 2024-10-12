@@ -126,14 +126,6 @@ class Engine::Impl {
     EngineConfig::is_debug_mode = !EngineConfig::is_debug_mode;
   }
 
-  static void ToggleGodMode() {
-    EngineConfig::player_god_mode = !EngineConfig::player_god_mode;
-  }
-
-  static void SetGodMode(bool value) {
-    EngineConfig::player_god_mode = value;
-  }
-
   static bool IsDebugModeEnabled() {
     return EngineConfig::is_debug_mode;
   }
@@ -230,14 +222,6 @@ void Engine::SetActiveScene(const std::string &scene_name) {
 
 void Engine::ToggleDebugMode() const {
   impl_->ToggleDebugMode();
-}
-
-void Engine::ToggleGodMode() const {
-  impl_->ToggleGodMode();
-}
-
-void Engine::SetGodMode(bool value) {
-  impl_->SetGodMode(value);
 }
 
 bool Engine::IsDebugModeEnabled() const {

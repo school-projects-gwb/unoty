@@ -95,8 +95,6 @@ class StressTestScene : Scene {
     scene_->SetBackground(std::move(scene_background));
     scene_->SetLighting(std::move(scene_lighting));
 
-    engine::Engine::GetInstance().SetGodMode(true);
-
     return scene_;
   }
 

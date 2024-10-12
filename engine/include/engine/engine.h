@@ -41,10 +41,6 @@ class Engine {
   void ToggleDebugMode() const;
   [[nodiscard]] bool IsDebugModeEnabled() const;
 
-  void ToggleGodMode() const;
-
-  void SetGodMode(bool value);
-
   /// @brief Shuts down engine
   ///
   /// @warning DO NOT use from within game script code; use Stop() instead. This function effectively destroys Engine pointer.

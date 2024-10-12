@@ -2,24 +2,13 @@
 
 <div align="center">
 
-[Project Collaborators](#project-collaborators) •
 [Project Description](#project-description) •
 [Rules](#rules) 
 
 </div> 
-  
-## Project Collaborators
-| **Naam**                  | **GitHub id**     | **E-mail address**              | **Studentennummer** |
-|---------------------------|-------------------|---------------------------------|---------------------|
-| Jess van Houts            | gunwunbun         | jpt.vanhouts@student.avans.nl   | 2182446             |
-| Wessel van Dorsten        | raintje           | w.vandorsten@student.avans.nl   | 2153442             |
-| Sjoerd van der Bok        | DoCNL             | sa.vanderbok@student.avans.nl   | 2113474             |
-| Jacky Zheng               | GXZheng312        | gx.zheng@student.avans.nl       | 2164239             |
-| Devlin van Asperdt        | Schooldoid        | daj.vanasperdt@student.avans.nl | 2187902             |
-  
+
 ## Project Description
-This repository serves to host the source code of the Unoty engine, our interpretation of the main assignment at
-the center of the C++ minor, as presented by Avans Hogeschool.
+Unoty game engine
 
 ## Getting Started
 
@@ -42,9 +31,6 @@ This project is still in the early stage of development, and this section will b
 have implemented some of the desired functionality.
 
 ## Rules
-
-### Project Management
-See our [JIRA board](https://unoty.atlassian.net/jira/software/projects/UNOTY/boards/1).
 
 ### Git Conventions
 - Our main branch serves as our "release branch", and will be updated at the conclusion of every sprint.
