@@ -105,8 +105,8 @@ void SdlSpriteRenderer::RenderTexture(SDL_Texture* texture, const SDL_Rect* sour
   SDL_Rect destination_rectangle;
 
   auto camera_position = sdl_renderer_->GetCameraPosition();
-  destination_rectangle.x = destination_position.x - (is_position_fixed ? 0 : camera_position.x - (size.x/2)) + offset.x;
-  destination_rectangle.y = destination_position.y - (is_position_fixed ? 0 : camera_position.y - (size.y/2)) + offset.y;
+  destination_rectangle.x = destination_position.x - (is_position_fixed ? 0 : camera_position.x) + offset.x;
+  destination_rectangle.y = destination_position.y - (is_position_fixed ? 0 : camera_position.y) + offset.y;
   destination_rectangle.w = size.x;
   destination_rectangle.h = size.y;
 

@@ -228,7 +228,7 @@ void SdlInput::InitializeGamepadMappings() {
 
 entities::Point SdlInput::GetMousePositionRelativeToCamera(const entities::Point &mouse_position,
                                                            const entities::Point &camera_position) {
-  return {mouse_position.x + camera_position.x, mouse_position.y + camera_position.y};
+  return {mouse_position.x, mouse_position.y};
 }
 
 }

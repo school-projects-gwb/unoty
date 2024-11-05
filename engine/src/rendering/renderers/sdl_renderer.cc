@@ -88,6 +88,8 @@ std::unique_ptr<TextRenderer> &SdlRenderer::GetTextRenderer() {
 void SdlRenderer::UpdateCameraPosition(engine::entities::Camera *camera) {
   // Get position camera is tracking
   auto center_target_position = camera->GetTransform()->Position;
+  center_target_position.x -= window_width_ / 2 + 1;
+  center_target_position.y -= window_height_ / 2 + 1;
   // TODO possibly improve this logic
   if (center_target_position.x == 0 && center_target_position.y == 0) {
     camera_position_.x = 0;
@@ -103,8 +105,11 @@ void SdlRenderer::UpdateCameraPosition(engine::entities::Camera *camera) {
   int camera_y = center_target_position.y;
 
   if (camera->HasTrackingTransform()) {
-    camera_x = (center_target_position.x + (target_transform->GetSize().x)) - (window_width_ / 2);
-    camera_y = (center_target_position.y + (target_transform->GetSize().y)) - (window_height_ / 2);
+    camera_x = target_transform->Position.x + (target_transform->GetSize().x / 2) - (window_width_ / 2);
+    camera_y = target_transform->Position.y + (target_transform->GetSize().y / 2) - (window_height_ / 2);
+    // camera_x = (center_target_position.x + (target_transform->GetSize().x)) - (window_width_ / 2);
+    // camera_y = (center_target_position.y + (target_transform->GetSize().y)) - (window_height_ / 2);
+    // target_transform->Position.Print();
   }
 
   camera_position_.x = camera_x;

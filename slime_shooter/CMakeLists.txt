@@ -142,8 +142,6 @@ target_sources(${PROJECT_NAME} PRIVATE
         src/scenes/stress_test_scene.h
         src/showcase/platformer/player.h
         src/showcase/platformer/player_movement.h
-        src/ui/hud/god_mode_indicator/god_mode_indicator_logic.h
-        src/ui/hud/god_mode_indicator/god_mode_indicator.h
 )
 
 target_include_directories(slime_shooter PRIVATE src)

@@ -14,7 +14,7 @@ class BedObject : public GameObject {
   BedObject() {
     auto background_object_sprite = Component::Create<Sprite>("resources/sprites/world/bed.png");
     AddComponent(background_object_sprite);
-    GetTransform()->Position = {450, 415};
+    GetTransform()->Position = {500, 415};
     GetTransform()->SetScale(2.7);
   }
 };

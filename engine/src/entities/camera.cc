@@ -38,17 +38,31 @@ class Camera::Impl : public GameObject {
   }
 
   bool IsObjectInViewport(const std::shared_ptr<Transform>& object_transform, float offset, entities::Point camera_position) const {
+    // Get object position and size
     auto object_position = object_transform->GetCenterPosition();
     auto object_size = object_transform->GetScaledSize();
 
-    bool overlaps_horizontally = (camera_position.x - offset <= object_position.x + object_size.x) &&
-        (camera_position.x + engine::EngineConfig::window_width + offset >= object_position.x);
+    // Adjust object position to account for its top-left corner (instead of center)
+    auto object_top_left_x = object_position.x - (object_size.x / 2);
+    auto object_top_left_y = object_position.y - (object_size.y / 2);
 
-    bool overlaps_vertically = (camera_position.y - offset <= object_position.y + object_size.y) &&
-        (camera_position.y + engine::EngineConfig::window_height + offset >= object_position.y);
+    // Calculate the camera's viewport bounds
+    float camera_left = camera_position.x - offset;
+    float camera_right = camera_position.x + engine::EngineConfig::window_width + offset;
+    float camera_top = camera_position.y - offset;
+    float camera_bottom = camera_position.y + engine::EngineConfig::window_height + offset;
+
+    // Check horizontal overlap
+    bool overlaps_horizontally = (camera_left <= object_top_left_x + object_size.x) &&
+                                 (camera_right >= object_top_left_x);
+
+    // Check vertical overlap
+    bool overlaps_vertically = (camera_top <= object_top_left_y + object_size.y) &&
+                               (camera_bottom >= object_top_left_y);
 
     return overlaps_horizontally && overlaps_vertically;
   }
+
 
  private:
   Point position_;

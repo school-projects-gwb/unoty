@@ -73,7 +73,7 @@ class GameScene : Scene {
     // Add GameObjects to Scene
     scene_->AddObject(player_object);
     scene_->AddObject(hud);
-    scene_->AddObject(enemy_spawner);
+    // scene_->AddObject(enemy_spawner);
 
     auto popup = GameObject::Create<Popup>();
     popup->SetLayer(5);
@@ -163,6 +163,7 @@ class GameScene : Scene {
       auto speed_upgrade = GameObject::Create<BaseUpgrade>(
           statistic_upgrades::GetStatisticUpgradeByName("Speed"),
           LevelLoaderConfig::GetPositionFromString(speed_upgrade_position));
+
       speed_upgrade->SetLayer(2);
       scene_->AddObject(speed_upgrade);
     }
@@ -171,6 +172,7 @@ class GameScene : Scene {
       auto health_upgrade = GameObject::Create<BaseUpgrade>(
           statistic_upgrades::GetStatisticUpgradeByName("Health"),
           LevelLoaderConfig::GetPositionFromString(health_upgrade_position));
+
       health_upgrade->SetLayer(2);
       scene_->AddObject(health_upgrade);
     }

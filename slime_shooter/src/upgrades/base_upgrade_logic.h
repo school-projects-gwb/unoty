@@ -44,7 +44,7 @@ class BaseUpgradeLogic : public BehaviourScript {
   std::shared_ptr<Transform> player_transform_;
   std::shared_ptr<Transform> transform_;
   std::shared_ptr<AudioSource> pickup_sound_;
-  Vector2d bounds_offset_ = {100, 100};
+  Vector2d bounds_offset_ = {0, 0};
 
   void HandleEnableUpgradeCheck() {
     if (current_player_level_ == player_statistics_->GetInt(StatisticType::Level) || is_active_) return;

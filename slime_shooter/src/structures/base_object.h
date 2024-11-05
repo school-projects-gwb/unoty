@@ -15,7 +15,7 @@ class BaseObject : public GameObject {
   BaseObject() {
     auto base_object_sprite = Component::Create<Sprite>("resources/sprites/world/floor.png");
     AddComponent(base_object_sprite);
-    GetTransform()->Position = {275, 325};
+    GetTransform()->Position = {600, 500};
     GetTransform()->SetSize({700, 430});
 
     auto base_logic = GameObject::Create<BaseLogic>();
